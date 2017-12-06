@@ -1,6 +1,6 @@
 /**
  * Created by chenzl on 2017/11/14.
- * Feature:新建迭代
+ * Feature:新建冲刺
  */
 /*eslint-disable*/
 import React, {Component} from 'react';
@@ -111,7 +111,7 @@ class UpdateSprint extends Component {
       <div className="sprintModalStyle">
         <Modal
           visible={updateVisible}
-          title="新建迭代"
+          title="编辑冲刺"
           closable={false}
           className="modalTitleStyle"
           onCancel={onCancel}
@@ -123,16 +123,16 @@ class UpdateSprint extends Component {
           }
         >
           <Form layout="vertical">
-            <FormItem label="迭代名称">
+            <FormItem label="冲刺名称">
               {getFieldDecorator('name', {initialValue: data.name}, {
-                rules: [{required: true, message: '请输入迭代名称!'}],
+                rules: [{required: true, message: '请输入冲刺名称!'}],
               })(
                 <Input />
               )}
             </FormItem>
-            <FormItem label="迭代描述">
+            <FormItem label="冲刺描述">
               {getFieldDecorator('description', {initialValue: data.description}, {
-                rules: [{required: true, message: '请输入迭代描述!'}],
+                rules: [{required: true, message: '请输入冲刺描述!'}],
               })(<TextArea rows={3} style={{resize:"none"}} />)}
             </FormItem>
             <FormItem label="选择发布计划">

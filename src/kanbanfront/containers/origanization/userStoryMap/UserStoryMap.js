@@ -248,7 +248,7 @@ class UserStoryMap extends Component {
           id="userstory"
           ref={this.getscroll.bind(this)}
           onClick={this.hideright.bind(this)}
-          style={{       
+          style={{   
             height: window.innerHeight - 48,
             backgroundColor: 'white',
           }}

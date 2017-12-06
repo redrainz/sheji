@@ -8,32 +8,44 @@ class SystemColumnContent extends React.Component {
   }
 
   render() {
-    let systemColumnColor = ["orange","#C1C1C1"];
+    let systemColumnColor = ["#598DED","#598DED"];
     let columnStatus = ["todo","done"];
-    let needAddColor = false;
+    let isSelectedColumn = false;
     let i=0;
     for(;i<columnStatus.length;i++){
       if(columnStatus[i]===this.props.columnStatus&&this.props.selected){
-        needAddColor = true;
+        isSelectedColumn = true;
         break;
       }
     }
     let response;
     let dataStatus = this.props.columnStatus;
-    dataStatus = dataStatus+(needAddColor?':Y':':N');
-    if(needAddColor){
+    dataStatus = dataStatus+(isSelectedColumn?':Y':':N');
+    if(isSelectedColumn){
       let content;
       if(this.props.columnStatus==="todo"){
         content = (<div>起始列</div>);
-      }else{
-        content = (<div>终止列</div>)
+      }else if(this.props.columnStatus==="done"){
+        content = (<div>终止列</div>);
       }
       response = (
         <Popover content={content}>
-          <div className="system-column-content" data-status={dataStatus} style={{backgroundColor:needAddColor?systemColumnColor[i]:'#39B2A9'}}/>
+          <div  data-status={dataStatus} style={{
+            position: 'absolute',
+            fontSize: 12,
+            left: 10,
+            top: 0
+          }}>{this.props.columnStatus==="todo"?'Start':'End'}</div>
         </Popover>)
     }else{
-      response = (<div className="system-column-content" data-status={dataStatus} style={{backgroundColor:needAddColor?systemColumnColor[i]:'#39B2A9'}}/>);
+      response = (
+        <div  data-status={dataStatus} style={{
+          position: 'absolute',
+          fontSize: 12,
+          left: 10,
+          top: 0
+        }}/>
+      );
     }
     return response;
   }

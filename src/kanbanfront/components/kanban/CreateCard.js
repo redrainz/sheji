@@ -24,6 +24,7 @@ import {
 import '../../assets/css/userStoryMap-card.css';
 import kanbanStore from '../../stores/origanization/kanban/KanbanStore'
 import IssueManageStore from '../../stores/origanization/issue/IssueManageStore'
+
 const Option = Select.Option;
 const FormItem = Form.Item;
 const Panel = Collapse.Panel;
@@ -74,32 +75,34 @@ class CreateCard extends Component {
     super();
     this.state = {
       storyDetailDatas: {},
-      formType:'task',
-      parentCard:[],
-      parentCardSelection:[],
-      submitting:false,
+      formType: 'task',
+      parentCard: [],
+      parentCardSelection: [],
+      submitting: false,
     }
   }
-  componentDidMount(){
+
+  componentDidMount() {
     let parentCard = []
     let parentCardSelection = []
-    kanbanStore.getIssueByProjectId('1').then((res)=>{
-      if(res){
-        res.map((item)=>{
-          if(item.kanbanId === Number(this.props.match.params.kanbanId)){
-            if(item.issueType === 'task' || item.issueType === 'story'){
+    kanbanStore.getIssueByProjectId('1').then((res) => {
+      if (res) {
+        res.map((item) => {
+          if (item.kanbanId === Number(this.props.match.params.kanbanId)) {
+            if (item.issueType === 'task' || item.issueType === 'story') {
               parentCard.push(item)
               parentCardSelection.push(<Option key={item.id}>{item.id}-{item.description}</Option>)
             }
           }
         });
         this.setState({
-          parentCard:parentCard,
-          parentCardSelection:parentCardSelection,
+          parentCard: parentCard,
+          parentCardSelection: parentCardSelection,
         })
       }
     })
   }
+
   prevent = (e) => {
     e.stopPropagation();
     e.preventDefault();
@@ -108,74 +111,84 @@ class CreateCard extends Component {
     e.preventDefault();
     // 校验表单
     this.props.form.validateFieldsAndScroll((err, data) => {
-      // if(data.parentId != null){
-      //   let temp = data.parentId.split(',')
-      //   data.parentId = temp[0].substr(6)
-      // }
-      // if(data.acception===undefined){
-      //   data.acception=this.state.editorValue;
-      // }
-      // // 判断时间非空
-      // if(data.startTime!=undefined){
-      //   data.startTime=data.startTime.valueOf();
-      // }else {
-      //   data.startTime=-28800000
-      // }
-      // if(data.endTime!=undefined){
-      //   data.endTime=data.endTime.valueOf();
-      // }else {
-      //   data.endTime=-28800000
-      // }
       data.status = 'pre todo';
       data.issueType = this.state.formType;
       data.projectId = '1';
-      if (!err) {
-        if (data.authorizedGrantTypes) {
-          data.authorizedGrantTypes = data.authorizedGrantTypes.join(',');
-          this.setState({submitting: true});
-        }
-        data = {
-          kanbanId: this.props.match.params.kanbanId,
-          positionY: 0,
-          positionX: 0,
-          ...data,
-        };
-        IssueManageStore.createIssue(data).then(data => {
-          if (data) {
-            kanbanStore.getCardById(this.props.match.params.kanbanId)
-              .then((res)=>{
-                this.props.getIssue(res);
-                message.success('添加成功', 1.5);
-                this.props.form.resetFields();// 清空
-              })
+      let parentCard = {}
+      if (data.parentId != null) {
+        IssueManageStore.getIssueById(data.parentId).then((res) => {
+            if (res) {
+              parentCard = res
+              if (!err) {
+                data = {
+                  kanbanId: this.props.match.params.kanbanId,
+                  positionY: 0,
+                  positionX: 0,
+                  releasePlanId: parentCard === {} ? 0 : parentCard.releasePlanId,
+                  sprintId: parentCard === {} ? 0 : parentCard.sprintId,
+                  ...data,
+                };
+                IssueManageStore.createIssue(data).then(data => {
+                  if (data) {
+                    kanbanStore.getCardById(this.props.match.params.kanbanId)
+                      .then((res)=>{
+                        this.props.getIssue(res);
+                        message.success('添加成功', 1.5);
+                        this.props.form.resetFields();// 清空
+                      })
+                  }
+                }).catch(error => {
+                    console.log(error);
+                    message.error('网络故障，请重试',1.5)
+                });
+              }
+            }
           }
-        }).catch(error => {
-          this.setState({
-            submitting: false,
+        )
+      }else{
+        if (!err) {
+          data = {
+            kanbanId: this.props.match.params.kanbanId,
+            positionY: 0,
+            positionX: 0,
+            ...data,
+          };
+          IssueManageStore.createIssue(data).then(data => {
+            if (data) {
+              kanbanStore.getCardById(this.props.match.params.kanbanId)
+                .then((res)=>{
+                  this.props.getIssue(res);
+                  message.success('添加成功', 1.5);
+                  this.props.form.resetFields();// 清空
+                })
+            }
+          }).catch(error => {
+            console.log(error);
+            message.error('网络故障，请重试',1.5)
           });
-        });
+        }
       }
     });
-  }
-  handleForm=(value)=>{
-    if(value === 'story'){
+  };
+  handleForm = (value) => {
+    if (value === 'story') {
       this.setState({
-        formType:'story'
+        formType: 'story'
       })
-    }else if(value === 'task'){
+    } else if (value === 'task') {
       this.setState({
-        formType:'task'
+        formType: 'task'
       })
-    }else if(value === 'bug'){
+    } else if (value === 'bug') {
       this.setState({
-        formType:'bug'
+        formType: 'bug'
       })
     }
   };
-  getForm=()=>{
-    if(this.state.formType==='story'){
+  getForm = () => {
+    if (this.state.formType === 'story') {
       const {getFieldDecorator} = this.props.form;
-      return(
+      return (
         <Form>
           <div
             style={{
@@ -195,15 +208,15 @@ class CreateCard extends Component {
               position: 'relative'
             }}>描述：
             </div>
-            <FormItem style={{marginBottom:'none'}}>
+            <FormItem style={{marginBottom: 'none'}}>
               {getFieldDecorator('description')
               (<TextArea
                 style={{
                   width: '74%',
                   resize: 'none',
-                  position:'relative',
-                  bottom:5,
-                  left:77
+                  position: 'relative',
+                  bottom: 5,
+                  left: 77
                 }}
                 // ref={instance => {
                 //   this.getTextArea(instance, 'description');
@@ -235,9 +248,9 @@ class CreateCard extends Component {
                 >
                   <div style={styles.items}>
                     {/*<div style={styles.item}>状态：</div>*/}
-                    <FormItem label='状态' style={{display:'inherit',marginBottom:0}}>
+                    <FormItem label='状态' style={{display: 'inherit', marginBottom: 0}}>
                       <div style={styles.select}>
-                        <Tag color="#108ee9" style={{color: 'white',marginLeft:39,width:104,textAlign:'center'}}>
+                        <Tag color="#108ee9" style={{color: 'white', marginLeft: 39, width: 104, textAlign: 'center'}}>
                           pre todo
                         </Tag>
                       </div>
@@ -245,12 +258,12 @@ class CreateCard extends Component {
                   </div>
                   <div style={styles.items}>
                     {/*<div style={styles.item}>负责人：</div>*/}
-                    <FormItem label='负责人' style={{display:'inherit',marginBottom:0}}>
+                    <FormItem label='负责人' style={{display: 'inherit', marginBottom: 0}}>
                       {getFieldDecorator('acception')
                       (<Select
                         size={size}
                         disabled={false}
-                        style={{top:5,marginLeft:27,width:104}}
+                        style={{top: 5, marginLeft: 27, width: 104}}
                       >
                         <Option value="陈造龙">陈造龙</Option>
                         <Option value="钱秋梅">钱秋梅</Option>
@@ -264,11 +277,11 @@ class CreateCard extends Component {
 
                   <div style={styles.items}>
                     {/*<div style={styles.item}>优先级：</div>*/}
-                    <FormItem label='优先级' style={{display:'inherit',marginBottom:0}}>
-                      {getFieldDecorator('issuePriority',{initialValue:'2'})
+                    <FormItem label='优先级' style={{display: 'inherit', marginBottom: 0}}>
+                      {getFieldDecorator('issuePriority', {initialValue: '2'})
                       (<Select
                         size={size}
-                        style={{top:5,marginLeft:27,width:104}}
+                        style={{top: 5, marginLeft: 27, width: 104}}
                       >
                         <Option value="1">
                           <div
@@ -336,22 +349,22 @@ class CreateCard extends Component {
 
                   <div style={styles.items}>
                     {/*<div style={styles.item}>故事点：</div>*/}
-                    <FormItem label='故事点' style={{display:'inherit',marginBottom:0}}>
+                    <FormItem label='故事点' style={{display: 'inherit', marginBottom: 0}}>
                       {getFieldDecorator('workload')
                       (<InputNumber
                         size={size}
-                        style={{marginLeft:27,width:104}}
+                        style={{marginLeft: 27, width: 104}}
                       />)}
                     </FormItem>
                   </div>
 
                   <div style={styles.items}>
                     {/*<div style={styles.item}>需求来源：</div>*/}
-                    <FormItem label='需求来源' style={{display:'inherit',marginBottom:0}}>
+                    <FormItem label='需求来源' style={{display: 'inherit', marginBottom: 0}}>
                       {getFieldDecorator('demandSource')
                       (<Select
                         size={size}
-                        style={{top:5,marginLeft:15,width:104}}
+                        style={{top: 5, marginLeft: 15, width: 104}}
 
                       >
                         <Option value="1">客户</Option>
@@ -369,11 +382,11 @@ class CreateCard extends Component {
                   </div>
                   <div style={styles.items}>
                     {/*<div style={styles.item}>需求类型：</div>*/}
-                    <FormItem label='需求类型' style={{display:'inherit',marginBottom:0}}>
+                    <FormItem label='需求类型' style={{display: 'inherit', marginBottom: 0}}>
                       {getFieldDecorator('demandType')
                       (<Select
                         size={size}
-                        style={{top:5,marginLeft:15,width:104}}
+                        style={{top: 5, marginLeft: 15, width: 104}}
                         labelInValue
                       >
                         <Option value="1">新需求</Option>
@@ -388,12 +401,12 @@ class CreateCard extends Component {
                     }}
                   >
                     {/*<div style={styles.item}>标签：</div>*/}
-                    <FormItem label='标签' style={{display:'inherit',marginBottom:0}}>
+                    <FormItem label='标签' style={{display: 'inherit', marginBottom: 0}}>
                       {getFieldDecorator('labels')
                       (<Select
                         size={size}
                         mode="multiple"
-                        style={{top:5,marginLeft:38,width:298}}
+                        style={{top: 5, marginLeft: 38, width: 298}}
                         placeholder="请选择标签"
                       >
                         {children}
@@ -403,7 +416,7 @@ class CreateCard extends Component {
                 </div>
               </Panel>
               <Panel header="内容" key="2" style={{background: '#fafafa'}}>
-                <FormItem  style={{marginBottom:'none'}}>
+                <FormItem style={{marginBottom: 'none'}}>
                   {getFieldDecorator('content')
                   (<TextArea
                     style={{margin: '10px', width: '94%', resize: 'none'}}
@@ -418,9 +431,9 @@ class CreateCard extends Component {
           </div>
         </Form>
       )
-    }else if(this.state.formType=== 'task'){
+    } else if (this.state.formType === 'task') {
       const {getFieldDecorator} = this.props.form;
-      return(
+      return (
         <Form>
           <div
             style={{
@@ -440,19 +453,19 @@ class CreateCard extends Component {
               position: 'relative'
             }}>描述：
             </div>
-            <FormItem style={{marginBottom:'none'}}>
-              {getFieldDecorator('description',{
+            <FormItem style={{marginBottom: 'none'}}>
+              {getFieldDecorator('description', {
                 rules: [
-              { required: true, message: '请输入描述' },
+                  {required: true, message: '请输入描述'},
                 ],
               })
               (<TextArea
                 style={{
                   width: '74%',
                   resize: 'none',
-                  position:'relative',
-                  bottom:5,
-                  left:77
+                  position: 'relative',
+                  bottom: 5,
+                  left: 77
                 }}
                 // ref={instance => {
                 //   this.getTextArea(instance, 'description');
@@ -482,9 +495,9 @@ class CreateCard extends Component {
                 >
                   <div style={styles.items}>
                     {/*<div style={styles.item}>状态：</div>*/}
-                    <FormItem label='状态' style={{display:'inherit',marginBottom:0}}>
+                    <FormItem label='状态' style={{display: 'inherit', marginBottom: 0}}>
                       <div style={styles.select}>
-                        <Tag color="#108ee9" style={{color: 'white',marginLeft:39,width:104,textAlign:'center'}}>
+                        <Tag color="#108ee9" style={{color: 'white', marginLeft: 39, width: 104, textAlign: 'center'}}>
                           pre todo
                         </Tag>
                       </div>
@@ -492,12 +505,12 @@ class CreateCard extends Component {
                   </div>
                   <div style={styles.items}>
                     {/*<div style={styles.item}>负责人：</div>*/}
-                    <FormItem label='负责人' style={{display:'inherit',marginBottom:0}}>
+                    <FormItem label='负责人' style={{display: 'inherit', marginBottom: 0}}>
                       {getFieldDecorator('acception')
                       (<Select
                         size={size}
                         disabled={false}
-                        style={{top:5,marginLeft:27,width:104}}
+                        style={{top: 5, marginLeft: 27, width: 104}}
                       >
                         <Option value="陈造龙">陈造龙</Option>
                         <Option value="钱秋梅">钱秋梅</Option>
@@ -511,11 +524,11 @@ class CreateCard extends Component {
 
                   <div style={styles.items}>
                     {/*<div style={styles.item}>优先级：</div>*/}
-                    <FormItem label='优先级' style={{display:'inherit',marginBottom:0}}>
-                      {getFieldDecorator('issuePriority',{initialValue:'2'})
+                    <FormItem label='优先级' style={{display: 'inherit', marginBottom: 0}}>
+                      {getFieldDecorator('issuePriority', {initialValue: '2'})
                       (<Select
                         size={size}
-                        style={{top:5,marginLeft:27,width:104}}
+                        style={{top: 5, marginLeft: 27, width: 104}}
                       >
                         <Option value="1">
                           <div
@@ -583,11 +596,11 @@ class CreateCard extends Component {
 
                   <div style={styles.items}>
                     {/*<div style={styles.item}>故事点：</div>*/}
-                    <FormItem label='故事点' style={{display:'inherit',marginBottom:0}}>
+                    <FormItem label='工作量' style={{display: 'inherit', marginBottom: 0}}>
                       {getFieldDecorator('workload')
                       (<InputNumber
                         size={size}
-                        style={{marginLeft:27,width:104}}
+                        style={{marginLeft: 27, width: 104}}
                       />)}
                     </FormItem>
                   </div>
@@ -598,14 +611,14 @@ class CreateCard extends Component {
                     }}
                   >
                     {/*<div style={styles.item}>标签：</div>*/}
-                    <FormItem label='父级需求' style={{display:'inherit',marginBottom:0}}>
+                    <FormItem label='父级需求' style={{display: 'inherit', marginBottom: 0}}>
                       {getFieldDecorator('parentId')
                       (<Select
                         size={size}
-                        style={{top:5,marginLeft:15,width:298}}
+                        style={{top: 5, marginLeft: 15, width: 298}}
                         placeholder="请选父级需求"
                       >
-                        {this.state.parentCardSelection?this.state.parentCardSelection:'未找到可用的父级需求'}
+                        {this.state.parentCardSelection ? this.state.parentCardSelection : '未找到可用的父级需求'}
                       </Select>)}
                     </FormItem>
                   </div>
@@ -616,12 +629,12 @@ class CreateCard extends Component {
                     }}
                   >
                     {/*<div style={styles.item}>标签：</div>*/}
-                    <FormItem label='标签' style={{display:'inherit',marginBottom:0}}>
+                    <FormItem label='标签' style={{display: 'inherit', marginBottom: 0}}>
                       {getFieldDecorator('labels')
                       (<Select
                         size={size}
                         mode="multiple"
-                        style={{top:5,marginLeft:38,width:298}}
+                        style={{top: 5, marginLeft: 38, width: 298}}
                         placeholder="请选择标签"
                       >
                         {children}
@@ -631,7 +644,7 @@ class CreateCard extends Component {
                 </div>
               </Panel>
               <Panel header="内容" key="2" style={{background: '#fafafa'}}>
-                <FormItem  style={{marginBottom:'none'}}>
+                <FormItem style={{marginBottom: 'none'}}>
                   {getFieldDecorator('content')
                   (<TextArea
                     style={{margin: '10px', width: '94%', resize: 'none'}}
@@ -896,8 +909,8 @@ class CreateCard extends Component {
     //     </Form>
     //   )
     // }
-    else{
-      return(
+    else {
+      return (
         <div>404</div>
       )
     }
@@ -917,7 +930,7 @@ class CreateCard extends Component {
           width: '448px',
           background: '#fafafa',
           borderLeft: '1px solid #ddd',
-          height: 'calc(100% - 98px)',
+          height: 'calc(100% - 112px)',
         }}
         onClick={this.prevent}
       >
@@ -938,11 +951,12 @@ class CreateCard extends Component {
             }}
           >
             添加卡片
-            <Button type="primary" size = 'small' htmlType="submit" onClick={this.saveAndAdd}
-                    style={{position:'relative',right:-247,bottom:2}}
+            <Button type="primary" size='small' htmlType="submit" onClick={this.saveAndAdd}
+                    style={{position: 'relative', right: -247, bottom: 2}}
                     loading={this.state.submitting}
             >确定</Button>
-            <Button size='small' htmlType="reset" style={{position:'relative',right:-260,bottom:2}} onClick={this.props.ChangeCreateCardState}>取消</Button>
+            <Button size='small' htmlType="reset" style={{position: 'relative', right: -260, bottom: 2}}
+                    onClick={this.props.ChangeCreateCardState}>取消</Button>
           </div>
           <div
             style={{
@@ -962,9 +976,9 @@ class CreateCard extends Component {
             </div>
             <Select
               size={size}
-              style={{width:104, marginLeft: 15}}
+              style={{width: 104, marginLeft: 15}}
               placeholder="请选择类型"
-              defaultValue ={this.state.formType}
+              defaultValue={this.state.formType}
               onSelect={this.handleForm}
             >
               <Option value="story">story</Option>
@@ -974,7 +988,7 @@ class CreateCard extends Component {
           </div>
           <br/>
           <div>
-            {this.state.formType ?this.getForm():''}
+            {this.state.formType ? this.getForm() : ''}
           </div>
 
         </div>

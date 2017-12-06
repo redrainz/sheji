@@ -48,10 +48,6 @@ for (let i = 10; i < 36; i++) {
   children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
 }
 
-function handleChange(value) {
-  console.log(`selected ${value}`);
-}
-
 const styles = {
   items: {
     width: '50%',
@@ -85,8 +81,8 @@ class EditCardDetail extends Component {
   }
 
   componentWillMount() {
-    if (this.props.id !== 0) {
-      IssueManageStore.getIssueById(this.props.id)
+    if (this.props.id !== 0 && this.props.id != '') {
+      IssueManageStore.getIssueById('id',this.props.id)
         .then((res) => {
           this.setState({
             storyDetailDatas: res
@@ -96,7 +92,7 @@ class EditCardDetail extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.id !== 0) {
+    if (nextProps.id !== 0 && nextProps.id != '') {
       IssueManageStore.getIssueById(nextProps.id)
         .then((res) => {
           this.setState({
@@ -108,17 +104,14 @@ class EditCardDetail extends Component {
 
   //textarea的enter事件
   ChangeIssue = (e, type) => {
-    console.log('enter');
     e.preventDefault();
     let data = {};
     let va = e.target.value;
     data[type] = va;
-    console.log('textarea', data);
     IssueManageStore.updateIssueById(
       {...data, objectVersionNumber: this.state.storyDetailDatas.objectVersionNumber}, this.state.storyDetailDatas.id)
       .then((data) => {
         if (data) {
-          console.log('kanban', this.props.match.params.kanbanId);
           KanbanStore.getCardById(this.props.match.params.kanbanId)
             .then((res) => {
               this.props.getIssue(res);
@@ -137,7 +130,6 @@ class EditCardDetail extends Component {
   getTextArea = (instance, type) => {
     if (instance) {
       this[type] = instance;
-      console.log(this[type]);
     }
   };
 
@@ -154,17 +146,14 @@ class EditCardDetail extends Component {
 
   //所有select的响应函数
   onSelectChange = (value, obj) => {
-    console.log(value, obj);
     let va;
     va = typeof value === 'object' ? value.label : value;
     let data = {};
     data[obj.type] = va;
-    console.log('输出数据？', data);
     IssueManageStore.updateIssueById(
       {...data, objectVersionNumber: this.state.storyDetailDatas.objectVersionNumber}, this.state.storyDetailDatas.id)
       .then((data) => {
         if (data) {
-          console.log('kanban', this.props.match.params.kanbanId);
           KanbanStore.getCardById(this.props.match.params.kanbanId)
             .then((res) => {
               this.props.getIssue(res);
@@ -179,19 +168,12 @@ class EditCardDetail extends Component {
       message.error("修改失败!", 0.1);
     });
   };
-  // saveRef(instance, type) {
-  //   if (instance) {
-  //     this[type] = instance;
-  //     ReactDOM.findDOMNode(this[type]).value = '2';
-  //     console.log(this[type]);
-  //   }
-  // }
   prevent = (e) => {
     e.stopPropagation();
     e.preventDefault();
   }
   getColor= ()=>{
-    const {storyDetailDatas} = this.state
+    const {storyDetailDatas} = this.state;
     if(storyDetailDatas.issueType === 'story'){
       return '#3f51b5'
     }else if(storyDetailDatas.issueType === 'task'){
@@ -201,8 +183,6 @@ class EditCardDetail extends Component {
 
   render() {
     const {storyDetailDatas} = this.state;
-    console.log({...storyDetailDatas});
-    console.log(storyDetailDatas.endTime);
     return (
       <div
         style={{
@@ -213,7 +193,7 @@ class EditCardDetail extends Component {
           width: '448px',
           background: '#fafafa',
           borderLeft: '1px solid #ddd',
-          height: 'calc(100% - 98px)',
+          height: 'calc(100% - 112px)',
         }}
         onClick={this.prevent}
       >
@@ -313,7 +293,7 @@ class EditCardDetail extends Component {
                   </div>
                   <div style={styles.items}>
                     <div style={styles.item}>迭代：</div>
-                    <div style={styles.select}>
+                    <div style={{...styles.select,overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>
                       {storyDetailDatas.sprintName == null
                         ? '-'
                         : storyDetailDatas.sprintName}
@@ -397,14 +377,14 @@ class EditCardDetail extends Component {
                   </div>
                   <div style={styles.items}>
                     <div style={styles.item}>看板：</div>
-                    <div style={styles.select}>
+                    <div style={{...styles.select,overflow:'hidden',whiteSpace:'nowrap',textOverflow:'ellipsis'}}>
                       {storyDetailDatas.kanbanName == null
                         ? '-'
                         : storyDetailDatas.kanbanName}
                     </div>
                   </div>
                   <div style={styles.items}>
-                    <div style={styles.item}>故事点：</div>
+                    <div style={styles.item}>工作量：</div>
                     <InputNumber
                       size={size}
                       style={styles.select}

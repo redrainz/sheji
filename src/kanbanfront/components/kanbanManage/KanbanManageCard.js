@@ -65,6 +65,10 @@ class KanbanManageCard extends React.Component {
     // input.focus();
   }
 
+  handleOnPressEnter=(event)=>{
+    event.target.blur();
+  }
+
   handleOnBlur=(event)=>{
     let oldKanbanName = event.target.previousSibling.innerHTML;
     let newKanbanName = trim(event.target.value);
@@ -134,12 +138,12 @@ class KanbanManageCard extends React.Component {
         </div>
         <div className="custom-card" style={{width:148,height:63,margin: '0 auto',position: 'relative',}}>
           <div className="kanban-name" style={{marginTop:11}} data-kanbanId={this.props.kanban.id}>
-            <div className="kanban-name-text" style={{color:this.state.isMouseHover?'rgba(0,0,0,0.72)':'rgba(0,0,0,0.87)'}}>{this.props.kanban.name}</div>
+            <div className="kanban-name-text" style={{color:this.state.isMouseHover?'rgba(0,0,0,0.72)':'rgba(0,0,0,0.87)'}} title={this.props.kanban.name}>{this.props.kanban.name}</div>
             <Input defaultValue={this.props.kanban.name}
                    style={{height: 21,top: 0,left: 0, position: 'absolute',display:this.state.showNameInput?'inline-block':'none'}}
-                   onBlur={this.handleOnBlur} onPressEnter={this.handleOnBlur}/>
+                   onBlur={this.handleOnBlur} onPressEnter={this.handleOnPressEnter}/>
           </div>
-          {this.state.isMouseHover?(<div className="kanban-lastupdate" style={{marginTop:-3}}>最近修改：{lastUpdateDate.year}年{lastUpdateDate.month}月{lastUpdateDate.day}日</div>):([])}
+          {this.state.isMouseHover?(<div className="kanban-lastupdate" style={{marginTop:-3,textOverflow:'ellipsis',overflow:'hidden', whiteSpace: 'nowrap'}}>最近修改：{lastUpdateDate.year}年{lastUpdateDate.month}月{lastUpdateDate.day}日</div>):([])}
         </div>
       </div>
       // <Card onMouseOver={this.handleOnMouseOver} onMouseLeave={this.handleOnMouseLeave}

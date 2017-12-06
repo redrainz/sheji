@@ -23,6 +23,7 @@ import {
   Table,
   Switch,
   Radio,
+  Badge,
 } from 'antd';
 import { NavLink, withRouter } from 'react-router-dom';
 import Routes from '../../../common/RouteMap';
@@ -42,6 +43,36 @@ import '../../../assets/css/acss.css';
 const confirm = Modal.confirm;
 const Search = Input.Search;
 
+const menu = (
+  <Menu>
+    <Menu.Item>Action 1</Menu.Item>
+    <Menu.Item>Action 2</Menu.Item>
+  </Menu>
+);
+const styles = {
+  tableitem: {
+    width: '120px',
+    height: '20px',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    fontSize: '14px',
+    color: 'rgba(0,0,0,0.65)',
+  },
+};
+
+// const data = [];
+// for (let i = 0; i < 3; ++i) {
+//   data.push({
+//     key: i,
+//     name: 'Screem',
+//     platform: 'iOS',
+//     version: '10.3.4.5654',
+//     upgradeNum: 500,
+//     creator: 'Jack',
+//     createdAt: '2014-12-24 23:12:00',
+//   });
+// }
 @observer
 class SprintManage extends Component {
   constructor(props) {
@@ -59,6 +90,7 @@ class SprintManage extends Component {
       planVisible: false, // 规划模态框
       filterStatus: 'all',
       filterSprintDate: [],
+      defaultExpandedRowKeys: [],
       // endOpen:false
     };
   }
@@ -104,6 +136,7 @@ class SprintManage extends Component {
         }
       })
       .catch(e => {
+        console.log(e);
         message.error('网络出错!');
       });
   }
@@ -178,7 +211,7 @@ class SprintManage extends Component {
   };
   // 编辑冲刺
   editSprint = id => {
-    this.planSprint();
+    // this.planSprint();
     SprintStore.getSprintById(id).then(data => {
       SprintStore.getReleaseData().then(releaseData => {
         if (data && releaseData) {
@@ -370,6 +403,7 @@ class SprintManage extends Component {
   sortByTime = () => {};
   // 打开规划冲刺模态框
   showSprintPlanModel = e => {
+    console.log('用户故事');
     this.setState({
       sprintId: e.target.id,
       planVisible: true,
@@ -416,11 +450,183 @@ class SprintManage extends Component {
     }
     return sprintsTemp;
   };
+  expandedRowRender = data => {
+    console.log(data);
+    const columns = [
+      {
+        title: '冲刺',
+        // width: 120,
+        dataIndex: 'name',
+        key: 'name',
+        render: (name, resolve) => (
+          <div style={styles.tableitem}>
+            <a
+              onClick={this.toDetail.bind(this, resolve.id)}
+              style={{ color: '#3F51B5' }}
+            >
+              {name}
+            </a>
+          </div>
+        ),
+      },
+      {
+        title: '描述',
+        // width: 120,
+        dataIndex: 'description',
+        key: 'description',
+        render: description => (
+          <div
+            style={{
+              ...styles.tableitem,
+              ...{ fontSize: '12px', width: '200px' },
+            }}
+          >
+            {description}
+          </div>
+        ),
+      },
+      {
+        title: '进度',
+        // width: 120,
+        dataIndex: 'progress',
+        key: 'progress',
+        render: progress => (
+          <div style={styles.tableitem}>
+            已完成{isNaN(parseInt(progress)) ? 0 : parseInt(progress)}%
+            {/* <Progress
+              percent={parseInt(progress)}
+              showInfo={false}
+              style={{ height: '15px' }}
+            /> */}
+          </div>
+        ),
+      },
+      {
+        title: '开始日期',
+        // width: 120,
+        dataIndex: 'startTime',
+        key: 'startTime',
+        render: startTime => <div style={styles.tableitem}>{startTime}</div>,
+      },
+      {
+        title: '结束日期',
+        // width: 120,
+        dataIndex: 'endTime',
+        key: 'endTime',
+        render: endTime => <div style={styles.tableitem}>{endTime}</div>,
+      },
+
+      {
+        title: '操作',
+        dataIndex: 'id',
+        key: 'id',
+        width: 360,
+        render: (id, recoder) => (
+          <div
+            style={{
+              ...styles.tableitem,
+              ...{ width: '280px', display: 'flex', alignItems: 'center' },
+            }}
+          >
+            <i
+              className="material-icons"
+              style={{ color: '#3F51B5', fontSize: '16px', marginRight: '8px' }}
+            >
+              {recoder.oldStatus === 'doing' ? 'lock_open' : 'lock_outline'}
+            </i>
+            <a
+              style={{ border: 'none', marginRight: '24px', color: '#3F51B5' }}
+              onClick={this.switchStatus.bind(this, id, recoder.oldStatus)}
+            >
+              {recoder.oldStatus === 'doing' ? '关闭' : '开启'}
+            </a>
+            <i
+              className="material-icons"
+              style={{ color: '#3F51B5', fontSize: '14px', marginRight: '8px' }}
+            >
+              border_color
+            </i>
+            <a
+              style={{ border: 'none', marginRight: '24px', color: '#3F51B5' }}
+              onClick={this.editSprint.bind(this, id)}
+              // onClick={() => console.log(id)}
+            >
+              编辑
+            </a>
+            <i
+              className="material-icons"
+              style={{ color: '#3F51B5', fontSize: '16px', marginRight: '6px' }}
+            >
+              av_timer
+            </i>
+            <a
+              id={id}
+              style={{ border: 'none', color: '#3F51B5' }}
+              onClick={this.showSprintPlanModel}
+              // onClick={() => console.log(id)}
+            >
+              用户故事
+            </a>
+          </div>
+        ),
+      },
+    ];
+    const children = [
+      {
+        key: 1,
+        name: 'testname',
+        description: 'dex',
+      },
+    ];
+    return (
+      <Table
+        columns={columns}
+        dataSource={data.children.children}
+        pagination={false}
+      />
+    );
+  };
 
   render() {
     let sprintsTemp = this.filterByStatus();
+    console.log(sprintsTemp);
     let switchStatus;
     let sprintArr = [];
+    let data = {};
+    let lastdata = [];
+    sprintsTemp.forEach((one, i) => {
+      if (data[one.releasePlanId] == undefined) {
+        data[one.releasePlanId] = {
+          name: one.releasePlanName,
+          children: [],
+        };
+      }
+      data[one.releasePlanId].children.push({
+        ...one,
+        ...{ key: i },
+        ...{ progress: one.endStory / one.storyIssue * 100 },
+      });
+    });
+    let j = 0;
+    for (let i in data) {
+      lastdata.push({
+        key: j,
+        name: data[i].name,
+        children: { children: data[i].children },
+      });
+      j++;
+    }
+    console.log(data, lastdata);
+    if (lastdata.length !== this.state.defaultExpandedRowKeys.length) {
+      let temp = [];
+      for (let i = 0; i < lastdata.length; i++) {
+        temp.push(i);
+      }
+      this.setState({
+        defaultExpandedRowKeys: temp,
+      });
+    }
+    const columns = [{ title: 'Release名称', dataIndex: 'name', key: 'name' }];
     for (let i = 0; i < sprintsTemp.length; i++) {
       if (sprintsTemp[i].oldStatus == 'done') {
         switchStatus = '开启';
@@ -563,7 +769,7 @@ class SprintManage extends Component {
     }
     return (
       <div className="sprintStyle">
-        <Header handleClick={this.showModel}/>
+        <Header handleClick={this.showModel} />
         <PageHeader style={{ display: 'flex' }}>
           {/* <Button
             style={{
@@ -634,7 +840,7 @@ class SprintManage extends Component {
           />
         </PageHeader>
         <div className="sprintContentStyle">
-          <div className="headerStyle">
+          {/* <div className="headerStyle">
             <div style={{ flex: '2' }}>
               <p style={{ marginLeft: '25px' }}>冲刺</p>
             </div>
@@ -647,8 +853,21 @@ class SprintManage extends Component {
             <div style={{ flex: '1.3' }}>
               <p>操作</p>
             </div>
+          </div> */}
+          {/* <div className="srollContant">{sprintArr}</div> */}
+          <div className="srollContant">
+            {lastdata.length > 0 && (
+              <Table
+                columns={columns}
+                // pagination={false}
+                className="components-table-demo-nested"
+                defaultExpandAllRows={true}
+                // defaultExpandedRowKeys={[0, 1, 2]}
+                expandedRowRender={this.expandedRowRender.bind(this)}
+                dataSource={lastdata}
+              />
+            )}
           </div>
-          <div className="srollContant">{sprintArr}</div>
         </div>
         <div>
           <CreateSprint

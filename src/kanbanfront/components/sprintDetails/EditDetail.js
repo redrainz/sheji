@@ -79,7 +79,6 @@ class EditDetail extends Component {
   }
 
   ChangeIssue = (e, type) => {
-    console.log('enter');
     let data = {};
     let va = e.target.value;
     data[type] = va;
@@ -189,7 +188,7 @@ class EditDetail extends Component {
             placeholder="请输入描述"
              defaultValue={currentEditData.description}
             autosize={{ minRows: 2, maxRows: 10 }}
-            onPressEnter={value => {
+            onBlur={value => {
               this.ChangeIssue(value, 'description');
             }}
           />
@@ -242,7 +241,7 @@ class EditDetail extends Component {
                   </div>
                   <div style={styles.items}>
                     <div style={styles.item}>迭代：</div>
-                    <div style={styles.select}>
+                    <div title={sprintName} style={styles.select}>
                       {sprintName == null
                         ? '——'
                         : sprintName}
@@ -326,7 +325,7 @@ class EditDetail extends Component {
                   </div>
                   <div style={styles.items}>
                     <div style={styles.item}>看板：</div>
-                    <div style={styles.select}>
+                    <div title={currentEditData.kanbanName} style={styles.select}>
                       {currentEditData.kanbanName == null
                         ? '——'
                         : currentEditData.kanbanName}
@@ -444,7 +443,7 @@ class EditDetail extends Component {
                   placeholder="请输入描述"
                    defaultValue={currentEditData.description}
                   autosize={{ minRows: 2, maxRows: 10 }}
-                  onPressEnter={value => {
+                  onBlur={value => {
                     this.ChangeIssue(value, 'content');
                   }}
                 />

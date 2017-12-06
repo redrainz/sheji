@@ -61,6 +61,7 @@ class SprintStore {
   }
   @action
   setSprintData(data){
+    console.log("1"+data)
        this.sprintData=data;
   }
   @computed get

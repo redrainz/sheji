@@ -259,14 +259,14 @@ class EditStory extends Component {
             onFocus={() => {
               this.setState({ topshow: true });
             }}
-            onBlur={() => {
-              this.setState({ topshow: false });
+            onBlur={e => {
+              this.ChangeIssue(e, 'description');
             }}
-            onPressEnter={value => {
-              this.ChangeIssue(value, 'description');
-            }}
+            // onPressEnter={value => {
+            //   this.ChangeIssue(value, 'description');
+            // }}
           />
-          <div
+          {/* <div
             style={{
               ...{ width: '90%', textAlign: 'right', color: '#888' },
               ...{ display: this.state.topshow ? 'block' : 'none' },
@@ -280,7 +280,7 @@ class EditStory extends Component {
                 marginRight: '6px',
               }}
             />Enter保存
-          </div>
+          </div> */}
           <p>
             <span style={{ margin: '5px 20px' }}>
               宝洁创建于:{storyDetailDatas.creationDate}
@@ -310,6 +310,9 @@ class EditStory extends Component {
                     <div style={styles.item}>负责人：</div>
                     <Select
                       size={size}
+                      getPopupContainer={() =>
+                        document.getElementById('editstory')
+                      }
                       disabled={true}
                       onChange={value => {
                         this.onSelectChange(value, { type: 'assign' });
@@ -342,6 +345,9 @@ class EditStory extends Component {
                   <div style={styles.items}>
                     <div style={styles.item}>优先级：</div>
                     <Select
+                      getPopupContainer={() =>
+                        document.getElementById('editstory')
+                      }
                       size={size}
                       style={styles.select}
                       value={
@@ -446,6 +452,9 @@ class EditStory extends Component {
                   <div style={styles.items}>
                     <div style={styles.item}>需求来源：</div>
                     <Select
+                      getPopupContainer={() =>
+                        document.getElementById('editstory')
+                      }
                       size={size}
                       style={styles.select}
                       labelInValue
@@ -474,6 +483,9 @@ class EditStory extends Component {
                   <div style={styles.items}>
                     <div style={styles.item}>需求类型：</div>
                     <Select
+                      getPopupContainer={() =>
+                        document.getElementById('editstory')
+                      }
                       size={size}
                       style={styles.select}
                       labelInValue
@@ -499,6 +511,9 @@ class EditStory extends Component {
                   >
                     <div style={styles.item}>标签：</div>
                     <Select
+                      getPopupContainer={() =>
+                        document.getElementById('editstory')
+                      }
                       size={size}
                       mode="multiple"
                       style={{ flex: 4, paddingLeft: '5px' }}
@@ -519,19 +534,20 @@ class EditStory extends Component {
                     this.getTextArea(instance, 'content');
                   }}
                   placeholder="请输入详细描述"
-                  defaultValue={storyDetailDatas.description}
+                  defaultValue={storyDetailDatas.content}
                   autosize={{ minRows: 2, maxRows: 10 }}
                   onFocus={() => {
                     this.setState({ show: true });
                   }}
-                  onBlur={() => {
-                    this.setState({ show: false });
+                  onBlur={e => {
+                    this.ChangeIssue(e, 'content');
                   }}
-                  onPressEnter={value => {
-                    this.ChangeIssue(value, 'content');
-                  }}
+                  // onPressEnter={value => {
+                  //   this.ChangeIssue(value, 'content');
+                  // }}
+                  
                 />
-                <div
+                {/* <div
                   style={{
                     ...{ width: '100%', textAlign: 'right', color: '#888' },
                     ...{ display: this.state.show ? 'block' : 'none' },
@@ -545,7 +561,7 @@ class EditStory extends Component {
                       marginRight: '6px',
                     }}
                   />Enter保存
-                </div>
+                </div> */}
               </Panel>
 
               <Panel header="动态" key="3" style={{ background: '#fafafa' }}>

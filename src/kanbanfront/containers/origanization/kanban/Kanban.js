@@ -13,7 +13,8 @@ import ReleasePlanModel from '../../../components/kanban/ReleasePlanModel'
 import PageHeader, {PageHeadStyle} from '../../../components/common/PageHeader'
 import EditCardDetailModel from '../../../components/kanban/EditCardDetail'
 import CreateCard from '../../../components/kanban/CreateCard'
-
+import KanbanHeader from '../../../components/kanban/KanbanHeader'
+import SystemColumnContent from '../../../components/editKanban/SystemColumnContent'
 require('../../../assets/css/kanban-card.css');
 require('../../../assets/css/kanban.css');
 const grid = 8;
@@ -57,7 +58,7 @@ class Kanban extends Component {
       issue: {},
       planState: false,
       releasePlanState: false,
-      CreateCardState:'none'
+      CreateCardState: 'none'
     }
     ;
     this.height = 1;
@@ -73,12 +74,11 @@ class Kanban extends Component {
   /*重置页面大小*/
   resizeKanbanContent = () => {
     let kanbanContent = document.getElementsByClassName("kanban-content")[0];
-    let topHeight = document.getElementsByClassName("ant-menu ant-menu-horizontal ant-menu-light ant-menu-root")[0].offsetHeight;
-    let topDiv = document.getElementById("menu");
-    this.hrWidth = window.innerWidth - topDiv.offsetWidth - 2;
-    kanbanContent.style.height = window.innerHeight - topHeight - 78 + "px";
-    kanbanContent.style.width = window.innerWidth - topDiv.offsetWidth - 2 + "px";
-  }
+    let topHeight = 47 + 94 + 2;
+    let menu = document.getElementById("menu");
+    kanbanContent.style.height = window.innerHeight - topHeight - 2 + "px";
+    kanbanContent.style.width = window.innerWidth - menu.offsetWidth - 2 + "px";
+  };
 
   /*给指定元素添加事件*/
   addEvent(obj, type, handle) {
@@ -307,13 +307,14 @@ class Kanban extends Component {
 
   //将卡片放入列中
   getColumnWithCard = (array) => {
+    const {cards} =  this.state;
     array.map((item) => {
       if (item.subColumns !== null && item.subColumns.length !== 0) {
         this.getColumnWithCard(item.subColumns)
       } else {
         item = {
           ...item,
-          card: this.state.cards[`${item.id}`] !== undefined ? this.state.cards[`${item.id}`] : [],
+          card: cards[`${item.id}`] !== undefined ? cards[`${item.id}`] : [],
         }
         this.allColumn.push(item);
       }
@@ -322,41 +323,72 @@ class Kanban extends Component {
   //获取卡片组件DOM
   getCards = (area, cards, columnId, y, kanbanheight, x) => {
     if (cards !== undefined && cards[`${columnId}`] !== undefined) {
-      let tempCard = []
+      let tempCard = [];
       area[columnId].map((item) => {
         for (let i = 0; i < cards[`${columnId}`].length; i += 1) {
           let card = cards[`${columnId}`][i]
           if (item.y <= card.positionY && card.positionY < item.y + item.height && item.y === y && x === card.positionX) {
+            if(i===0){
+              tempCard.push(
+                <Draggable key={card.id} draggableId={card.id}>
+                  {(provided, snapshot) => (
 
-            tempCard.push(
-              <Draggable key={card.id} draggableId={card.id}>
-                {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      style={{
+                        zIndex: 10,
+                        ...provided.draggableStyle,
+                      }}
+                      {...provided.dragHandleProps}
+                    >
 
-                  <div
-                    ref={provided.innerRef}
-                    style={{
-                      zIndex: 10,
-                      ...provided.draggableStyle,
-                    }}
-                    {...provided.dragHandleProps}
-                  >
+                      <KanbanCard issueInfo={card} id={card.id}
+                                  changeCardsDetail={this.handleChangeCardsDetailState}
+                                  handleReloadKanban={this.reloadKanban}
+                                  getSubCards={this.getSubCards}
+                                  linktoChange={this.linktoChange}
+                                  key={card.id}/>
 
-                    <KanbanCard issueInfo={card} id={card.id}
-                                changeCardsDetail={this.handleChangeCardsDetailState}
-                                handleReloadKanban={this.reloadKanban}
-                                getSubCards={this.getSubCards}
-                                linktoChange={this.linktoChange}
-                                key={card.id}/>
+                    </div>
 
-                  </div>
+                  )}
+                </Draggable>
+              )
+            }else {
+              tempCard.push(
+                <Draggable key={card.id} draggableId={card.id}>
+                  {(provided, snapshot) => (
 
-                )}
-              </Draggable>
-            )
+                    <div
+                      ref={provided.innerRef}
+                      style={{
+                        zIndex: 10,
+                        marginTop:22,
+                        ...provided.draggableStyle,
+                      }}
+                      {...provided.dragHandleProps}
+                    >
+
+                      <KanbanCard issueInfo={card} id={card.id}
+                                  changeCardsDetail={this.handleChangeCardsDetailState}
+                                  handleReloadKanban={this.reloadKanban}
+                                  getSubCards={this.getSubCards}
+                                  linktoChange={this.linktoChange}
+                                  key={card.id}
+                      />
+
+                    </div>
+
+                  )}
+                </Draggable>
+              )
+            }
+
           }
         }
       })
       if (tempCard.length > kanbanheight) {
+        console.log('1111111')
         let tempMixCard = []
         let simple = tempCard.length - kanbanheight + 1
         area[columnId].map((item) => {
@@ -558,7 +590,7 @@ class Kanban extends Component {
                           handleReloadKanban={this.reloadKanban} key={card.id}/>
             </div>)}
         </Draggable>)
-      })
+      });
       return tempCard;
     }
     // if (this.allColumn[2] !== undefined) {
@@ -664,7 +696,7 @@ class Kanban extends Component {
                    data-columnId={node.id} data-nextToBody={node.nextToBody}
                    data-position={node.position}
       >
-        {this.getSystemColumn(node.status, node.selected)}
+        <SystemColumnContent columnStatus={node.status} selected={node.selected}/>
         <div className="content" style={{
           textOverflow: 'ellipsis',
           overflow: 'hidden',
@@ -760,19 +792,17 @@ class Kanban extends Component {
     e.preventDefault();
     e.stopPropagation();
     const {history, match} = this.props;
-    if (e.target.id === '1') {
-      history.push(`${match.url}/create`)
-    } else if (e.target.id === '2') {
-      history.push(`/kanbanFront/editkanban/${match.params.kanbanId}`)
-    }
+    history.push(`/kanbanFront/editkanban/${match.params.kanbanId}`)
+
   };
   //打开侧边栏
   handleChangeCardsDetailState = (e) => {
     e.preventDefault()
     e.stopPropagation();
+    console.log('selectCards',e.target);
     this.setState({
-      displayState: 'block',
       selectedCards: e.target.id,
+      displayState: 'block',
     })
   };
   //使侧边栏不可见
@@ -872,10 +902,11 @@ class Kanban extends Component {
   //拖动结束的处理
   onDragEnd = (result) => {
     // dropped outside the list
-    let event = window.event || arguments[0];
+    console.log(result)
     if (result.destination != null) {
       let tempArea = {}
       let countCard = []
+      const {cards} = this.state
       let startArray = result.source.droppableId.split(',')
       let endArray = result.destination.droppableId.split(',')
       let tempCard = JSON.parse(JSON.stringify(this.state.cards))
@@ -913,13 +944,12 @@ class Kanban extends Component {
             }
           })
         }
-        this.state.cards[endArray[0]].map((item) => {
+        cards[endArray[0]].map((item) => {
           if (item.positionY >= tempArea.y && item.positionY < tempArea.y + tempArea.height) {
             countCard.push(item)
           }
         });
       }
-
       if (startArray[4] === 'CardChild') {
         for (let i = 0; i < tempCard[startArray[0]].length; i += 1) {
           let card = JSON.parse(JSON.stringify(tempCard[startArray[0]][i]));
@@ -975,11 +1005,11 @@ class Kanban extends Component {
           let item = JSON.parse(JSON.stringify(tempCard[startArray[0]][i]));
           if (item.id === result.draggableId) {
             item.positionY = Number(endArray[1]);
-            item.columnId = Number(endArray[0]);
+            item.columnId = Number(0);
             item.positionX = Number(endArray[2]);
             item.swimLaneId = Number(endArray[3]);
             item.status = 'pre todo';
-            item.kanbanId = 0;
+            item.projectId = 1;
             KanbanStore.updateIssueById(item.id, item).then((res) => {
               if (res) {
                 this.fetchTaskCards(this.props.match.params.kanbanId)
@@ -993,6 +1023,7 @@ class Kanban extends Component {
           }
         }
       } else if (countCard.length < tempArea.height * tempArea.width && endArray[4] !== 'swimLane') {
+        console.log('进入area')
         let cardCountInCell = this.getCardCountInCell(tempArea, endArray[0],
           startArray[0], endArray[1], startArray[1], endArray[2], startArray[2]);
         for (let i = 0; i < tempCard[startArray[0]].length; i += 1) {
@@ -1005,55 +1036,39 @@ class Kanban extends Component {
             item.kanbanId = this.props.match.params.kanbanId
             this.allColumn.map((column) => {
               let realCardNum = 0;
+              let cardNum = 0;
               tempCard[item.columnId].map((item) => {
+                cardNum += 1;
                 if (item.swimLaneId === 0) {
                   realCardNum += 1
                 }
               });
               if (column.id === item.columnId) {
-                if (column.status === 'doing') {
-                  if (column.wipNum === -1 || column.wipNum === null || realCardNum < column.wipNum) {
-                    item.status = column.status
-                    KanbanStore.updateIssueById(item.id, item).then((res) => {
-                      if (res) {
-                        this.fetchTaskCards(this.props.match.params.kanbanId)
-                        // tempCard[`${endArray[0]}`].push(item);
-                        // tempCard[startArray[0]].splice(i, 1);
-                        // this.setState({
-                        //   cards: tempCard,
-                        // })
-                      }
-                    });
-                  }
-                  else if (startArray[0] === endArray[0]) {
-                    item.status = column.status
+                console.log('进入222');
+                if (column.wipNum === -1 || column.wipNum === null || realCardNum < column.wipNum) {
+                  if(cardNum <this.state.height){
+                    console.log('进入111');
+                    item.status = column.status;
                     KanbanStore.updateIssueById(item.id, item).then((res) => {
                       if (res) {
                         this.fetchTaskCards(this.props.match.params.kanbanId)
                       }
-                      // tempCard[`${endArray[0]}`].push(item);
-                      // tempCard[startArray[0]].splice(i, 1);
-                      // this.setState({
-                      //   cards: tempCard,
-                      // })
                     });
-
-                  }
-                  else {
+                  }else {
                     message.warning('此列已满')
                   }
-                } else {
+                }
+                else if (startArray[0] === endArray[0]) {
                   item.status = column.status
                   KanbanStore.updateIssueById(item.id, item).then((res) => {
                     if (res) {
                       this.fetchTaskCards(this.props.match.params.kanbanId)
-                      // tempCard[`${endArray[0]}`].push(item);
-                      // tempCard[startArray[0]].splice(i, 1);
-                      // this.setState({
-                      //   cards: tempCard,
-                      // })
                     }
                   });
+
+                }
+                else {
+                  message.warning('此列已满')
                 }
               }
             })
@@ -1082,16 +1097,11 @@ class Kanban extends Component {
                 });
                 if (column.id === item.columnId) {
                   if (column.status === 'doing') {
-                    if (column.wipNum == -1 || column.wipNum == null || realCardNum < column.wipNum) {
+                    if (column.wipNum === -1 || column.wipNum === null || realCardNum < column.wipNum) {
                       item.status = column.status
                       KanbanStore.updateIssueById(item.id, item).then((res) => {
                         if (res) {
                           this.fetchTaskCards(this.props.match.params.kanbanId)
-                          // tempCard[`${item.columnId}`].push(item);
-                          // tempCard[startArray[0]].splice(i, 1);
-                          // this.setState({
-                          //   cards: tempCard,
-                          // })
                         }
                       });
 
@@ -1101,28 +1111,17 @@ class Kanban extends Component {
                       KanbanStore.updateIssueById(item.id, item).then((res) => {
                         if (res) {
                           this.fetchTaskCards(this.props.match.params.kanbanId)
-                          // tempCard[`${item.columnId}`].push(item);
-                          // tempCard[startArray[0]].splice(i, 1);
-                          // this.setState({
-                          //   cards: tempCard,
-                          // })
                         }
                       });
-
                     }
                     else {
                       message.warning('此列已满')
                     }
                   } else {
-                    item.status = column.status
+                    item.status = column.status;
                     KanbanStore.updateIssueById(item.id, item).then((res) => {
                       if (res) {
                         this.fetchTaskCards(this.props.match.params.kanbanId)
-                        // tempCard[`${item.columnId}`].push(item);
-                        // tempCard[startArray[0]].splice(i, 1);
-                        // this.setState({
-                        //   cards: tempCard,
-                        // })
                       }
                     });
                   }
@@ -1131,12 +1130,14 @@ class Kanban extends Component {
             }
           }
         }
+      }else {
+        message.warning('此列已满')
       }
     }
   };
   handleScroll = (e) => {
     let KanbantheadDom = document.getElementsByClassName('kanban-thead');
-    let KanbanContentDom = document.getElementsByClassName('kanban-content')
+    let KanbanContentDom = document.getElementsByClassName('kanban-content');
     KanbantheadDom[0].setAttribute('style', `top:${KanbanContentDom[0].scrollTop}px;position:absolute;z-index:7;`)
   }
 
@@ -1158,7 +1159,7 @@ class Kanban extends Component {
     // const {history, match} = this.props;
     // history.push(`${match.url}/create`)
     this.setState({
-      CreateCardState:'block'
+      CreateCardState: 'block'
     })
   }
   handleTaskColumn = (e) => {
@@ -1175,14 +1176,13 @@ class Kanban extends Component {
         taskColumnState: 'none',
       })
     }
-
   };
   //获取子卡
   getSubCards = (subCards) => {
     let tempCard = []
     if (subCards != null && subCards.length !== 0) {
       subCards.map((card) => {
-          if (card.positionX === 0 && card.positionY === 0) {
+          if (card.status === 'pre todo') {
             tempCard.push(
               <Draggable draggableId={card.id}>
                 {(provided, snapshot) => (
@@ -1195,7 +1195,6 @@ class Kanban extends Component {
                     }}
                     {...provided.dragHandleProps}
                   >
-
                     <KanbanCard issueInfo={card} id={card.id}
                                 changeCardsDetail={this.handleChangeCardsDetailState}
                                 handleReloadKanban={this.reloadKanban}
@@ -1209,48 +1208,48 @@ class Kanban extends Component {
             )
           }
         }
-      )
+      );
       return tempCard;
     }
-  }
+  };
   linktoChange = (url) => {
     const {history, match} = this.props;
     history.push(`${match.url}/${url}`)
-  }
+  };
   onDragStart = (res) => {
     let event = window.event || arguments[0];
-  }
+  };
   preventTest = (e) => {
     e.preventDefault();
     e.stopPropagation();
-  }
+  };
   handlePlanState = (e) => {
     e.preventDefault();
     e.stopPropagation();
     this.setState({
       planState: true
     })
-  }
+  };
   handleReleasePlanState = (e) => {
     e.preventDefault();
     e.stopPropagation();
     this.setState({
       releasePlanState: true
     })
-  }
+  };
   ChangePlanState = (planState) => {
     this.setState({
       planState: planState,
     })
-  }
+  };
   ChangeReleasePlanState = (releasePlanState) => {
     this.setState({
       releasePlanState: releasePlanState,
     })
-  }
-  ChangeCreateCardState = ()=>{
+  };
+  ChangeCreateCardState = () => {
     this.setState({
-      CreateCardState:'none'
+      CreateCardState: 'none'
     })
   }
 
@@ -1270,43 +1269,7 @@ class Kanban extends Component {
     let tbody = tableInfo.tbody;
     return (
       <DragDropContext onDragEnd={this.onDragEnd} onDragStart={this.onDragStart}>
-        <div className="kanban" onClick={this.setCardsDetailUnSeen} style={{marginLeft:'-1rem'}}>
-          {/*<div*/}
-          {/*style={{*/}
-          {/*height: 168,*/}
-          {/*width: 40,*/}
-          {/*position: 'fixed',*/}
-          {/*zIndex: 6,*/}
-          {/*marginLeft: 0,*/}
-          {/*marginTop: 60,*/}
-          {/*textAlign: 'center'*/}
-          {/*}}>*/}
-          {/*<Tooltip placement="right" title='新增卡片'>*/}
-          {/*<Icon id='1' type="plus-square-o"*/}
-          {/*style={{cursor: 'pointer', display: 'block', fontSize: 22, marginTop: 20}}*/}
-          {/*onClick={this.handleCreateCard}/>*/}
-
-          {/*</Tooltip>*/}
-          {/*<Tooltip placement="right" title='卡片暂存区'>*/}
-          {/*<Badge count={this.state.cards['temp'] != null ? this.state.cards['temp'].length : 0}*/}
-          {/*style={{top: 12, left: 14, transform: 'scale(0.8)'}}>*/}
-          {/*{this.state.taskColumnState === 'none' ?*/}
-          {/*<Icon type="folder" style={{cursor: 'pointer', display: 'block', fontSize: 22, marginTop: 20}}*/}
-          {/*onClick={this.handleTaskColumn}/>*/}
-          {/*:*/}
-          {/*<Icon type="folder-open" style={{cursor: 'pointer', display: 'block', fontSize: 22, marginTop: 20}}/>*/}
-          {/*}*/}
-          {/*</Badge>*/}
-          {/*</Tooltip>*/}
-          {/*<Tooltip placement="right" title='从迭代导入'>*/}
-          {/*<Icon type="schedule" style={{cursor: 'pointer', display: 'block', fontSize: 22, marginTop: 20}}*/}
-          {/*onClick={this.handlePlanState}/>*/}
-          {/*</Tooltip>*/}
-          {/*<Tooltip placement="right" title='从用户故事地图导入'>*/}
-          {/*<Icon type="schedule" style={{cursor: 'pointer', display: 'block', fontSize: 22, marginTop: 20}}*/}
-          {/*onClick={this.handleReleasePlanState}/>*/}
-          {/*</Tooltip>*/}
-          {/*</div>*/}
+        <div className="kanban" onClick={this.setCardsDetailUnSeen} style={{marginLeft: '-1rem'}}>
           <div className="taskColumn"
                onMouseDown={this.preventTest}
                style={{
@@ -1343,76 +1306,16 @@ class Kanban extends Component {
               )}
             </Droppable>
           </div>
-          <PageHeader title={this.state.kanbanName} style={{borderBottom: 'none'}}>
-            <Button htmlType='button' style={PageHeadStyle.leftBtn} ghost>
-              <Dropdown overlay={menu} trigger={['click']}>
-                <a className="ant-dropdown-link" href="#">
-                  <i className="material-icons" style={{fontSize: 16, top: 3, position: 'relative'}}>move_to_inbox</i>
-                  <span style={{marginLeft: 12, position: 'relative'}}>导入用户故事</span>
-                </a>
-              </Dropdown>
-            </Button>
-            {/*<hr style={{*/}
-              {/*position: 'absolute',*/}
-              {/*top: 94,*/}
-              {/*width: this.hrWidth,*/}
-              {/*marginLeft: -16,*/}
-              {/*borderTop: '1px solid rgb(215,215,215)'*/}
-            {/*}}/>*/}
-          </PageHeader>
-          <div style={{height: 30,borderBottom:'1px solid rgb(215,215,215)'}}>
-            <Tooltip placement="bottom" title='绘制看板'>
-              <i className="material-icons" id='2'
-                 style={{
-                   cursor: 'pointer',
-                   display: 'inline-block',
-                   fontSize: 16,
-                   lineHeight: '30px',
-                   float: 'right',
-                   marginRight: 25
-                 }}
-                 onClick={this.handleClick}
-              >border_color</i>
-            </Tooltip>
-            {/*<Icon id='2' type="login" style={{cursor: 'pointer', display: 'block', fontSize: 16}}*/}
-            {/*onClick={this.handleClick}/>*/}
-            <Tooltip title="卡片暂存区">
-              {/*<Badge count={this.state.cards['temp'] != null ? this.state.cards['temp'].length : 0}*/}
-              {/*style={{top: 12, left: 14, transform: 'scale(0.8)'}}>*/}
-              <i className="material-icons"
-                 style={{
-                   cursor: 'pointer',
-                   display: 'inline-block',
-                   fontSize: 16,
-                   lineHeight: '30px',
-                   float: 'right',
-                   marginRight: 15
-                 }}
-                 onClick={this.handleTaskColumn}
-              >note_add</i>
-            </Tooltip>
-            <Tooltip title="添加卡片">
-              <i className="material-icons"
-                 style={{
-                   cursor: 'pointer',
-                   display: 'inline-block',
-                   fontSize: 16,
-                   lineHeight: '30px',
-                   float: 'right',
-                   marginRight: 15
-                 }}
-                 onClick={this.handleCreateCard}
-              >add_to_photos</i>
-            </Tooltip>
-            {/*<hr style={{*/}
-              {/*position: 'absolute',*/}
-              {/*top: 125,*/}
-              {/*width: this.hrWidth,*/}
-              {/*marginLeft: -16,*/}
-              {/*borderTop: '1px solid rgb(215,215,215)'*/}
-            {/*}}/>*/}
-          </div>
-          <div className="kanban-content" style={{overflow: 'auto', height: '85vh', position: 'relative'}}
+          <KanbanHeader
+            kanbanName={this.state.kanbanName}
+            handleCreateCard={this.handleCreateCard}
+            handleTaskColumn={this.handleTaskColumn}
+            handleClick={this.handleClick}
+            handleReleasePlanState={this.handleReleasePlanState}
+            handlePlanState={this.handlePlanState}
+            cardNum ={this.state.cards !== []?0:this.state.cards['temp'].length}
+          />
+          <div className="kanban-content" style={{overflow: 'auto', height: '85vh', position: 'relative', marginTop: 2}}
                onScroll={this.handleScroll}>
             <table className="kanban-table"
                    style={{borderCollapse: 'collapse',}}

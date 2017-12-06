@@ -1,13 +1,14 @@
 /*eslint-disable*/
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { Icon,message,Button,Input,Modal,notification,Checkbox } from 'antd';
+import { Icon,message,Button,Input,Modal,notification,Checkbox,Popover } from 'antd';
 import { observer } from 'mobx-react';
-import SiderMenu from '../../../components/common/SiderMenu';
-import InnerContent from '../../../components/common/InnerContent';
-import SystemColumnContent from '../../../components/common/SystemColumnContent';
-import ColumnMenu from '../../../components/common/ColumnMenu';
-import InputNumber from '../../../components/common/InputNumber';
+import SiderMenu from '../../../components/editKanban/SiderMenu';
+import InnerContent from '../../../components/editKanban/InnerContent';
+import SystemColumnContent from '../../../components/editKanban/SystemColumnContent';
+import ColumnMenu from '../../../components/editKanban/ColumnMenu';
+import InputNumber from '../../../components/editKanban/InputNumber';
+import EditKanbanHeader from '../../../components/editKanban/EditKanbanHeader';
 import KanbanStore from '../../../stores/origanization/kanban/KanbanStore';
 import PageHeader,{PageHeadStyle} from '../../../components/common/PageHeader'
 // import SiderMenu from "../../../../../../../boot/src/app/kanbanfront/components/common/SiderMenu";
@@ -70,6 +71,7 @@ class EditKanban extends Component {
     this.state = {
       array: [],
       height: 1,
+      kanbanName: null,
       isCreatingSwimLane: false,
       // isFold:isFold,
     }
@@ -207,6 +209,12 @@ class EditKanban extends Component {
     /*根据侧边栏展开与否调整kanban-conten的宽度*/
     this.resizeKanbanContent();
 
+    /*为列名设置marginLeft(为了居中显示)*/
+    for(let columnName of document.getElementsByClassName("kanban-column-name")){
+      let marginLeft = columnName.nextSibling.offsetWidth;
+      columnName.style.marginLeft = marginLeft + "px";
+    }
+
     /*初始化thead单元样式*/
     for(let item of document.getElementsByTagName("thead")[0].getElementsByTagName("td")){
       // if(item.getAttribute("data-status")=="doing"){/*若不为pb列则设置相应的列宽和鼠标样式*/
@@ -215,20 +223,21 @@ class EditKanban extends Component {
       let nextToBody = item.getAttribute("data-nextToBody");
       // let content = item.getElementsByClassName("edit-content")[0];
       /*缩列或扩列按钮的父级容器*/
-      let extendOrFoldButton = item.firstChild.lastChild.lastChild.lastChild;
+      let extendOrFoldButton = item.firstChild.lastChild;
       /*若列不和tbody相邻且非pb列,则设置其扩列按钮的鼠标样式为not-allowed,其内部div宽度调整为auto*/
       if(nextToBody!=1){
-        item.firstChild.lastChild.lastChild.lastChild.lastChild.style.cursor = "not-allowed";
+        item.firstChild.lastChild.lastChild.style.cursor = "not-allowed";
         // item.firstChild.lastChild.lastChild.firstChild.firstChild.style.cursor = "not-allowed";
         // content.setAttribute("style","width:auto;");
         item.firstChild.setAttribute('style', 'width: auto');
         /*所有不和tbody相邻的td均需隐藏缩列按钮*/
         if(extendOrFoldButton.childNodes.length!=1){
           extendOrFoldButton.removeChild(extendOrFoldButton.firstChild);
-          extendOrFoldButton.setAttribute("style","width:15px");
+          // extendOrFoldButton.style.width = '15px';
+          // extendOrFoldButton.setAttribute("style","width:15px");
         }
       }else{/*和tbody相邻的td需设置内部div宽度大小*/
-        item.firstChild.lastChild.lastChild.lastChild.lastChild.style.cursor = "pointer";
+        item.firstChild.lastChild.lastChild.style.cursor = "pointer";
         // item.firstChild.lastChild.lastChild.firstChild.firstChild.style.cursor = "pointer";
         item.firstChild.setAttribute('style', 'width: '+colWidth*163+'px');
         /*列宽大于1且缩列按钮不存在时才添加缩列按钮*/
@@ -237,22 +246,22 @@ class EditKanban extends Component {
           newIcon.className="anticon anticon-verticle-right";
           newIcon.style.fontSize = "12px";
           extendOrFoldButton.insertBefore(newIcon,extendOrFoldButton.firstChild);
-          extendOrFoldButton.setAttribute("style","width:30px");
+          // extendOrFoldButton.setAttribute("style","width:30px");
+          // extendOrFoldButton.style.width = '30px';
         }else if(colWidth==1&&extendOrFoldButton.childNodes.length==2){
           /*列宽等于1且缩列按钮存在时需移除缩列按钮*/
           extendOrFoldButton.removeChild(extendOrFoldButton.firstChild);
-          extendOrFoldButton.setAttribute("style","width:15px");
+          // extendOrFoldButton.setAttribute("style","width:15px");
+          // extendOrFoldButton.style.width = '15px';
+
         }
       }
-      // if(true){/*若不为pb列则设置相应的列宽和鼠标样式*/
-      //
-      // }
     }
     /*为新建的列初始化样式（为了让其input显示并获得焦点）*/
     if(window.newColumnId!=null){
       let targetTd = document.getElementById(window.newColumnId);
       let span = targetTd.firstChild.firstChild.nextSibling;
-      let input = span.nextSibling;
+      let input = span.nextSibling.nextSibling;
       span.style.display = "none";
       input.style.display = "inline-block";
       input.focus();
@@ -290,11 +299,11 @@ class EditKanban extends Component {
 
   resizeKanbanContent=()=>{
     let kanbanContent = document.getElementsByClassName("kanban-content")[0];
-    let topHeight = document.getElementsByClassName("ant-menu ant-menu-horizontal ant-menu-light ant-menu-root")[0].offsetHeight;
-    let topDiv = document.getElementById("menu");
+    let topHeight = 47 + 94 + 2;
+    let menu = document.getElementById("menu");
     kanbanContent.style.height = window.innerHeight - topHeight + "px";
-    kanbanContent.style.width = window.innerWidth - topDiv.offsetWidth - 18 + "px";
-    this.resizeSiderMenu();
+    kanbanContent.style.width = window.innerWidth - menu.offsetWidth -2 + "px";
+    // this.resizeSiderMenu();
   }
 
   /*为当前页面的有效按钮绑定点击事件，点击事件发生时将调用各自相对应的handleOn方法*/
@@ -313,7 +322,7 @@ class EditKanban extends Component {
     document.onmouseup=null;
     /*绑定扩列按钮*/
     for(let item of thead.getElementsByClassName("anticon anticon-verticle-left")){
-      let targetTd = item.parentNode.parentNode.parentNode.parentNode.parentNode;
+      let targetTd = item.parentNode.parentNode.parentNode;
       /*只有和tbody相邻的单元格的扩列按钮才是有效点击事件*/
       if(targetTd.getAttribute("data-nextToBody")==1) {
         this.addEvent(item,"click",this.handleOnExtend);
@@ -343,17 +352,9 @@ class EditKanban extends Component {
       this.addEvent(item,"click",this.handleOnDeleteSwimLane);
     }
     /*绑定列上设置按钮*/
-    for(let item of thead.getElementsByClassName("anticon anticon-setting")){
-      this.addEvent(item,"click",this.handleOnSetColumn);
-      // let targetTd = item.parentNode.parentNode.parentNode.parentNode.parentNode;
-      // /*只有和tbody相邻的单元格的设置按钮才是有效点击事件*/
-      // if(targetTd.getAttribute("data-nextToBody")==1) {
-      //   this.addEvent(item,"click",this.handleOnSetColumn);
-      //   // item.style.cursor='pointer';
-      // }else{/*防止之前添加过点击事件，但是之后不再位于最下层时点击事件仍然生效*/
-      //   this.removeEvent(item,"click",this.handleOnSetColumn);
-      // }
-    }
+    // for(let item of thead.getElementsByClassName("anticon anticon-setting")){
+    //   this.addEvent(item,"click",this.handleOnSetColumn);
+    // }
     // for(let item of thead.getElementsByClassName("anticon anticon-setting")){
     //   this.addEvent(item,"click",this.handleOnSetColumn);
     // }
@@ -519,7 +520,7 @@ class EditKanban extends Component {
     }
   }
   handleOnSetColumn=(e)=>{
-    let columnMenu = e.target.parentNode.parentNode.parentNode.parentNode.parentNode.lastChild;
+    let columnMenu = e.target.parentNode.parentNode.parentNode.lastChild;
     if(columnMenu.style.display=="block"){
       let sourceArray = this.deepCopy(this.state.array);
       let positionArray =columnMenu.parentNode.getAttribute("data-position").split(",");
@@ -544,7 +545,7 @@ class EditKanban extends Component {
     columnMenu.style.display = 'block';
     window.openMenu.push(columnMenu.parentNode.id);
     let sourceArray = this.state.array;
-    let positionArray = e.target.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute("data-position").split(",");
+    let positionArray = columnMenu.parentNode.getAttribute("data-position").split(",");
     let targetColumn = this.findTargetColumn(sourceArray,positionArray);
     if(!targetColumn.wipChecked){
       columnMenu.firstChild.lastChild.value = this.state.height;
@@ -975,7 +976,7 @@ class EditKanban extends Component {
   handleOnShrink(e){
     /*找到扩列按钮所在的td DOM元素*/
     this.removeInvalidRecord();
-    let targetTd = e.target.parentNode.parentNode.parentNode.parentNode.parentNode;
+    let targetTd = e.target.parentNode.parentNode.parentNode;
     /*获取位置数组和源数组，通过他们找到目标column的引用*/
     let positionArray = this.getPositionArray(targetTd);
     let sourceArray = this.deepCopy(this.state.array);
@@ -994,7 +995,7 @@ class EditKanban extends Component {
   handleOnExtend(e){
     /*找到扩列按钮所在的td DOM元素*/
     this.removeInvalidRecord();
-    let targetTd = e.target.parentNode.parentNode.parentNode.parentNode.parentNode;
+    let targetTd = e.target.parentNode.parentNode.parentNode;
     /*相关操作逻辑同handleOnShrink*/
     let positionArray = this.getPositionArray(targetTd);
     let sourceArray = this.deepCopy(this.state.array);
@@ -1103,7 +1104,7 @@ class EditKanban extends Component {
     /*找到添加按钮所在的td DOM元素*/
     this.removeInvalidRecord();
     let kanbanId = this.props.match.params.kanbanId;
-    let targetTd = e.target.parentNode.parentNode.parentNode.parentNode.parentNode;
+    let targetTd = e.target.parentNode.parentNode.parentNode;
     let positionArray = this.getPositionArray(targetTd);
     let sourceArray = this.deepCopy(this.state.array);
     let target = this.findTargetColumn(sourceArray,positionArray);
@@ -1128,10 +1129,12 @@ class EditKanban extends Component {
         /*取得看板列数组和看板高度*/
         let array = response.list;
         let kanbanHeight = response.height;
+        let kanbanName = response.kanbanName;
         this.createHistoryState(array,kanbanHeight,this.state.isCreatingSwimLane,this.state);
         this.setState({
           array: array,
           height: kanbanHeight,
+          kanbanName: kanbanName,
         });
       }
     });
@@ -1176,10 +1179,10 @@ class EditKanban extends Component {
     return kanbanHeightArray[kanbanHeightArray.length-1];
   }
   showAlterColumnNameInput(e){
-    e.target.nextSibling.style.display='inline-block';
-    e.target.nextSibling.focus();
+    e.target.nextSibling.nextSibling.style.display='inline-block';
+    e.target.nextSibling.nextSibling.focus();
     e.target.style.display='none';
-
+    e.target.nextSibling.style.display='none';
   }
 
   handleOnAlterColumnName(e){
@@ -1193,6 +1196,7 @@ class EditKanban extends Component {
     if(e.target.previousSibling.innerHTML==columnName){
       e.target.style.display='none';
       e.target.previousSibling.style.display="inline-block";
+      e.target.previousSibling.previousSibling.style.display="inline-block";
       return;
     }
     this.removeInvalidRecord();
@@ -1203,6 +1207,7 @@ class EditKanban extends Component {
     targetColumn.name = columnName/*!=null&&e.target.value!=''?e.target.value:'未命名列名'*/;
     e.target.style.display="none";
     e.target.previousSibling.style.display="inline-block";
+    e.target.previousSibling.previousSibling.style.display="inline-block";
     this.createHistoryState(sourceArray,this.state.height,this.state.isCreatingSwimLane,this.state);
     this.setState({
       array:sourceArray,
@@ -1443,7 +1448,7 @@ class EditKanban extends Component {
     let result = null;
     for(let item of document.getElementsByTagName("thead")[0].getElementsByTagName("td")){
       if(item.id!="pb"){
-        if(item.firstChild.nextSibling.nextSibling.getAttribute("data-status")==targetStatus){
+        if(item.firstChild.nextSibling.getAttribute("data-status")==targetStatus){
           result=item.id;
           break;
         }
@@ -2058,9 +2063,13 @@ class EditKanban extends Component {
       let defalutValue = (node.wipNum==-1||node.wipNum==null)?this.state.height:node.wipNum;
       let wip = null;
       if(node.nextToBody==1&&node.wipNum!=-1){
-        wip = <span style={{position: 'absolute', top: 0, left: 3}}>{node.wipNum}</span>;
+        wip = (
+          <Popover content="在制品">
+            {/*rgb(48, 63, 159)*/}
+            <span style={{position: 'relative', color: 'white',top: -4,left:4}}>({node.wipNum})</span>
+          </Popover>);
       }else {
-        wip = <span></span>;
+        wip = <span/>;
       }
       /*渲染表头*/
       row.push(<td id={node.id==null?node.uniqueId:node.id} rowSpan={(node.subColumns==null||node.subColumns.length==0)?(depth-currentLayout+1):1}
@@ -2068,20 +2077,62 @@ class EditKanban extends Component {
       data-columnId={node.id} data-nextToBody={node.nextToBody} data-parentId={node.parentId}
       data-position={node.position} data-uniqueId={node.uniqueId}>
         <div>
-          <div className="edit-item edit-close" style={{position:'absolute',top:0,right:2}}>
+          <div className="edit-item edit-close" style={{position:'absolute',top:0,right:8}}>
             <Icon type="close" style={{fontSize:12}} />
           </div>
-          <span onDoubleClick={this.showAlterColumnNameInput}>{node.name}</span>
-          <Input style={{backgroundColor:'white',position:'relative',display:'none',padding:'none', width: '50%',height: 14}} placeholder="未命名列名" defaultValue={node.name=='未命名列名'?'':node.name} onBlur={this.handleOnAlterColumnName} onPressEnter={this.handleOnAlterColumnName}/>
-          <div style={{position: 'absolute',bottom: -8,width: '100%',height:4}}>
-            <div className="edit-bottom">
-              <div className="edit-item"><Icon type="setting" style={{fontSize:12}}/></div>
-              <div className="edit-item"><Icon type="plus" style={{fontSize:12}}/></div>
-              <div className="edit-item"><Icon type="verticle-left" style={{fontSize:12}}/></div>
-            </div>
+          <div className="kanban-column-name" onDoubleClick={this.showAlterColumnNameInput} style={{
+            display:'inline-block',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            position: 'relative',
+            /* height: 17px; */
+            top: 4,
+            maxWidth: 84,
+          }} title={node.name}>{node.name}</div>
+          {wip}
+
+          <Input style={{backgroundColor:'white',position:'relative',display:'none',padding:'none', width: '50%',height: 18}} placeholder="未命名列名" defaultValue={node.name=='未命名列名'?'':node.name} onBlur={this.handleOnAlterColumnName} onPressEnter={this.handleOnAlterColumnName}/>
+
+          <div className="edit-item" style={{
+            display: 'inline-block',
+            position: 'absolute',
+            left: 10,
+            bottom: -2,
+            cursor:'pointer',
+            /*设置zIndex的目的是防止被+号图标的div挡住*/
+            zIndex:2,
+          }}>
+            <Icon type="setting" style={{fontSize:12}} onClick={this.handleOnSetColumn}/>
           </div>
+          <div className="edit-item" style={{
+            display: 'inline-block',
+            position: 'absolute',
+            bottom: -3,
+            width: '100%',
+            left: 0,
+            textAlign: 'center',
+          }}>
+            <Icon type="plus" style={{fontSize:12}}/>
+          </div>
+          <div className="edit-item" style={{
+            display: 'inline-block',
+            position: 'absolute',
+            right: 8,
+            bottom: -3,
+          }}>
+            <Icon type="verticle-left" style={{fontSize:12}}/>
+          </div>
+
+
+          {/*<div style={{position: 'absolute',bottom: -4,width: '98%',left:'1%',height:4,}}>*/}
+            {/*<div className="edit-bottom">*/}
+              {/*<div className="edit-item"><Icon type="setting" style={{fontSize:12}}/></div>*/}
+              {/*<div className="edit-item"><Icon type="plus" style={{fontSize:12}}/></div>*/}
+              {/*<div className="edit-item"><Icon type="verticle-left" style={{fontSize:12}}/></div>*/}
+            {/*</div>*/}
+          {/*</div>*/}
         </div>
-        {wip}
         {/*<span style={{position: 'absolute', top: 0, left: 3}}>{node.wipNum!=null?`wip:${node.nextToBody==1?node.wipNum}`:''}</span>*/}
         <SystemColumnContent columnStatus={node.status} selected={node.selected}/>
         <div className="column-menu"  style={display?{display:'block'}:{display:'none'}}>
@@ -2408,67 +2459,28 @@ class EditKanban extends Component {
     let thead = tableInfo.thead;
     let tbody = tableInfo.tbody;
     return (
-      <div className="edit-kanban">
-        {/*<PageHeader title="编辑看板">*/}
-          {/*<Button className="header-btn"*/}
-                  {/*ghost={true}*/}
-                  {/*onClick={ this.handleOnAddColumn }*/}
-                  {/*style={PageHeadStyle.leftBtn} /*icon="file"*/}
-          {/*>{'新添一列'}</Button>*/}
+      <div className="edit-kanban" style={{marginLeft:'-1rem'}}>
+        <EditKanbanHeader kanbanName={this.state.kanbanName}
+                          isCreatingSwimLane={this.state.isCreatingSwimLane}
+                          handleOnAddColumn={this.handleOnAddColumn}
+                          handleOnChangeModel={this.handleOnChangeModel}
+                          handleOnAddHeight={this.handleOnAddHeight}
+                          handleOnReduceHeight={this.handleOnReduceHeight}
+                          handleOnRevocate={this.handleOnRevocate}
+                          handleOnRecover={this.handleOnRecover}
+                          handleOnSave={this.handleOnSave}
+                          toUseKanbanPage={this.toUseKanbanPage}/>
 
-          {/*<Button className="header-btn"*/}
-                  {/*ghost={true}*/}
-                  {/*onClick={ this.handleOnChangeModel }*/}
-                  {/*style={this.state.isCreatingSwimLane?{marginTop: '10px',*/}
-                    {/*marginLeft: '30px',*/}
-                    {/*lineHeight: '24px',*/}
-                    {/*height: '28px',*/}
-                    {/*color: 'rgb(59, 120, 231)',*/}
-                    {/*float: 'left',borderColor:'#108ee9'}:PageHeadStyle.leftBtn}*/}
-            {/*/*style={PageHeadStyle.leftBtn} icon="file"*/}
-          {/*>{this.state.isCreatingSwimLane?'退出绘制':'绘制泳道'}</Button>*/}
-
-          {/*<Button className="header-btn"*/}
-                  {/*ghost={true}*/}
-                  {/*onClick={this.handleOnAddHeight}*/}
-                  {/*style={PageHeadStyle.leftBtn} icon="plus-square-o">{'增加列高'}</Button>*/}
-
-          {/*<Button className="header-btn"*/}
-                  {/*ghost={true}*/}
-                  {/*onClick={this.handleOnReduceHeight}*/}
-                  {/*style={PageHeadStyle.leftBtn} icon="minus-square-o">{'减少列高'}</Button>*/}
-
-          {/*<Button id="revocate" className="header-btn"*/}
-                  {/*ghost={true}*/}
-                  {/*onClick={this.handleOnRevocate}*/}
-                  {/*style={PageHeadStyle.leftBtn} /*icon="delete">{'撤销'}</Button>*/}
-
-          {/*<Button id="recover" className="header-btn"*/}
-                  {/*ghost={true}*/}
-                  {/*onClick={this.handleOnRecover}*/}
-                  {/*style={PageHeadStyle.leftBtn} /*icon="delete">{'恢复'}</Button>*/}
-
-          {/*<Button className="header-btn"*/}
-                  {/*ghost={true}*/}
-                  {/*onClick={this.handleOnSave}*/}
-                  {/*style={PageHeadStyle.leftBtn} /*icon="desktop">{'保存'}</Button>*/}
-
-          {/*<Button className="header-btn"*/}
-                  {/*ghost={true}*/}
-                  {/*onClick={this.toUseKanbanPage}*/}
-                  {/*style={PageHeadStyle.leftBtn} ><Icon type="logout" style={{transform:'rotate(180deg)'}} />{'使用看板'}</Button>*/}
-
-        {/*</PageHeader>*/}
-        <SiderMenu isCreatingSwimLane={this.state.isCreatingSwimLane}
-                   handleOnAddColumn={this.handleOnAddColumn}
-                   handleOnChangeModel={this.handleOnChangeModel}
-                   handleOnAddHeight={this.handleOnAddHeight}
-                   handleOnReduceHeight={this.handleOnReduceHeight}
-                   handleOnRevocate={this.handleOnRevocate}
-                   handleOnRecover={this.handleOnRecover}
-                   handleOnSave={this.handleOnSave}
-                   toUseKanbanPage={this.toUseKanbanPage}
-                   resizeSiderMenu={this.resizeSiderMenu}/>
+        {/*<SiderMenu isCreatingSwimLane={this.state.isCreatingSwimLane}*/}
+                   {/*handleOnAddColumn={this.handleOnAddColumn}*/}
+                   {/*handleOnChangeModel={this.handleOnChangeModel}*/}
+                   {/*handleOnAddHeight={this.handleOnAddHeight}*/}
+                   {/*handleOnReduceHeight={this.handleOnReduceHeight}*/}
+                   {/*handleOnRevocate={this.handleOnRevocate}*/}
+                   {/*handleOnRecover={this.handleOnRecover}*/}
+                   {/*handleOnSave={this.handleOnSave}*/}
+                   {/*toUseKanbanPage={this.toUseKanbanPage}*/}
+                   {/*resizeSiderMenu={this.resizeSiderMenu}/>*/}
         {/*<SiderMenu onCilckAddColumn={this.handleOnAddColumn} onClickAddHeight={this.handleOnAddHeight}*/}
         {/*onClickReduceHeight={this.handleOnReduceHeight} onClickSave={this.handleOnSave}/>*/}
         <div className="kanban-content" style={{overflow:'auto',position:'relative'}}>

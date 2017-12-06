@@ -8,6 +8,7 @@ import React, {Component} from 'react';
 import {observer} from 'mobx-react';
 import {withRouter} from 'react-router-dom';
 import SprintStore from '../../stores/origanization/sprint/SprintStore';
+import FontAwesome from 'react-fontawesome';
 import {
   Select,
   Button,
@@ -68,7 +69,7 @@ const styles = {
   select: {
     // width: '100px',
     // flex: 5,
-    width: '130px',
+    width: '150px',
     whiteSpace: "nowrap",
     textOverflow: "ellipsis",
     overflow: "hidden",
@@ -86,7 +87,8 @@ class CreateCard extends Component {
     this.state = {
       storyDetailDatas: {},
       formType:'story',
-      kanbanName:"——"
+      kanbanName:"——",
+      status:"——"
     }
   }
 
@@ -104,6 +106,7 @@ class CreateCard extends Component {
         data.sprintId=this.state.sprintId
         data.projectId="1"
         data.status=this.state.status
+        data.parentId=this.state.parentId
         data.issueType="task"
         console.log(data)
         IssueManageStore.createIssue(data).then(data => {
@@ -111,6 +114,7 @@ class CreateCard extends Component {
                 this.props.init();
                 message.success('添加成功', 1.5);
                 this.props.form.resetFields();// 清空
+                this.setState({status:"——"})
           }
         })
       }
@@ -120,8 +124,11 @@ class CreateCard extends Component {
     e.preventDefault();
     e.stopPropagation();
     SprintStore.closeCreateTaskShow();
+    this.props.form.resetFields();// 清空
+    this.setState({status:"——"})
   }
   selectParent=((key,option)=>{
+    let kanbanName;
     let data=SprintStore.getSprintData;
     data["issue"].map((item,index)=>{
       if(item.id==key) {
@@ -132,11 +139,17 @@ class CreateCard extends Component {
         } else {
           status = "pre todo"
         }
+        if(!item.kanbanName){
+          kanbanName="——"
+        }else{
+          kanbanName= item.kanbanName;
+        }
         this.setState({
-          kanbanName: item.kanbanName,
+          kanbanName: kanbanName,
           status: status,
           kanbanId: item.kanbanId,
-          sprintId: item.sprintId
+          sprintId: item.sprintId,
+          parentId:key
         })
       }
     })
@@ -152,9 +165,6 @@ class CreateCard extends Component {
     }
     })
     const {getFieldDecorator} = this.props.form;
-    const {storyDetailDatas} = this.state;
-    console.log({...storyDetailDatas});
-    console.log(storyDetailDatas.endTime);
 
     return (
       <div
@@ -247,14 +257,20 @@ class CreateCard extends Component {
                     }}
                   >
                     <div style={styles.items}>
-                      {/*<div style={styles.item}>状态：</div>*/}
-                      <FormItem label='状态' style={{display:'inherit',marginBottom:0}}>
-                      <div style={styles.select}>
-                        <Tag color="#108ee9" style={{color: 'white',marginLeft:27,width:104,textAlign:'center'}}>
-                          {this.state.status}
-                        </Tag>
+                      <div style={styles.item}>状态：</div>
+                      <div title={this.state.status} style={styles.select}>
+                        <div style={styles.select}>
+                          {this.state.status!="——"?
+                            <div
+                                 style={{ backgroundColor:"#108ee9", borderRadius:"8px",display:"inline-block"}}>
+                              {this.state.status}
+                            </div>
+                            :<div style={{display:"inline-block" }}>
+                              {this.state.status}
+                            </div>
+                          }
+                        </div>
                       </div>
-                      </FormItem>
                     </div>
                     <div style={styles.items}>
                       {/*<div style={styles.item}>负责人：</div>*/}
@@ -276,7 +292,7 @@ class CreateCard extends Component {
                     </div>
                     <div style={styles.items}>
                       <div style={styles.item}>迭代：</div>
-                      <div style={styles.select}>
+                      <div title={name} style={styles.select}>
                         {name?name:"——"}
                       </div>
                     </div>
@@ -287,7 +303,6 @@ class CreateCard extends Component {
                         (<Select
                           size={size}
                           style={{top:5,marginLeft:27,width:104}}
-                          defaultValue={"2"}
                         >
                           <Option value="1">
                             <div
@@ -354,7 +369,7 @@ class CreateCard extends Component {
                     </div>
                     <div style={styles.items}>
                       <div style={styles.item}>看板：</div>
-                      <div style={styles.select}>
+                      <div title={this.state.kanbanName} style={styles.select}>
                         {this.state.kanbanName}
                       </div>
                     </div>
@@ -368,19 +383,23 @@ class CreateCard extends Component {
                         />)}
                       </FormItem>
                     </div>
-                    <div style={styles.items}>
+                    <div style={{ width: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',}}>
                       <FormItem label='父级需求' style={{display:'inherit',marginBottom:0}}>
                         {getFieldDecorator('parentId',{
                           rules: [{ required: true, message: '父级为必选项!' },],
                         })
                         (<Select
                           size={size}
-                          style={{top:5,marginLeft:27,width:104}}
+                          style={{top:5,marginLeft:4,width:110,marginRight:7}}
                           onSelect={this.selectParent}
                           >
                           {items}
                         </Select>)}
                          </FormItem>
+                      <div style={{transform:"scale(0.8)",transformOrigin:"left"}}>选择父级需求，任务状态会随其改变</div>
                     </div>
                     {/*<div style={styles.items}>*/}
                       {/*/!*<div style={styles.item}>需求来源：</div>*!/*/}

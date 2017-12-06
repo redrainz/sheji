@@ -79,6 +79,13 @@ class KanbanCard extends React.Component {
       CardsChildDisplayStatus:'none',
     })
   }
+  getColor=(type)=>{
+    if(type==='story'){
+      return '#3F51B5'
+    }if(type==='task'){
+      return '#009688'
+    }
+  }
   render() {
     return (
       <div className="card" id={this.state.issueInfo.issueId} onClick={this.testPrevent}>
@@ -87,11 +94,16 @@ class KanbanCard extends React.Component {
                id={this.state.issueInfo.id}
                onClick={this.props.changeCardsDetail}
                style={{
-                 transformOrigin: '69 8.5 0'
+                 transformOrigin: '69 8.5 0',
+                 textOverflow:'ellipsis',
+                 whiteSpace:'nowrap',
+                 overflow:'hidden'
                }}>
+            <span id={this.state.issueInfo.id}>
             {this.state.issueInfo.description}
+            </span>
           </div>
-          <div className="color-bar"/>
+          <div className="color-bar" style={{backgroundColor:this.getColor(this.state.issueInfo.issueType)}}/>
           <div className="kanbanCard-header">
             <div className="lf-header">
               {this.state.issueInfo.parentId != null ? `#${this.state.issueInfo.parentId}-${this.state.issueInfo.issueId}`
@@ -102,7 +114,7 @@ class KanbanCard extends React.Component {
             {/*</div>*/}
           </div>
           <div id={this.state.issueInfo.acception} className="lf-label">{this.state.issueInfo.acception}</div>
-          <div className="mid-label" style={{display:this.state.issueInfo.columnId == null ? 'none':''}} onClick={this.changeCardsChildDisplayStatus}>
+          <div className="mid-label" style={{display:this.state.issueInfo.columnId == null || this.state.issueInfo.subIssue.length === 0 ? 'none':''}} onClick={this.changeCardsChildDisplayStatus}>
             <Icon type="bars" style={{
             fontSize: 13,
             position: 'relative',

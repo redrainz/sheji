@@ -17,12 +17,12 @@ const KANBANIndex = asyncRouter(() => import('./origanization/kanban/KANBANIndex
 const EDITKANBANIndex = asyncRouter(() => import('./origanization/editKanban/EDITKANBANIndex'));
 const SPRINTIndex = asyncRouter(() => import('./origanization/sprint/SPRINTIndex'));
 
-
 class KANBANFRONTIndex extends React.Component {
   render() {
-    const { match,  } = this.props;
+    const { match } = this.props;
     
-    return ( 
+    return (
+      
         <div>
           <Switch>
             <Route exact path={match.url} component={Home} />
@@ -37,7 +37,8 @@ class KANBANFRONTIndex extends React.Component {
             <Route path={`${match.url}/sprintManage`} component={SPRINTIndex} />
             <Route path={`${match.url}/sprintDetails`} component={SPRINTIndex} />
           </Switch>
-        </div>   
+        </div>
+     
     );
   }
 }

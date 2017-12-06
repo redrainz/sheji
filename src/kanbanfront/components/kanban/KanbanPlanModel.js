@@ -7,7 +7,7 @@ import KanbanStore from '../../stores/origanization/kanban/KanbanStore';
 
 const Option = Select.Option;
 let data;
-
+require('../../assets/css/kanban.css')
 class KanbanPlanModel extends Component {
   constructor(props) {
     super(props);
@@ -30,11 +30,9 @@ class KanbanPlanModel extends Component {
   }
   componentDidUpdate(){
     let dom = document.getElementsByClassName("ant-transfer-list");
-    console.log('dom',dom);
     if(dom.length>0){
       for(let i=0;i<dom.length;i++){
         let span = dom[i].children[0].children[1].children[0];
-        console.log(span.childNodes)
 
         span.childNodes[1].data = span.childNodes[1].data='0'? '' : span.childNodes[1].data[0] === '(' ? span.childNodes[1].data : `(${span.childNodes[1].data})`;
         span.setAttribute('style','margin-left:21px;')
@@ -42,7 +40,6 @@ class KanbanPlanModel extends Component {
     }
   }
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps.visible)
     this.setState({
       visible: nextProps.visible
     })
@@ -51,20 +48,19 @@ class KanbanPlanModel extends Component {
   getData = () => {
     let selectItems = [];
     let TargetKeys = [];
-    console.log('getData');
     KanbanStore.getKanbanById(this.props.kanbanId).then((kanban) => {
       if (kanban) {
-        console.log('kanban', kanban)
         KanbanStore.getSprintByProjectId(`1`).then((res) => {
           if (res) {
-            console.log('sprint', res)
             res.map((item) => {
-              selectItems.push({
-                id: item.id,
-                name: item.name,
-                sprintId:item.sprintId,
-                issuePriority:item.issuePriority,
-              })
+              if(item.status==='doing'){
+                selectItems.push({
+                  id: item.id,
+                  name: item.name,
+                  sprintId:item.sprintId,
+                  issuePriority:item.issuePriority,
+                })
+              }
             });
 
             let mockData = []
@@ -83,10 +79,9 @@ class KanbanPlanModel extends Component {
                 })
               }
               KanbanStore.getIssueWithoutKanbanIDbySprintId(kanban.sprintId).then((data) => {
-                console.log('data', data)
                 if (data) {
                   data.map((item, index) => {
-                    if (item.status === 'sprint backlog') {
+                    if (item.status === 'sprint backlog' && item.issueType === 'story') {
                       mockData.push({
                         key: item.id,
                         title: item.description,
@@ -143,8 +138,6 @@ class KanbanPlanModel extends Component {
           if (kanban) {
             KanbanStore.MountUpdateIssue(moveData).then((res) => {
                 if (res) {
-                  console.log('进入')
-                  console.log('kanban')
                   KanbanStore.getCardById(this.props.kanbanId).then((item) => {
                     if (item) {
                       message.success('修改成功', 0.1);
@@ -164,7 +157,6 @@ class KanbanPlanModel extends Component {
       } else {
         KanbanStore.MountUpdateIssue(moveData).then((res) => {
             if (res) {
-              console.log('进入')
               KanbanStore.getCardById(this.props.kanbanId).then((item) => {
                 if (item) {
                   message.success('修改成功', 0.1);
@@ -206,7 +198,6 @@ class KanbanPlanModel extends Component {
               if (kanban) {
                 KanbanStore.MountUpdateIssue(moveData).then((res) => {
                     if (res) {
-                      console.log('进入')
                       KanbanStore.getCardById(this.props.kanbanId).then((item) => {
                         if (item) {
                           message.success('修改成功', 0.1);
@@ -226,7 +217,6 @@ class KanbanPlanModel extends Component {
           } else {
             KanbanStore.MountUpdateIssue(moveData).then((res) => {
                 if (res) {
-                  console.log('进入')
                   KanbanStore.getCardById(this.props.kanbanId).then((item) => {
                     if (item) {
                       message.success('修改成功', 0.1);
@@ -260,9 +250,7 @@ class KanbanPlanModel extends Component {
     return option.description.indexOf(inputValue) > -1;
   }
   setSource = (value) => {
-    console.log(1)
     let mockData = [];
-    console.log('value', value)
     KanbanStore.getIssueWithoutKanbanIDbySprintId(value).then((data) => {
       console.log(data)
       if (data) {
@@ -309,7 +297,7 @@ class KanbanPlanModel extends Component {
     const {visible} = this.state;
 
     return (
-      <div>
+      <div >
         <Modal
           title="规划看板"
           visible={visible}
@@ -317,26 +305,26 @@ class KanbanPlanModel extends Component {
           closable={true}
           className="sprintPlanStyle"
           footer={null}
+          style = {{width:538}}
         >
-          <div style={{paddingTop: "10px", paddingLeft: "10px", paddingBottom: "10px"}}>选择迭代：
+          <div style={{ marginTop: -20, paddingBottom: "20px"}}>选择冲刺：
             <div style={{display: "inline-block"}}><Select
               // mode="multiple"
               style={{minWidth: "120px"}}
               placeholder="Please select"
               onSelect={this.setSource}
               defaultValue={this.state.kanbanInfo.sprintId}
-              disabled={!this.state.ifKanbanCanChangeSprint}
             >
               {this.state.selectItems.length > 0 ?
                 this.state.selectItems.map((item, index) => {
                   return (<Option key={item.id} value={item.id}>{item.name}</Option>)
                 })
-                : <Option key={0} value={0}>未发现迭代</Option>
+                : <Option key={0} value={0}>未发现冲刺</Option>
               }
             </Select></div>
           </div>
-          <div style={{width:'50%',display:'inline-block'}}>冲刺:{this.state.sprintName ===''?'未选择冲刺':this.state.sprintName}</div>
-          <div style={{width:'auto',display:'inline-block',marginLeft:22}}>看板:{this.state.kanbanInfo.name}</div>
+          <div style={{width:200,display:'inline-block',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>冲刺名称:{this.state.sprintName ===''?'未选择冲刺':this.state.sprintName}</div>
+          <div style={{width:200,display:'inline-block',marginLeft:64,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>看板名称:{this.state.kanbanInfo.name}</div>
           <Transfer
             dataSource={this.state.storyGroup}
             titles={[[<span style={{left:-137,position:'absolute'}}>描述</span>,'优先级'],

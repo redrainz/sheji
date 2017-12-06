@@ -151,17 +151,17 @@ class KanbanManage extends Component {
       blockOrList:type,
     });
     if(type==="block"){
-      message.info('已切换到块级显示',1.5);
+      message.info('已切换到块级显示',1);
     }else if(type==="list"){
-      message.info('已切换到列表显示',1.5);
+      message.info('已切换到列表显示',1);
     }
   }
 
   render() {
     let SearchInput = (
-      <Search placeholder="根据看板名称查询" size="small"
-      style={{marginRight: 20, width: 306,height:28,marginTop:5}}
-        onSearch={value => console.log(value)} onChange={this.handleOnSearchChange}
+      <Input prefix={<i className="material-icons" style={{fontSize:16}}>search</i>} placeholder="根据看板名称查询" size="small"
+      style={{marginRight: 20, width: 260,height:28,marginTop:5,fontSize:14}}
+        onChange={this.handleOnSearchChange}
         className="searchStyle"/>);
     const headFontStyle = {fontSize: 14, color: 'rgba(0,0,0,0.65)'};
 
@@ -205,12 +205,12 @@ class KanbanManage extends Component {
                   <div className="all-kanban-right">
                     <div className="kanban-manage-item" style={{marginRight: 8}}>
                       <Tooltip title="块级显示">
-                        <i className="material-icons" data-type="block" onClick={this.handleOnTypeChange} style={{cursor:'pointer',fontSize:16,color:this.state.blockOrList==="block"?'#2196f3d4':'unset',}}>dashboard</i>
+                        <i className="material-icons" data-type="block" onClick={this.handleOnTypeChange} style={{cursor:'pointer',fontSize:16,color:this.state.blockOrList==="block"?'#3F51B5':'unset',}}>dashboard</i>
                       </Tooltip>
                     </div>
                     <div className="kanban-manage-item" style={{ marginRight: 21,position:'relative',}}>
                       <Tooltip title="列表显示">
-                        <i className="material-icons" data-type="list" onClick={this.handleOnTypeChange} style={{cursor:'pointer',fontSize:19,position:'relative',top:1,color:this.state.blockOrList==="list"?'#2196f3d4':'unset'}}>view_list</i>
+                        <i className="material-icons" data-type="list" onClick={this.handleOnTypeChange} style={{cursor:'pointer',fontSize:19,position:'relative',top:1,color:this.state.blockOrList==="list"?'#3F51B5':'unset'}}>view_list</i>
                       </Tooltip>
                     </div>
                   </div>

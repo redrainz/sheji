@@ -4,9 +4,13 @@
  */
 
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import {
+  Route,
+  Switch,
+} from 'react-router-dom';
+import asyncRouter from 'asyncRouter';
 
-import userStoryMap from './UserStoryMap';
+const userStoryMap = asyncRouter(() => (import('./UserStoryMap')));
 const USERSTORYMAPIndex = ({ match }) => (
   <Switch>
     <Route exact path={match.url} component={userStoryMap} />

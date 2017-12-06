@@ -190,7 +190,12 @@ class UserStoryStore {
                 story: [],
               },
             ],
-          },         
+          },
+          {
+            id: 4,
+            subIssue: [],
+            description: 'activity2',
+          },
         ],
       },
       {
@@ -199,53 +204,11 @@ class UserStoryStore {
         subIssue: [],
       },
     ];
-    const releaseData = [
-      {
-        id: 1,
-        name: 'ss',
-        issues:[]
-      },
-      {
-        id: 1,
-        name: 'ss',
-        issues:[]
-      },
-      {
-        id: 1,
-        name: 'ss',
-        issues:[]
-      },
-      {
-        id: 1,
-        name: 'ss',
-        issues:[]
-      },
-      {
-        id: 1,
-        name: 'ss',
-        issues:[]
-      },
-      {
-        id: 1,
-        name: 'ss',
-        issues:[]
-      },
-      {
-        id: 1,
-        name: 'ss',
-        issues:[]
-      },
-      {
-        id: 1,
-        name: 'ss',
-        issues:[]
-      },
-    ];
     axios.get('/kanban/v1/project/1/releasePlan').then(data => {
       if (data) {
         console.log('已获取story数据');
         console.log(data);
-        this.setReleasePlanData(releaseData);
+        this.setReleasePlanData(data);
         axios.get('/kanban/v1/project/1/userStoryMap').then(data => {
           if (data) {
             console.log('已获取数据');

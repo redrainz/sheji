@@ -44,14 +44,30 @@
   padding: 0;
   top:1px;
 }
-
+.sprintPlanStyle .ant-modal-header{
+  background: white !important;
+  border-bottom: none;
+}
+.sprintPlanStyle .ant-modal-title{
+  color: black !important;
+  font-size: 18px;
+}
+.sprintPlanStyle .ant-modal-content{
+  border-radius: 0;
+  width:538px;
+}
+.sprintPlanStyle .ant-modal-body{
+  padding: 25px;
+}
 .system-column-content{
   width: 100%;
   height: 4px;
   position: absolute;
   top: 0;
 }
-
+.sprintPlanStyle * {
+  border-radius: 0 !important;
+}
 /*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
 .kanban-content::-webkit-scrollbar
 {
@@ -99,4 +115,20 @@
   border-radius: 8px;
   -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
   background-color: #dedede;
+}
+/*对antd 所有select样式修改*/
+.ant-select-selection{
+  border-radius: 0 !important;
+}
+.ant-input-number{
+  border-radius: 0 !important;
+}
+.ant-input{
+  border-radius: 0 !important;
+}
+#kanbanDropdown:hover{
+  text-decoration: none;
+}
+#kanbanDropdown:visited{
+  text-decoration: none;
 }

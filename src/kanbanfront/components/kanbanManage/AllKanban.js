@@ -167,7 +167,7 @@ class AllKanban extends React.Component {
         render: (text,record) => {
           return (
             <div className="kanban-list" style={{position:'relative',}}>
-              <span style={{cursor:'pointer',color: '#3F51B5',}} onClick={this.toKanbanPage.bind(this,record.id)}>{text}</span>
+              <div style={{width:450,cursor:'pointer',color: '#3F51B5',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}} onClick={this.toKanbanPage.bind(this,record.id)}>{text}</div>
               <Input defaultValue={text} onBlur={this.handleOnBlur} onPressEnter={this.handleOnBlur}
                 data-kanbanId={record.id} style={{ position: 'absolute',left: 0, width: '60%',display:record.showInput?'inline-block':'none'}}/>
             </div>

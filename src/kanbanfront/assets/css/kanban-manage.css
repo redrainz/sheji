@@ -22,6 +22,18 @@
 .kanban-manage .searchStyle .anticon{
   margin-top:6px !important;
 }
+/*.kanban-manage .searchStyle .ant-input-affix-wrapper .ant-input:not(:first-child){*/
+  /**/
+/*}*/
+
+.kanban-manage .searchStyle .ant-input{
+  font-size: 12px;
+  padding-left: 28px;
+}
+
+.kanban-manage .ant-input-prefix{
+  bottom: 3px;
+}
 
 .kanban-manage .ant-input-search-icon{
   font-size: 14px !important;

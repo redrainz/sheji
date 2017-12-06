@@ -297,14 +297,13 @@ class ReleasePlanModel extends Component {
           className="sprintPlanStyle"
           footer={null}
         >
-          <div style={{paddingTop: "10px", paddingLeft: "10px", paddingBottom: "10px"}}>选择发布计划：
+          <div style={{ marginTop: -20, paddingBottom: "20px"}}>选择发布计划：
             <div style={{display: "inline-block"}}><Select
               // mode="multiple"
               style={{minWidth: "120px"}}
               placeholder="Please select"
               onSelect={this.setSource}
               defaultValue={this.state.kanbanInfo.releasePlanId == null ?`未选择发布计划`:this.state.kanbanInfo.releasePlanId}
-              diabled={!this.state.ifKanbanCanChangeReleasePlan }
             >
               {this.state.selectItems.length > 0 ?
                 this.state.selectItems.map((item, index) => {
@@ -314,8 +313,8 @@ class ReleasePlanModel extends Component {
               }
             </Select></div>
           </div>
-          <div style={{width:'50%',display:'inline-block'}}>分组:{this.state.releasePlanName ===''?'未选择分组':this.state.releasePlanName}</div>
-          <div style={{width:'auto',display:'inline-block',marginLeft:22}}>看板:{this.state.kanbanInfo.name}</div>
+          <div style={{width:200,display:'inline-block',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>发布计划名称:{this.state.releasePlanName ===''?'未选择分组':this.state.releasePlanName}</div>
+          <div style={{width:200,display:'inline-block',marginLeft:64,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>看板名称:{this.state.kanbanInfo.name}</div>
           <Transfer
             dataSource={this.state.storyGroup}
             titles={[[<span style={{left:-137,position:'absolute'}}>描述</span>,'优先级'],

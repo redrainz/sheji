@@ -57,7 +57,7 @@ class SprintPlanModel extends Component {
       selectedRowKeys: [],//table的选中项
       targetKeys: [],
       selectedKeys: [],
-      selectItems: [],
+      selectedTargetKeysCount: 0,
       storyGroup: [],
       cruStoryGroup: [],
       unFinishStory: [],
@@ -80,7 +80,6 @@ class SprintPlanModel extends Component {
           let unFinishStory = [];
           let storyGroup = [];
           let cruReleaseData = [];
-          let selectItems = [];
           let list = [];
           let cruReleasePlanId = sprintData.releasePlanId;
           sprintData["issue"].map((option, index) => {
@@ -114,6 +113,8 @@ class SprintPlanModel extends Component {
               }
             }
             if (option.issueType == "story" && option.status != "done") {
+              console.log(option.subIssue)
+              console.log(option.subIssue.length)
               unFinishStory.push({
                 key: option.id,
                 issueId: option.issueId,
@@ -145,7 +146,6 @@ class SprintPlanModel extends Component {
             name:sprintData.name,
             cruReleaseData:cruReleaseData,
             targetKeys: targetKeys,
-            selectItems: selectItems,
             cruStoryGroup: cruStoryGroup,
             unFinishStory: unFinishStory,
             storyGroup: storyGroup,
@@ -161,7 +161,10 @@ class SprintPlanModel extends Component {
 
   renderItem = (item) => {
     const customLabel = (
-      <div style={{display:"inline-block"}}><div style={{display:"inline-block",width:"150px"}}>{item.title}</div><div style={{display:"inline-block",marginLeft:"10px",width:"90px",textAlign:"center"}}>{item.status}</div></div>
+      <div style={{display:"inline-block"}}>
+        <div style={{display:"inline-block",width:"150px",width: '130px', whiteSpace: "nowrap", textOverflow:
+          "ellipsis", overflow: "hidden",}}>{item.title}</div>
+        <div style={{display:"inline-block",marginLeft:"10px",width:"90px",textAlign:"center"}}>{item.status}</div></div>
     );
     return {
       label: customLabel, // for displayed item
@@ -196,6 +199,7 @@ class SprintPlanModel extends Component {
               issueType: option.issueType,
               description: option.description,
               status: "sprint backlog",
+              subIssue:option.subIssue,
               kanbanId: option.kanbanId,
             })
           }
@@ -244,17 +248,22 @@ class SprintPlanModel extends Component {
   }
 
   handleSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
-    if (targetSelectedKeys.length) {
+    let count=this.state.selectedTargetKeysCount;
+    if (targetSelectedKeys.length>count) {
       let n = targetSelectedKeys.length - 1;
       this.state.unFinishStory.map((item, index) => {
+        console.log(item)
         if (targetSelectedKeys[n] == item.key) {
-          if (item.subIssue) {
+          if (item.subIssue.length) {
             this.setState({
+              selectedTargetKeysCount:targetSelectedKeys.length,
               exitTaskVisible: true,
               tempSelectedKeys: [...sourceSelectedKeys, ...targetSelectedKeys]
             })
           } else {
-            this.setState({selectedKeys: [...sourceSelectedKeys, ...targetSelectedKeys]});
+            this.setState({
+              selectedTargetKeysCount:targetSelectedKeys.length,
+              selectedKeys: [...sourceSelectedKeys, ...targetSelectedKeys]});
           }
         }
       })
@@ -310,7 +319,8 @@ class SprintPlanModel extends Component {
           this.setState({
             selectedRowKeys: [],
             unFinishStory: unFinishStory,
-            targetKeys: targetKeys
+            targetKeys: targetKeys,
+            resetStoryVisible: false
           });
         }
         else {
@@ -325,6 +335,11 @@ class SprintPlanModel extends Component {
       exitTaskVisible: true,
     });
   }
+  showResetModal=()=>{
+    this.setState({
+      resetStoryVisible: true,
+    });
+  }
   handleExitTaskOk = (e) => {
     this.setState({
       exitTaskVisible: false,
@@ -333,13 +348,12 @@ class SprintPlanModel extends Component {
   }
   handleExitTaskCancel = (e) => {
     this.setState({
+      selectedTargetKeysCount:this.state.selectedTargetKeysCount-1,
       exitTaskVisible: false,
     });
   }
   handleResetStoryOk = (e) => {
-    this.setState({
-      resetStoryVisible: false,
-    });
+    this.storyReset();
   }
   handleResetStoryCancel = (e) => {
     this.setState({
@@ -373,7 +387,7 @@ class SprintPlanModel extends Component {
               onOk={this.handleExitTaskOk}
               onCancel={this.handleExitTaskCancel}
             >
-              移动改story将会删除关联下的task
+              此用户故事已经拆分task，如果选择移入release中，拆分的task将被删除，是否继续？
             </Modal>
             <Modal
               title="重置story"
@@ -381,14 +395,18 @@ class SprintPlanModel extends Component {
               onOk={this.handleResetStoryOk}
               onCancel={this.handleResetStoryCancel}
             >
-              移动改story将会删除关联下的task
+              退回的用户故事状态重置为product backlog状态，所属子卡都将删除确认是否继续？
             </Modal>
             <Tabs defaultActiveKey="1" onChange={this.callback} animated={{inkBar: false, tabPane: true}}>
               <TabPane tab="用户故事" key="1">
                 <div>
                   <div style={{display: "inline-block",paddingBottom: "10px",width:"300px",whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
-                    发布计划：{this.state.cruReleaseData.name}</div>
-                  <div style={{display: "inline-block",marginLeft: "47px",paddingBottom: "10px",width:"300px",whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>冲刺：{this.state.name}</div>
+                    <div title={this.state.cruReleaseData.name} style={{ width: '300px', whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden",}}>发布计划：{this.state.cruReleaseData.name}</div>
+                    <div style={{transform:"scale(0.9)",color:"#a1a1a1",transformOrigin:"left",paddingTop:"7px"}}>选择添加到冲刺的用户故事，状态将会变更为Sprint backlog</div></div>
+                  <div style={{display: "inline-block",marginLeft: "47px",paddingBottom: "10px",width:"300px",whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden"}}>
+                    <div title={this.state.name} style={{ width: '300px', whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden",}}>冲刺：{this.state.name}</div>
+                    <div style={{transform:"scale(0.9)",color:"#a1a1a1",transformOrigin:"left",paddingTop:"7px"}}>选择Sprint backlog的用户故事回到发布计划，状态被重置</div>
+                  </div>
                 </div>
                 <Transfer
                   dataSource={this.state.storyGroup}
@@ -409,11 +427,11 @@ class SprintPlanModel extends Component {
                 />
               </TabPane>
               <TabPane tab="退回" key="2">
-                <div style={{display: "inline-block", paddingBottom: "5px"}}>
-                  <Popover content={"用户故事讲重置所有状态回到用户故事的图并移除相关task"}>
-                    <Button type="primary" onClick={this.storyReset}>重置用户故事</Button>
-                  </Popover>
+                <div style={{display: "inline-block", paddingBottom: "5px",width:"100%"}}>
+                  <p style={{    fontSize: "16px", display: "inline-block", verticalAlign: "top"}}>未完成的用户故事</p>
+                  <Button style={{marginRight:"10px",float:"right"}}type="primary" onClick={this.showResetModal}>退回</Button>
                 </div>
+                <div style={{transform:"scale(0.9)",color:"#a1a1a1",transformOrigin:"left",paddingBottom:"7px"}}>sprint中未完成的用户故事可以回退到release中</div>
                 <div style={{width: "100%"}}>
                   <Table rowSelection={rowSelection} columns={columns} dataSource={this.state.unFinishStory}
                          pagination={true} size="small"/>

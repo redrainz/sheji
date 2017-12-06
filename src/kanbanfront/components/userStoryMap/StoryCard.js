@@ -382,11 +382,12 @@ class StoryCard extends Component {
                 e.stopPropagation();
                 e.preventDefault();
               }}
-              onClick={this.oneClick.bind(this)}
-              onDoubleClick={this.setFocus.bind(this)}
-              onFocus={this.focus.bind(this)}
-              onBlur={this.handin.bind(this)}
-              {...(this.state.disabled ? { readOnly: 'readonly' } : '')}
+              onClick={this.openRight.bind(this)}
+              // onDoubleClick={this.setFocus.bind(this)}
+              // onFocus={this.focus.bind(this)}
+              readOnly="readonly"
+              // onBlur={this.handin.bind(this)}
+              // {...(this.state.disabled ? { readOnly: 'readonly' } : '')}
               style={{
                 ...{
                   border: 'none',
@@ -411,12 +412,12 @@ class StoryCard extends Component {
             className="hoverMenu"
             style={{ ...styles.menus, ...this.props.style }}
           >
-            <Icon
+            {/* <Icon
               className="menu"
               type="edit"
               style={styles.menuicon}
               onClick={this.openRight.bind(this)}
-            />
+            /> */}
             <Icon
               className="menu"
               type="delete"
