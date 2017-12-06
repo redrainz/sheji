@@ -1,0 +1,246 @@
+/**{*/
+  /*-webkit-user-select:none;*/
+  /*-moz-user-select:none;*/
+  /*-ms-user-select:none;*/
+/*}*/
+/*table{*/
+  /*!*-webkit-user-select:none;*!*/
+  /*!*-moz-user-select:none;*!*/
+  /*!*-ms-user-select:none;*!*/
+  /*!*user-select:none;*!*/
+  /*border-bottom:2px solid #D7D7D7;*/
+/*}*/
+.edit-content .edit-item{
+  width: 15px;
+  height: 15px;
+}
+.edit-content{
+  /*width: 100%;*/
+  height: 100%;
+  background-color: #82A6F2;
+  text-align: center;
+}
+.edit-top{
+  height: 70%;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+}
+
+.edit-top .edit-close{
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+
+.edit-bottom{
+  height: 29%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  margin: 2px;
+  align-items: flex-end;
+}
+
+.edit-kanban{
+  /*display: flex;*/
+  /*flex-flow: row nowrap;*/
+  /*justify-content: flex-start;*/
+  /*align-items: stretch;*/
+}
+.kanban-content{
+  /*display: flex;*/
+  /*flex-flow: row nowrap;*/
+  /*justify-content: flex-start;*/
+  /*align-items: stretch;*/
+  margin-left: 2px;
+}
+.edit-kanban-table td{
+  border:1px solid #bebdbd;
+  box-sizing: content-box;
+}
+
+.edit-kanban-table thead tr td{
+  /*padding-bottom: 5px;*/
+  position: relative;
+  height: 38px;
+  min-width: 163px;
+  text-align: center;
+  background-color: #39B2A9;
+  outline: none;
+  border:1px solid white;
+
+  font-family: 'Arial Normal', 'Arial';
+  color:white;
+  font-size: 12px;
+
+  text-overflow: ellipsis;
+  /*overflow: hidden;*/
+  white-space: nowrap;
+}
+
+.edit-kanban-table tbody tr td{
+  /*min-width: 163px;*/
+  height: 130px;
+  /*min-height: 500px;*/
+
+  /*background-color: white;*/
+  border:1px solid #bebdbd;
+  border-top:1px dotted #bebdbd;
+  border-bottom:1px dotted #bebdbd;
+
+  font-family: 'Arial Normal', 'Arial';
+}
+.sider-menu-content li{
+  margin-bottom: 2px;
+}
+
+.edit-kanban-table tr td i{
+  cursor: pointer;
+}
+
+.innerDiv{
+  width:163px;
+  height:100%;
+  display:inline-block;
+  box-sizing: border-box;
+  /*border-left: 1px dashed rgb(231,231,231);*/
+}
+
+/*.innerDiv:hover{*/
+  /*background-color: #FAFDFF;*/
+/*}*/
+
+tbody td .edit-tbody-td-content > .innerDiv:first-child{
+  border-left:none;
+}
+
+.system-column-content{
+  width: 100%;
+  height: 4px;
+  position: absolute;
+  top: 0;
+}
+
+/*.system-column-tbody-td{*/
+  /*border-bottom: none !important;*/
+  /*border-top: none !important;*/
+  /*background-color: #f3f3f3 !important;*/
+/*}*/
+
+.edit-tbody-td-content{
+  height:100%;
+  position: relative;
+}
+
+.selected{
+  background: #ecf6fd;
+}
+
+.edit-tbody-swimlane-name{
+  font-size: 13px;
+  width: 93%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  /*color: rgba(51, 51, 51, 0.61);*/
+  /*font-style: oblique;*/
+  position: absolute;
+  top: 18px;
+  left: 17px;
+  z-index: 991;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select: none;
+}
+.swimlane-td{
+  border:1px solid #bebdbd !important;
+}
+.edit-kanban-table table tr td i{
+  z-index: 991;
+}
+
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+.kanban-content::-webkit-scrollbar
+{
+  width: 10px;
+  height: 10px;
+  background-color: #F5F5F5;
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+.kanban-content::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  /*border-radius: 10px;*/
+  background-color: #F5F5F5;
+}
+
+/*定义滑块 内阴影+圆角*/
+.kanban-content::-webkit-scrollbar-thumb
+{
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  background-color: #dedede;
+}
+.edit-kanban-table thead{
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+}
+
+.ant-menu{
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.column-menu{
+  position: absolute;
+  width: 100%;
+  background: rgba(0,0,0,0.8);
+  z-index: 992;
+  font-size:12px;
+  color:#ffffff;
+  height: 75px;
+  bottom: -76px;
+}
+.column-menu button{
+  margin:0 12px;
+}
+#wip-save-button:hover{
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.kanban-sidermenu{
+  width:32px;
+  position: fixed;
+  z-index:992;
+}
+
+.kanban-sidermenu i{
+  font-size:20px;
+  margin: 8px 10px;
+  opacity: 0.8;
+  color: #333333;
+  cursor: pointer;
+}
+
+.kanban-sidermenu i:hover{
+  opacity: 1;
+}
+
+/*.kanban-content input{*/
+  /*background-color: white !important;*/
+/*}*/
+
+.edit-tbody-td-content input{
+  background-color: white !important;
+}
+
+.not-show{
+  border: none !important;
+  width:0;
+}

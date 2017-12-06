@@ -1,0 +1,806 @@
+html {
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+body {
+  font-size: 12px;
+  line-height: 24px;
+}
+
+// a
+a {
+  color: #49a9ee;
+  text-decoration: none;
+}
+
+a:hover {
+  color:#ff4081;
+  text-decoration: underline;
+}
+ // menu底色
+ //.ant-menu {
+ //  background-color: #000;
+ //}
+
+
+.mainContent {
+  margin-top: 15px;
+  margin-left: 15px;
+  form {
+    margin-left: 50px;
+  }
+  .ant-form-item {
+    .ant-form-item-label {
+      line-height: 24px;
+    }
+    .ant-form-item-control {
+      line-height: 25px;
+    }
+  }
+  .form-group {
+    margin-bottom: 15px;
+    label {
+      display: inline-block;
+      font-size: 14px;
+      max-width: 100%;
+      margin-bottom: 5px;
+    }
+    .form-field-suffix {
+      margin-left:10px;
+      color: #333;
+      font-size:12px;
+    }
+  }
+}
+
+// pageHeader
+.page-head {
+  width: 100%;
+  height: 48px;
+  border-bottom: 1px solid rgb(224, 224, 224);
+  margin: auto;
+  background-color:rgb(255,255,255);
+  h1 {
+    font-weight: normal;
+    float: left;
+    padding-left:20px;
+    font-size: 18px;
+    line-height: 48px;
+    display: inline;
+  }
+  .back-btn {
+    float: left;
+    color: #108ee9;
+    font-size: 20px;
+    padding: 12px 0 14px 12px;
+    width: 25px;
+    border: none !important;
+    height: 48px
+  }
+  .back-btn:hover {
+    border:none;
+  }
+  .back-btn:focus{
+    border:none;
+  }
+  .back-btn:active{
+    border:none;
+  }
+  button {
+    svg {
+      margin-left:5px !important;
+    }
+    span {
+      padding: 0;
+    }
+  }
+}
+
+.operateIcons{
+  text-align: center;
+  margin-right:18px;
+  width: 150px;
+}
+
+.small-tooltip .ant-tooltip-inner{
+  min-height:0;
+  padding:2px 4px;
+}
+.logo{
+  display: block;
+  height: 30px;
+  line-height: 30px;
+}
+.logo img{
+  float: left;
+  height: 30px;
+  line-height: 30px;
+}
+img{
+  border-style: none;
+}
+.logo span {
+  color: #0f0f0f;
+  float: left;
+  padding-left: 10px;
+  font-size: 14px;
+  height: 30px;
+  line-height: 30px;
+}
+//调form的原生样式
+.test{
+margin-bottom: 10px;
+}
+
+ .a{
+   color: #2d3740;
+   display: -webkit-box;
+   text-overflow: ellipsis;
+   -webkit-box-orient: vertical;
+   overflow: hidden;
+   -webkit-line-clamp: 1;
+ }
+ .a:hover{
+   color: #2686dc;
+   text-decoration: none;
+ }
+
+ .deployment{
+   overflow: hidden;
+   //padding-top:10px;
+   height:70px;
+   margin-top: 20px;
+   margin-bottom: 20px;
+   display: -webkit-box;
+   text-overflow: ellipsis;
+   -webkit-line-clamp: 3;
+   -webkit-box-orient: vertical;
+   font-size:12px;
+   color:#707070;
+ }
+.test11  .ant-input-group-wrapper{
+  width: 100%;
+}
+// model
+.issue {
+  width: 600px !important;
+}
+
+.ant-modal-footer button + button {
+  margin-left: 15px;
+}
+
+// Collapse
+.ant-collapse {
+  margin-top: 15px;
+}
+
+// issue
+.issue .ant-form-item{
+  margin-bottom: 10px !important;
+}
+.shouIssue .ant-form-item{
+  margin-bottom: 10px !important;
+}
+.issueM .ant-row{
+  margin-bottom: 0px !important;
+}
+.shouIssue .ant-row{
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+.createIssue .ant-row{
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+}
+.shouIssue .ant-col-12 {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  margin-bottom: -20px;
+}
+.shouIssue .spanstyle{
+  margin-right: 20px;
+  color: #000 !important;
+}
+// 修改基础配置的文字位置
+.shouIssue .ant-form-item-label{
+  text-align: left !important;
+}
+// 折叠面板样式
+.shouIssue .ant-collapse .ant-collapse-item  .ant-collapse-header{
+  background: #f7f7f7 !important;
+}
+
+.shouIssue .select-style{
+  position:absolute;
+  overflow:hidden;
+}
+.shouIssue .select-style select{
+  margin:-2px;
+}
+// 隐藏边框
+.shouIssue .ant-select-selection {
+  border: none !important;
+}
+// 鼠标放上去显示边框
+.shouIssue .ant-select-selection:hover{
+  border: 1px solid #d9d9d9 !important;
+}
+// 了隐藏select下来箭头
+.shouIssue .ant-select-arrow{
+  display: none !important;
+}
+// 显示下来箭头
+.shouIssue .ant-select-arrow:hover{
+  display: block !important;
+}
+.shouIssue .inputNum{
+  border: none !important;
+  margin-bottom: -1px;
+}
+.shouIssue .inputNum:hover{
+  border: 1px solid #d9d9d9!important;
+}
+// 时间选择框隐藏/显示边框样式
+.shouIssue .ant-calendar-picker-input{
+  border: none !important;
+}
+.shouIssue .ant-calendar-picker-input:hover{
+  border: 1px solid #d9d9d9 !important;
+}
+// 图标
+.shouIssue .ant-calendar-picker-icon{
+  display: none !important;
+}
+.shouIssue .ant-calendar-picker-icon:hover{
+  display: inline-block !important;
+}
+.shouIssue .form .ant-input-number{
+  margin-top: 0px !important;
+  margin-right: 0px !important;
+}
+.shouIssue .InputNumStyle{
+  border: none;
+}
+.shouIssue .InputNumStyle:hover{
+  border: 1px solid #d9d9d9;
+}
+.shouIssue .parentIdStyle{
+  border: none !important;
+}
+.shouIssue .parentIdStyle:hover{
+  border: 1px solid #d9d9d9 !important;
+}
+.shouIssue .ant-select-lg .ant-select-selection--single{
+  height: 28px !important;
+}
+// 故事卡片的样式
+.storyCardStyle{
+  border: 4px solid #f7f7f7;
+  borderBottom: none;
+  height: 80vh ;
+  width: 40%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 103;
+  background-color: #FFF;
+  box-shadow: 0 3px 5px rgba(0,0,0,.3);
+}
+.storyCardStyle .ant-select-lg .ant-select-selection--single{
+  height: 28px !important;
+}
+// 用户故事地图详情页面样式
+// 隐藏边框
+.storyCardStyle .ant-select-selection {
+  border: none !important;
+}
+// 时间选择框隐藏/显示边框样式
+.storyCardStyle .ant-calendar-picker-input{
+  border: none !important;
+}
+.storyCardStyle .ant-calendar-picker-input:hover{
+  border: 1px solid #d9d9d9 !important;
+}
+// 鼠标放上去显示边框
+.storyCardStyle .ant-select-selection:hover{
+  border: 1px solid #d9d9d9 !important;
+}
+// 了隐藏select下来箭头
+.storyCardStyle .ant-select-arrow{
+  display: none !important;
+}
+// 显示下来箭头
+.storyCardStyle .ant-select-arrow:hover{
+  display: block !important;
+}
+.storyCardStyle .inputNum{
+  border: none !important;
+  margin-bottom: -1px;
+}
+.storyCardStyle .inputNum:hover{
+  border: 1px solid #d9d9d9!important;
+}
+// 时间选择框隐藏/显示边框样式
+.shouIssue .ant-calendar-picker-input{
+  border: none !important;
+}
+.storyCardStyle .ant-calendar-picker-input:hover{
+  border: 1px solid #d9d9d9 !important;
+}
+// 图标
+.storyCardStyle .ant-calendar-picker-icon{
+  display: none !important;
+}
+.storyCardStyle .ant-calendar-picker-icon:hover{
+  display: inline-block !important;
+}
+.storyCardStyle .form .ant-input-number{
+  margin-top: 0px !important;
+  margin-right: 0px !important;
+}
+.storyCardStyle .InputNumStyle{
+  border: none;
+}
+.storyCardStyle .InputNumStyle:hover{
+  border: 1px solid #d9d9d9;
+}
+.storyCardStyle .parentIdStyle{
+  border: none !important;
+}
+.storyCardStyle .parentIdStyle:hover{
+  border: 1px solid #d9d9d9 !important;
+}
+.storyCardStyle .ant-select-lg .ant-select-selection--single{
+  height: 28px !important;
+}
+.storyCardStyle .ant-col-12 {
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  margin-bottom: -20px;
+}
+.shouIssue .IssueDetailStyle{
+  //border: 4px solid #f7f7f7;
+  borderBottom: none;
+  //height: 80vh ;
+  width: 40%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 103;
+  background-color: #FFF;
+  margin-top: 95px;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
+  box-shadow: 0 3px 5px rgba(0,0,0,.3);
+}
+.text-editor .CodeMirror{
+  height: 230px;
+  min-height: 230px;
+  padding: 0px !important;
+}
+.text-editor .editor-toolbar:after{
+  margin-top: 2px !important;
+}
+.text-editor .editor-toolbar:before {
+  margin-bottom: 2px !important;
+}
+.text-editor .CodeMirror-scroll{
+  min-height: 100px !important;
+}
+.text-editor .editor-statusbar{
+  padding: 0px !important;
+  display: none;
+}
+.wtest {
+  background-color: black !important;
+}
+//迭代详情页面
+.kanbanOther{
+  width: 100%;
+  min-width: 980px;
+  padding-right: 4px;
+  padding-left: 4px;
+  min-height:51rem;
+  height:100%;
+  overflow: hidden;
+}
+.kanbanOther .topStyle{
+  width: 100%;
+  height: 55px;
+  border: 1px solid #eee;
+  //border-radius: 50px;
+  margin-top: 10px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+}
+// 左边图像的样式
+.kanbanOther .leftCircle{
+  width: 45px;
+  height: 45px;
+  text-align: center;
+  margin-top: auto;
+  margin-bottom: auto;
+  background-color: #adb9ca;
+  -webkit-border-radius: 50px;
+  -moz-border-radius: 50px;
+  border-radius: 50px;
+  margin-left: 5px;
+}
+// 左边样式
+.kanbanOther .leftDivStyle{
+  flex: 3;
+  height: 132px;
+  background-color: #ffffff;
+  display: inline-block;
+  margin-right: 8px;
+  border: 1px solid #eee;
+}
+// 右边样式
+.kanbanOther .rightDivStyle{
+  flex: 1;
+  height: 132px;
+  background-color: #ffffff;
+}
+.kanbanOther .iconStyle{
+  line-height: 50px;
+  font-size: 24px;
+  margin-right: 10px;
+  margin-left: 18px;
+  vertical-align: bottom;
+}
+.kanbanOther .desStyle{
+  vertical-align: bottom;
+}
+.kanbanOther .smallFont{
+  display:block;
+  color:#999999;
+  font-size:12px;
+  transform: scale(0.8);
+  transform-origin:0 0;
+
+  -ms-transform: scale(0.8);         /* IE 9 */
+  -ms-transform-origin:0 0;       /* IE 9 */
+
+  -webkit-transform: scale(0.8); /* Safari 和 Chrome */
+  -webkit-transform-origin:0 0;   /* Safari 和 Chrome */
+
+  -moz-transform: scale(0.8);        /* Firefox */
+  -moz-transform-origin:0 0;      /* Firefox */
+
+  -o-transform: scale(0.8);      /* Opera */
+  -o-transform-origin:0 0;        /* Opera */
+}
+.kanbanOther .colStyle{
+  margin-top: 10px;
+  vertical-align: bottom;
+}
+.kanbanOther .SprintTopStyle{
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  padding: 4px;
+  height: 25px;
+}
+.kanbanOther .Sprintlog{
+  display: flex;
+  align-items: center;
+  background-color: #f4f4f4;
+  padding: 4px;
+  height: 25px;
+}
+.kanbanOther .img{
+  width: 42px;
+  height: 42px;
+  padding-right: 4px;
+  border-radius: 50%;
+}
+.kanbanOther .kanbanStyle{
+  display:flex;
+}
+.kanbanOther .kanbanLeft{
+  flex: 1;
+  background: #f4f4f4;
+  height: 40rem
+}
+.kanbanOther .kanbanRight{
+  width: 100%;
+  flex: 5;
+  background: #ffffff;
+  height: 40rem
+}
+.kanbanOther .rightTop{
+  background: #ffffff;
+  width: 100%;
+  height: 10%;
+}
+.kanbanOther .rightCont{
+  //white-space: nowrap;
+  height: 70%;
+  width: 100%;
+  overflow-y: auto;
+}
+.kanbanOther .cardStyle{
+  margin-left:5px ;
+  display: inline-block;
+}
+.kanbanOther .custom-card{
+  width:100%;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  -o-text-overflow:ellipsis;
+  overflow: hidden;
+  padding-top: 10px;
+  height:40px;
+  text-align: center;
+}
+.kanbanOther .custom-image{
+  height: 150px;
+  //border-bottom: 1px solid #dedede;
+}
+.kanbanOther .page-head{
+  border-top:1px solid #eee ;
+  background-color: #ffffff;
+  display: flex;
+}
+.sprintTable .ant-tabs-bar {
+  border-bottom: 1px solid #d9d9d9;
+   margin-bottom: 0px;
+  outline: none;
+  transition: padding 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+.sprintTable .ant-table-small {
+  border: 1px;
+  border-radius: 4px;
+}
+.kanbanOther .ant-tabs-nav-wrap {
+  background-color: #ffffff;
+  width: 100%;
+  height: 39px;
+}
+  .kanbanOther .ant-tabs-ink-bar
+  {
+    z-index: 0;
+  }
+.kanbanOther .tableTopStyle{
+  border-bottom:1px solid #eee;
+  background-color: #ffffff;
+  width: 100%;
+  height: 40px;
+}
+.kanbanOther .tableStyle{
+  background-color: #ffffff;
+  display: flex;
+  height: 80%;
+  width: 100%;
+}
+.tableStyle .ant-table-wrapper{
+  width:100%;
+}
+.kanbanOther .ant-table-thead{
+  background-color: #fff;
+}
+.kanbanOther .ant-table-thead > tr > th{
+  background-color: #fff;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.kanbanOther .ant-input-affix-wrapper{
+  width: 80%;
+}
+.kanbanOther .ant-tabs-tab{
+  display: inline-block;
+  width: 120px;
+  font-size: 12px;
+  text-align:center;
+  margin-right: 0px;
+  box-sizing: border-box;
+  position: relative;
+  padding: 8px 20px;
+  transition: color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  cursor: pointer;
+  text-decoration: none;
+}
+.kanbanOther .ant-tabs-nav .ant-tabs-tab-active{
+  background-color: #4472c4;
+  font-size: 12px;
+  width:120px;
+  height:39px;
+  position:relative;
+  text-align:center;
+  color:white;
+}
+.kanbanOther .childStyle{
+  position:absolute;
+  top:-10px;
+  left:0;
+  height:0;
+  width:0;
+  border-left:60px solid transparent;
+  border-right:60px solid transparent;
+  border-bottom:30px solid transparent;
+  border-top:60px solid #595959;
+}
+.tableTopStyle .ant-radio-button-wrapper-checked{
+  border-color: #3063cb;
+  box-shadow: -1px 0 0 0 #3063cb;
+  color: #eaf4f5;
+  background: #3063cb;
+}
+.shouIssue .aStyle a:active{
+  color: #ff4081;
+}
+
+.sprintStyle .sprintContent{
+  display: flex;
+  height: 90px;
+  border-left: none;
+  border-right: none;
+ // border-top:1px solid #e0e0e0;
+  border-bottom:1px solid #e0e0e0;  
+  margin-right: 10px;
+  margin-left: 10px;
+}
+.sprintStyle .page-head{
+  border-top:1px solid #e0e0e0;
+  display: flex;
+  border-bottom: none;
+}
+.sprintStyle .page-head h1{
+  padding-left: 0px !important; 
+}
+.sprintStyle .ant-progress-line{
+  width: 80%;
+  font-size: 12px;
+  position: relative;
+}
+.sprintStyle .ant-progress-bg{
+  height: 8px !important
+}
+.sprintStyle .small-font{
+  font-size:12px; 
+  transform: scale(0.90);
+} 
+.modalTitleStyle .ant-modal-header{
+  background: #00a8b3 !important;
+}
+.modalTitleStyle .ant-modal-title{
+  color: white !important
+}
+.modalTitleStyle .ant-input{
+  border-radius: 0px !important
+}
+.modalTitleStyle .ant-calendar-picker{
+  width: 200px !important
+}
+.endTimeStyle .ant-form-item-required{
+  margin-left: 40px !important
+}
+.endTimeStyle .ant-form-item-control-wrapper{
+  margin-left: 45px !important
+}
+.modalTitleStyle .ant-btn-primary{
+  background: #39b2a9 !important;
+  border: none
+}
+.sprintStyle .numStyle{
+  font-weight:bold !important
+}
+.sprintStyle .ant-btn:hover, .ant-btn:focus{
+  border-color:#3b78e7 !important;
+}
+.sprintStyle .ant-btn-primary{
+  border: none !important;
+}
+.sprintStyle .timeStyle{
+  display: inline-block;
+  transform: scale(0.90);
+}
+.sprintStyle .releaseStyle{
+  display: inline-block;
+  transform: scale(0.90);
+}
+.sprintStyle .desStyle{
+  display: inline-block;
+  transform: scale(0.95)
+}
+.sprintStyle .finshStyle{
+  display: inline-block;
+  transform: scale(0.95);
+  float:right;
+  margin-right:30px;
+}
+.sprintStyle .ant-btn:hover, .ant-btn:focus{
+  border-color: none;
+}
+.modalTitleStyle .onCreateStyle{
+   background: #39b2a9 !important;
+   border: none;
+   color: #fff;
+}
+.modalTitleStyle .ant-select-selection{
+  border-radius: 0;
+}
+
+// 规划迭代Model样式
+.sprintPlanStyle .ant-modal-header{
+  background: #00a8b3 !important;
+  color: #fff !important;
+}
+.sprintPlanStyle .ant-modal-title{
+  color: #fff !important;
+}
+.sprintPlanStyle .ant-transfer-list{
+  width: 222px
+}
+.searchStyle .ant-input{
+  border-radius: 0px !important;
+}
+.searchStyle .anticon{
+  margin-top: 10px;
+}
+// 迭代页面调整
+.sprintStyle .sprintContentStyle{
+  width: 99%;
+  height: 100%;
+  border: 1px solid #eff0f1;
+  z-index: 999;
+  box-shadow: 0px 2px 5px #bbb;
+ 
+}
+.sprintStyle .srollContant{
+  overflow: auto;
+  height: 31.7rem;
+}
+/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
+.sprintStyle .srollContant::-webkit-scrollbar
+{
+  width: 8px;
+  height: 8px;
+  background-color: #e2e2e2;
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+.sprintStyle .srollContant::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  /*border-radius: 10px;*/
+  background-color: #F5F5F5;
+}
+
+/*定义滑块 内阴影+圆角*/
+.sprintStyle .srollContant::-webkit-scrollbar-thumb
+{
+  border-radius: 8px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  background-color: #F5F5F5;
+}
+.sprintStyle .headerStyle{
+  display: flex;
+  border-bottom:1px solid #e0e0e0;  
+}
+.sprintStyle .headerStyle p{
+  font-size: 13px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+.sprintStyle .radioStyle .ant-radio-button-wrapper:last-child{
+  border-radius:0px !important;
+}
+.radioStyle .ant-radio-button-wrapper-checked{
+  background: #0070c0;
+  color: #fff;
+}

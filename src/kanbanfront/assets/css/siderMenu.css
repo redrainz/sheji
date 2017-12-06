@@ -1,0 +1,94 @@
+.sider-menu-content{
+  width: 186px;
+  border-right: 1px solid #E9E9E9;
+}
+
+.sider-menu-content .sider-menu-info{
+  color: rgba(0, 0, 0, 0.43);
+  font-size: 12px;
+  position: relative;
+}
+
+.sider-menu-ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+}
+
+.sider-menu-ul li a {
+  display: block;
+  color: rgba(0,0,0,.65);
+  font-size: 12px;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+.sider-menu-ul li a:hover:not(.active) {
+  color: #108ee9;
+}
+
+.sider-menu-des{
+  font-size: 12px;
+  line-height: 1.5;
+  padding:8px 16px;
+  display: inline-block;
+}
+.sider-menu-icon{
+  font-size: 15px;
+  line-height: 1.5;
+  display: inline-block;
+  position: absolute;
+  right: 16px;
+  top: 5px;
+  cursor: pointer;
+}
+
+/****************折叠模式下的SiderMenu***************/
+.sider-menu-content-collapsed{
+  width: 50px;
+  border-right: 1px solid #E9E9E9;
+}
+
+.sider-menu-content-collapsed .sider-menu-info-collapsed{
+  color: rgba(0, 0, 0, 0.43);
+  font-size: 12px;
+  position: relative;
+  display: block;
+  width: 49px;
+  height: 31px;
+  padding-bottom: 32px;
+}
+
+.sider-menu-icon-collapsed{
+  font-size: 15px;
+  line-height: 1.5;
+  display: inline-block;
+  position: absolute;
+  right: 18px;
+  top: 4px;
+  cursor: pointer;
+}
+
+.sider-menu-ul-collapsed {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  background-color: #ffffff;
+}
+
+.sider-menu-ul-collapsed li a {
+  display: block;
+  color: rgba(0,0,0,.65);
+  font-size: 12px;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+.sider-menu-ul-collapsed li a:hover:not(.active) {
+  color: #108ee9;
+}
+
+.sider-menu-ul-collapsed li{
+  height: 42px;
+}
