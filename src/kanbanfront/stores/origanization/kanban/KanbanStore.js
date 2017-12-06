@@ -2,7 +2,7 @@
 import { observable, action, computed } from 'mobx';
 import React from 'react';
 import {message} from 'antd';
-import axios from '../../../../../../../boot/src/containers/common/axios';
+import axios from 'Axios';
 
 class KanbanStore {
   @observable issue = {}

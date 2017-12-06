@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import { Table, Button, Tooltip, Icon, message, Row, Col, Form, Select, Input, Spin, Upload, DatePicker, Collapse, InputNumber } from 'antd';
 import { withRouter } from 'react-router-dom';
 import PageHeader, { PageHeadStyle } from '../../../components/common/PageHeader';
-import store from '../../../../../containers/common/store';
+import store from 'Store';
 import IssueManageStore from '../../../stores/origanization/issue/IssueManageStore';
 import SprintStore from '../../../stores/origanization/sprint/SprintStore';
 import Remove from '../../../components/common/Remove';

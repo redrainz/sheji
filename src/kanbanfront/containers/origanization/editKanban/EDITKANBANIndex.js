@@ -3,7 +3,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import asyncRouter from '../../../../../util/asyncRouter';
+import asyncRouter from 'asyncRouter';
 
 const EditKanban = asyncRouter(() => (import('./EditKanban')));
 const EDITKANBANIndex = ({ match }) => (

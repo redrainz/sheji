@@ -6,7 +6,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import asyncRouter from '../../../../../util/asyncRouter';
+import asyncRouter from 'asyncRouter';
 
 const labelManage = asyncRouter(() => (import('./LabelManage')));
 const editLabel = asyncRouter(() => (import('./EditLabel')));

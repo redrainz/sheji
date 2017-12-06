@@ -1,6 +1,6 @@
 /*eslint-disable*/
 import React from 'react';
-import axios from '../../../../../../../boot/src/containers/common/axios';
+import axios from 'Axios';
 
 class KanbanCardStore {
   /*

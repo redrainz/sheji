@@ -3,8 +3,8 @@
  */
 /*eslint-disable*/
 import { observable, action, computed } from 'mobx';
-import axios from '../../../../../../../boot/src/containers/common/axios';
-import store from '../../../../../../../boot/src/containers/common/store';
+import axios from 'Axios';
+import store from 'Store';
 
 @store('LabelManageStore')
 class LabelManageStore {

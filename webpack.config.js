@@ -15,6 +15,7 @@ module.exports = {
     alias: {
       Axios: path.resolve(__dirname, './src/axios.js'),
       Store: path.resolve(__dirname, './src/store.js'),
+      asyncRouter: path.resolve(__dirname, './src/asyncRouter.js'),
     },
   },
   module: {
@@ -29,7 +30,7 @@ module.exports = {
         loader: 'babel-loader',
       },
       {
-        test: /\.(ttf|eot|svg|woff|woff2)$/,
+        test: /\.(png|ttf|eot|svg|woff|woff2)$/,
         use: [
           {
             loader: 'file-loader',
@@ -48,7 +49,7 @@ module.exports = {
       '/kanban/*': {
         target: 'http://123.207.142.127:8378',
         changeOrigin: true,
-        pathRewrite: {"^/kanban" : ""}        
+        pathRewrite: { '^/kanban': '' },
       },
     },
   },

@@ -8,7 +8,7 @@ import {
   Route,
   Switch,
 } from 'react-router-dom';
-import asyncRouter from '../../../../../util/asyncRouter';
+import asyncRouter from 'asyncRouter';
 
 const issueManage = asyncRouter(() => (import('./IssueManage')), () => (import('../../../stores/origanization/issue/IssueManageStore')));
 const createIssue = asyncRouter(() => (import('./CreateIssuePage')), () => (import('../../../stores/origanization/issue/IssueManageStore')));
