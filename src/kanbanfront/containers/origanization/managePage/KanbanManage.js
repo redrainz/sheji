@@ -167,7 +167,7 @@ class KanbanManage extends Component {
 
     const { getFieldDecorator } = this.props.form;
     return (
-      <div className="kanban-manage" style={{marginLeft:'-1rem'}}>
+      <div className="kanban-manage">
         <Modal title="新建看板" visible={this.state.visible}
                onOk={this.handleOnOk} onCancel={this.handleOnCancel}>
           <Form onSubmit={this.handleOnOk}>

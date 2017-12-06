@@ -30,6 +30,8 @@
         "axios": "^0.17.1",
         "echarts": "^3.7.2",
         "file-loader": "^1.1.5",
+        "less": "^2.7.3",
+        "less-loader": "^4.0.5",
         "lodash": "^4.17.4",
         "marked": "^0.3.6",
         "mobx": "^3.3.0",

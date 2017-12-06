@@ -2459,7 +2459,7 @@ class EditKanban extends Component {
     let thead = tableInfo.thead;
     let tbody = tableInfo.tbody;
     return (
-      <div className="edit-kanban" style={{marginLeft:'-1rem'}}>
+      <div className="edit-kanban">
         <EditKanbanHeader kanbanName={this.state.kanbanName}
                           isCreatingSwimLane={this.state.isCreatingSwimLane}
                           handleOnAddColumn={this.handleOnAddColumn}

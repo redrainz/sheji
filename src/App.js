@@ -9,6 +9,7 @@ import {
   Link,
 } from 'react-router-dom';
 import { Menu, Icon } from 'antd';
+import './kanbanfront/assets/css/main.less';
 const SubMenu = Menu.SubMenu;
 class App extends Component {
   render() {

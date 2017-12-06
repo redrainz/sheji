@@ -138,6 +138,7 @@ div .ant-progress-inner {
 
 .sprintStyle .ant-radio-button-wrapper-checked {
     background: #5266D4;
+    color: white;
 }
 
 .sprintStyle .radioStyle .ant-radio-button-wrapper:last-child {

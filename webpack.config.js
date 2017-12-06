@@ -25,15 +25,43 @@ module.exports = {
         use: ['style-loader', 'css-loader'],
       },
       {
+        test: /\.less$/,
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+          },
+          {
+            loader: 'less-loader',
+            options: {
+              sourceMap: true,              
+            },
+          },
+        ],
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
       },
       {
-        test: /\.(png|ttf|eot|svg|woff|woff2)$/,
+        test: /\.(ttf|eot|svg|woff|woff2)$/,
         use: [
           {
             loader: 'file-loader',
+          },
+        ],
+      },
+      {
+        test: /\.(jpe?g|png|gif|svg|ico)/i,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: 'img_[hash:8].[ext]',
+            },
           },
         ],
       },

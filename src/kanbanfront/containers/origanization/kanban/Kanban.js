@@ -1269,7 +1269,7 @@ class Kanban extends Component {
     let tbody = tableInfo.tbody;
     return (
       <DragDropContext onDragEnd={this.onDragEnd} onDragStart={this.onDragStart}>
-        <div className="kanban" onClick={this.setCardsDetailUnSeen} style={{marginLeft: '-1rem'}}>
+        <div className="kanban" onClick={this.setCardsDetailUnSeen}>
           <div className="taskColumn"
                onMouseDown={this.preventTest}
                style={{
