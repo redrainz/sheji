@@ -16,8 +16,8 @@ fs.readFile(
       fs.writeFile(KANBANFRONTIndex, data, err => {
         if (err) {
           console.log(err);
-        }else{
-            console.log('替换KANBANFRONTIndex文件')
+        } else {
+          console.log('替换KANBANFRONTIndex文件');
         }
       });
     }
@@ -33,9 +33,18 @@ traversefolder(dirPath)
         if (err) {
           console.log(err);
         } else {
-          data = data.replace(/'(.*?)axios'/g, "'Axios'");
-          data = data.replace(/'(.*?)store'/g, "'Store'");
-          data = data.replace(/'(.*?)asyncRouter'/g, "'asyncRouter'");
+          data = data.replace(/'(.*?)\/axios'/g, match => {
+            console.log('替换', match, '为', "'Axios'");
+            return "'Axios'";
+          });
+          data = data.replace(/'(.*?)\/store'/g, match => {
+            console.log('替换', match, '为', "'Store'");
+            return "'Store'";
+          });
+          data = data.replace(/'(.*?)\/asyncRouter'/g, match => {
+            console.log('替换', match, '为', "'asyncRouter'");
+            return "'asyncRouter'";
+          });
           // console.log(data);
           fs.writeFile(one, data, err => {
             if (err) {
@@ -44,7 +53,6 @@ traversefolder(dirPath)
           });
         }
       });
-    });
-    console.log("替换完毕")
+    });    
   })
   .catch(e => console.error(e));
