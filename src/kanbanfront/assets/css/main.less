@@ -16,6 +16,7 @@ h6 {
 body {
   font-size: 12px;
   line-height: 24px;
+  overflow: hidden;
 }
 
 // a
@@ -33,6 +34,46 @@ a:hover {
 //  background-color: #000;
 //}
 
+/*滚动条样式*/
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-button {
+  background-color: #ff7677;
+  display: none;
+}
+
+::-webkit-scrollbar-track {
+  /*background: #FF66D5;*/
+  border-radius: 5px;
+  box-shadow: inset 0 0 5px #ddd;
+}
+
+::-webkit-scrollbar-track-piece {
+  /* display: none; */
+  /*2background: url(http://www.lyblog.net/wp/wp-content/themes/mine/img/stripes_tiny_08.png);*/
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+::-webkit-scrollbar-corner {
+  /* background: #ccc; */
+  display: none;
+}
+
+::-webkit-scrollbar-resizer {
+  background: #ff0bee;
+}
 .mainContent {
   margin-top: 15px;
   margin-left: 15px;
@@ -426,7 +467,23 @@ img {
   display: flex;
   // align-items: center;
 }
-
+.kanbanOther .ant-pagination-item {
+  border-radius: 0;
+  border: none;
+}
+.kanbanOther .ant-pagination-item-link:after {
+  font-weight: bold !important;
+}
+.kanbanOther .ant-pagination-item-link {
+  border-radius: 0;
+  border: none;
+  color: #3f51b5;
+  font-weight: bold !important;
+  background: transparent;
+}
+.kanbanOther .ant-pagination-item-active {
+  background: #3f51b5;
+}
 // 左边样式
 .kanbanOther .leftDivStyle {
   flex: 3;
@@ -544,7 +601,7 @@ img {
   display: flex;
 }
 .sprintTable .ant-tabs-bar {
-  border-bottom: 2px solid rgba(0, 0, 0, 0.26);
+  border-bottom: 3px solid rgba(0, 0, 0, 0.26);
   margin-bottom: 0px;
   outline: none;
   transition: padding 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
@@ -566,7 +623,7 @@ img {
 .kanbanOther .tableTopStyle {
   background-color: #ffffff;
   width: 100%;
-  height: 40px;
+  margin-top: 18px;
 }
 .kanbanOther .tableStyle {
   background-color: #ffffff;
@@ -594,6 +651,9 @@ img {
   // height:28px;
   width: 80%;
 }
+.kanbanOther .ant-table-small .ant-table-tbody > tr > td {
+  text-align: left;
+}
 .kanbanOther .ant-tabs-tab {
   display: inline-block;
   width: 120px;
@@ -606,16 +666,17 @@ img {
   cursor: pointer;
   text-decoration: none;
 }
-.kanbanOther .ant-table-thead > tr > th{
+.kanbanOther .ant-table-thead > tr > th {
   text-align: left;
 }
-.kanbanOther .ant-table-thead td{
+.kanbanOther .ant-table-thead td {
   text-align: left !important;
 }
 .kanbanOther .ant-tabs-tab:last-child {
   margin: 0;
 }
 .kanbanOther .ant-tabs-nav .ant-tabs-tab {
+  width: 143px;
   padding: 8px 0;
 }
 .kanbanOther .ant-tabs-nav .ant-tabs-tab:hover {
@@ -625,7 +686,6 @@ img {
   // background-color: #4472c4;
   font-size: 14px;
   color: #3f51b5;
-  width: 120px;
   height: 39px;
   position: relative;
   text-align: center;
@@ -648,10 +708,18 @@ img {
 }
 .kanbanOther .ant-input-affix-wrapper input {
   height: 28px !important;
-  transform: translateY(2px);
-  font-size: 14px;
+  font-size: 12px;
   border-radius: 0;
-  border: 1px solid rgba(0,0,0,0.26);
+  border: 1px solid rgba(0, 0, 0, 0.26);
+}
+.kanbanOther .ant-select-selection--single {
+  height: 28px !important;
+  border-radius: 0;
+  margin-right: 12px;
+}
+.kanbanOther .ant-select-open .ant-select-selection {
+  border-color: #3f51b5;
+  // box-shadow: 0 0 5px 1px #3f51b5;
 }
 .kanbanOther .childStyle {
   position: absolute;
@@ -675,10 +743,10 @@ img {
 }
 
 .modalTitleStyle .ant-modal-header {
-  background: #00a8b3 !important;
+  // background: #bdf7fa !important;
 }
 .modalTitleStyle .ant-modal-title {
-  color: white !important;
+  // color: black !important;
 }
 .modalTitleStyle .ant-input {
   border-radius: 0px !important;
@@ -693,14 +761,16 @@ img {
   margin-left: 45px !important;
 }
 .modalTitleStyle .ant-btn-primary {
-  background: #39b2a9 !important;
+  background: white !important;
+  color: #3f51b5;
   border: none;
 }
 
-.modalTitleStyle .onCreateStyle {
-  background: #39b2a9 !important;
+.modalTitleStyle .onCreateStyle,
+.modalTitleStyle .ant-btn {
+  // background: #3f51b5 !important;
   border: none;
-  color: #fff;
+  color: #3f51b5;
 }
 .modalTitleStyle .ant-select-selection {
   border-radius: 0;
@@ -708,11 +778,11 @@ img {
 
 // 规划迭代Model样式
 .sprintPlanStyle .ant-modal-header {
-  background: #00a8b3 !important;
-  color: #fff !important;
+  // background: #3f51b5 !important;
+  color: black !important;
 }
 .sprintPlanStyle .ant-modal-title {
-  color: #fff !important;
+  color: black !important;
 }
 .sprintPlanStyle .ant-transfer-list {
   width: 222px;
@@ -727,4 +797,49 @@ img {
 .radioStyle .ant-radio-button-wrapper-checked {
   background: #0070c0;
   color: #fff;
+}
+//侧边栏全局样式
+#editstory .ant-select-sm .ant-select-selection--single {
+  height: 24px;
+  line-height: 24px;
+  border-radius: 0;
+}
+// #editstory textarea.ant-input {
+//   // height: 64px !important;
+// }
+#editstory .ant-tabs-content {
+  padding-top: 10px;
+  height: 100%;
+  overflow: scroll;
+}
+#editstory .ant-tabs-bar {
+  margin-bottom: 0;
+}
+.kanbanOther #editstory .ant-tabs-nav .ant-tabs-tab {
+  width: 60px;
+}
+#editstory .ant-tabs-nav {
+  font-size: 14px;
+  margin-left: 10px;
+}
+#editstory .ant-tabs-nav .ant-tabs-tab:hover {
+  color: #3f51b5;
+}
+.sprintTable #editstory .ant-tabs-bar{
+  border-bottom: 2px solid rgba(0, 0, 0, 0.26);
+}
+.kanbanOther #editstory .ant-tabs-ink-bar {
+  height: 1px;
+}
+#editstory .ant-tabs-tab-active {
+  color: #3f51b5;
+}
+#editstory .ant-tabs-ink-bar {
+  background: #3f51b5;
+}
+#editstory .ant-select-sm .ant-select-selection__rendered{
+  line-height: 24px;
+}
+#editstory .ant-input-number-sm input{
+  height:27px;
 }

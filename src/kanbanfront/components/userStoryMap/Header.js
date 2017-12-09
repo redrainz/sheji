@@ -11,7 +11,7 @@ const styles = {
     // width: '',
     display: 'flex',
     alignItems: 'center',
-    height: '64px',
+    height: '58px',
     // padding: '10px',
     borderBottom: '1px solid #D3D3D3',
 
@@ -76,7 +76,7 @@ class Header extends Component {
         </div>
         <div
           style={{
-            margin: '0 100px',
+            margin: '0 0 0 100px',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
@@ -89,6 +89,25 @@ class Header extends Component {
             playlist_add
           </i>
           添加发布计划
+        </div>
+        <div
+          style={{
+            margin: '0 20px',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            color: '#3F51B5',
+            fontSize: '14px',
+          }}
+          onClick={() => {
+            UserStoryStore.localUserStoryData();
+            message.success('刷新成功');
+          }}
+        >
+          <i className="material-icons" style={styles.icon}>
+            refresh
+          </i>
+          刷新
         </div>
       </div>
     );

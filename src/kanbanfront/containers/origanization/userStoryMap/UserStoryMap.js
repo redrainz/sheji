@@ -195,7 +195,7 @@ class UserStoryMap extends Component {
   focus(e) {
     console.log('focus', e.target.value);
   }
-  hideright() {
+  hideright() {   
     UserStoryStore.closeright();
   }
   scroll() {
@@ -264,7 +264,7 @@ class UserStoryMap extends Component {
             style={{
               width: '100%',
               overflow: 'auto',
-              height: 'calc(100% - 97px)',
+              height: 'calc(100% - 88px)',
               backgroundColor: 'white',
             }}
             onScroll={this.scroll.bind(this)}
@@ -274,7 +274,7 @@ class UserStoryMap extends Component {
               // style={{ display: UserStoryStore.rightshow ? 'block' : 'block' }}
               onClick={e => e.stopPropagation()}
             >
-              <EditStory id={UserStoryStore.currentEditid} />
+              <EditStory id={UserStoryStore.currentEditid} hideright={this.hideright.bind(this)}/>
 
               {/*  */}
             </div>

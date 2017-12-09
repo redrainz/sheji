@@ -14,8 +14,8 @@ const newKanbanManage = asyncRouter(() => (import('./NewKanbanManage')));
 
 const KANBANMANAGEIndex = ({ match }) => (
   <Switch>
-    <Route exact path={`${match.url}`} component={kanbanManage} />
-    <Route path={`${match.url}/new`} component={newKanbanManage} />
+    <Route exact path={`${match.url}/:sprintId`} component={kanbanManage} />
+    <Route path={`${match.url}/:sprintId/new`} component={newKanbanManage} />
   </Switch>
 );
 

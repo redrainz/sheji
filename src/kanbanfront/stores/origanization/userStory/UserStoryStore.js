@@ -114,6 +114,7 @@ class UserStoryStore {
   // 加载数据
   localUserStoryData = () => {
     console.log('加载');
+    let flag=false;
     const data2 = [
       {
         id: 1,
@@ -213,12 +214,14 @@ class UserStoryStore {
           if (data) {
             console.log('已获取数据');
             console.log(data);
+            flag=true;
             this.setUserStoryData(data);
             this.getstorynum();
           }
         });
       }
     });
+    return flag;
   };
   @action
   getstorynum() {

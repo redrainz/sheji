@@ -4,78 +4,45 @@
  */
 /*eslint-disable*/
 import ReactDOM from 'react-dom';
-import React, {Component} from 'react';
-import {observer} from 'mobx-react';
-import {withRouter} from 'react-router-dom';
+import React, { Component } from 'react';
+import { observer } from 'mobx-react';
+import { withRouter } from 'react-router-dom';
 import SprintStore from '../../stores/origanization/sprint/SprintStore';
-import FontAwesome from 'react-fontawesome';
-import {
-  Select,
-  Button,
-  InputNumber,
-  Input,
-  Collapse,
-  DatePicker,
-  Form,
-  Row,
-  Col,
-  message,
-  Tag,
-  Tabs,
-} from 'antd';
+import { Select, Button, InputNumber, Input, Form, message } from 'antd';
 import IssueManageStore from '../../stores/origanization/issue/IssueManageStore';
-import UserStoryStore from '../../stores/origanization/userStory/UserStoryStore';
-import '../../assets/css/userStoryMap-card.css';
-import OneComment from '../userStoryMap/OneComment';
-import KanbanStore from '../../stores/origanization/kanban/KanbanStore'
 
 const Option = Select.Option;
 const FormItem = Form.Item;
-const Panel = Collapse.Panel;
-const {TextArea} = Input;
-const TabPane = Tabs.TabPane;
-
-const commitdata = [
-  {
-    username: '看板',
-    content: '“所属计划：”由“[空值]”改为“开发”',
-  },
-  {
-    username: '看板',
-    content: '“所属计划：”由“[空值]”改为“开发”',
-  },
-];
-const children = [];
-for (let i = 10; i < 36; i++) {
-  children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
-}
-
-function handleChange(value) {
-  console.log(`selected ${value}`);
-}
-
+const { TextArea } = Input;
+//定义状态卡片颜色
+const types = {
+  'product backlog': '#108EE9',
+  'sprint backlog': '#0C60AA',
+  'pre todo': '#523EB3',
+  todo: '#FF8040',
+  doing: '#F2B43E',
+  done: '#00A854',
+};
 const styles = {
   items: {
-    width: '50%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    // marginTop: '6px',
+    marginTop: '2px',
   },
   item: {
+    width: '65px',
+  },
+  itemContent: {
     flex: 1,
-    // marginLeft: '10px',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
   select: {
-    // width: '100px',
-    // flex: 5,
-    width: '150px',
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis",
-    overflow: "hidden",
-    paddingLeft: '-10px',
-    // padding: '0 -10px',
-    // transform: 'scaleY(0.9)',
+    width: '88%',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
 };
 const size = 'small';
@@ -86,85 +53,89 @@ class CreateCard extends Component {
     super();
     this.state = {
       storyDetailDatas: {},
-      formType:'story',
-      kanbanName:"——",
-      status:"——"
-    }
+      formType: 'story',
+      kanbanName: '-',
+      status: '-',
+    };
   }
 
-  prevent = (e) => {
+  prevent = e => {
     e.stopPropagation();
     e.preventDefault();
-  }
-  createTask = (e) => {
+  };
+  createTask = e => {
     e.preventDefault();
     // 校验表单
     this.props.form.validateFieldsAndScroll((err, data) => {
-      if(!err) {
-        console.log(data)
-        data.kanbanId=this.state.kanbanId
-        data.sprintId=this.state.sprintId
-        data.projectId="1"
-        data.status=this.state.status
-        data.parentId=this.state.parentId
-        data.issueType="task"
-        console.log(data)
+      if (!err) {
+        console.log(data);
+        data.kanbanId = this.state.kanbanId;
+        data.sprintId = this.state.sprintId;
+        data.projectId = '1';
+        data.status = this.state.status;
+        data.parentId = this.state.parentId;
+        data.issueType = 'task';
+        console.log(data);
         IssueManageStore.createIssue(data).then(data => {
           if (data) {
-                this.props.init();
-                message.success('添加成功', 1.5);
-                this.props.form.resetFields();// 清空
-                this.setState({status:"——"})
+            this.props.init();
+            message.success('添加成功', 1.5);
+            this.props.form.resetFields(); // 清空
+            this.setState({ status: '-' });
           }
-        })
+        });
       }
-  })
-  }
-  cancel=(e)=>{
+    });
+  };
+  cancel = e => {
     e.preventDefault();
     e.stopPropagation();
     SprintStore.closeCreateTaskShow();
-    this.props.form.resetFields();// 清空
-    this.setState({status:"——"})
-  }
-  selectParent=((key,option)=>{
+    this.props.form.resetFields(); // 清空
+    this.setState({ status: '-' });
+  };
+  selectParent = (key, option) => {
     let kanbanName;
-    let data=SprintStore.getSprintData;
-    data["issue"].map((item,index)=>{
-      if(item.id==key) {
+    let data = SprintStore.getSprintData;
+    data['issue'].map((item, index) => {
+      if (item.id == key) {
         let status;
-        console.log(item.status)
-        if (item.status == "sprint backlog") {
-          status = "sprint backlog"
+        console.log(item.status);
+        if (item.status == 'sprint backlog') {
+          status = 'sprint backlog';
         } else {
-          status = "pre todo"
+          status = 'pre todo';
         }
-        if(!item.kanbanName){
-          kanbanName="——"
-        }else{
-          kanbanName= item.kanbanName;
+        if (!item.kanbanName) {
+          kanbanName = '-';
+        } else {
+          kanbanName = item.kanbanName;
         }
         this.setState({
           kanbanName: kanbanName,
           status: status,
           kanbanId: item.kanbanId,
           sprintId: item.sprintId,
-          parentId:key
-        })
+          parentId: key,
+        });
       }
-    })
-  })
+    });
+  };
   render() {
-    let data=SprintStore.getSprintData;
-    const name=data["name"]
-    let items=[];
-    console.log(data)
-    data["issue"].map((item,index)=>{
-      if(item["issueType"]=="story"){
-        items.push(<Option key={item.id} value={`${item.id}`}>{item.description}</Option>)
-    }
-    })
-    const {getFieldDecorator} = this.props.form;
+    let data = SprintStore.getSprintData;
+    const name = data['name'];
+    let items = [];
+    console.log(data);
+    data['issue'].map((item, index) => {
+      if (item['issueType'] == 'story') {
+        items.push(
+          <Option key={item.id} value={`${item.id}`}>
+            {item.description}
+          </Option>,
+        );
+      }
+    });
+    const { getFieldDecorator } = this.props.form;
 
     return (
       <div
@@ -173,303 +144,258 @@ class CreateCard extends Component {
           bottom: 0,
           right: 0,
           zIndex: 500,
-          width: '448px',
-          background: '#fafafa',
+          width: '440px',
+          background: 'white',
           borderLeft: '1px solid #ddd',
           height: 'calc(100% - 48px)',
+          display: 'flex',
+          flexDirection: 'column',
         }}
         onClick={this.prevent}
+        id="editstory"
       >
+        {/* 侧边栏的header */}
         <div
           style={{
-            width: '100%',
-            height: 'calc(100% - 70px)',
-            overflowY: 'auto',
-            overflowX: 'hidden',
+            padding: '10px 10px',
+            height: '57px',
+            fontSize: '18px',
+            display: 'flex',
+            alignItems: 'center',
+            borderBottom: '1px solid #ddd',
           }}
         >
-          <div
+          <span style={{ margin: '0 0 0 10px' }}>添加Task</span>
+          <span
             style={{
-              padding: '10px 20px',
-              fontSize: '14px',
-              borderBottom: '1px solid #ddd',
+              color: '#3f51b5',
+              fontSize: '13px',
+              marginLeft: '114px',
+              cursor: 'pointer',
             }}
+            onClick={this.props.hideRight}
           >
-            添加Task
-            <Button type="primary" size = 'small' htmlType="submit" onClick={this.createTask} style={{position:'absolute',right:78}}>确定</Button>
-            <Button size='small' htmlType="reset" style={{position:'absolute',right:23}} onClick={this.cancel} >取消</Button>
-          </div>
+            隐藏信息面板
+          </span>
+        </div>
+        <div
+          style={{
+            padding: '0 24px 10px 24px',
+            flex: 1,
+            overflow: 'hidden',
+            overflowY: 'auto',
+          }}
+        >
           <Form>
-            <div
-              style={{
-                display: 'inline',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                position: 'relative',
-                top: 5,
-                ...{width: '100%'},
-              }}
-            >
-              <div style={{
-                display: 'inline',
-                marginLeft: 26,
-                width: 41,
-                bottom: -16,
-                position: 'relative'
-              }}>描述：
-              </div>
-              <FormItem style={{marginBottom:'none'}}>
-                {getFieldDecorator('description',{
-                  rules: [{ required: true, message: '请输入描述!' },],
-                })
-                (<TextArea
+            <div style={{ marginTop: '10px' }}>描述：</div>
+            <FormItem>
+              {getFieldDecorator('description', {
+                rules: [{ required: true, message: '请输入描述!' }],
+              })(
+                <TextArea
                   style={{
-                    width: '74%',
+                    width: '88%',
                     resize: 'none',
-                    position:'relative',
-                    bottom:5,
-                    left:77
+                    borderRadius: 0,
                   }}
                   // ref={instance => {
                   //   this.getTextArea(instance, 'description');
                   // }}
                   placeholder="请输入描述"
-                  autosize={{minRows: 2, maxRows: 10}}
+                  autosize={{ minRows: 3, maxRows: 10 }}
                   onPressEnter={value => {
                     this.ChangeIssue(value, 'description');
                   }}
-                />)}
-              </FormItem>
-            </div>
-            <div style={{margin: '-10px 10px 0 10px'}}>
-              <Collapse bordered={false} defaultActiveKey={['1', '2']}>
-                <Panel
-                  header="基本信息"
-                  key="1"
-                  style={{background: '#fafafa'}}
-                >
-                  <div
+                />,
+              )}
+            </FormItem>
+            <div style={{ marginTop: '10px' }}>内容：</div>
+            <FormItem>
+              {getFieldDecorator('content')(
+                <TextArea
+                  style={{
+                    width: '88%',
+                    resize: 'none',
+                    borderRadius: 0,
+                  }}
+                  placeholder="请输入描述"
+                  autosize={{ minRows: 3, maxRows: 10 }}
+                />,
+              )}
+            </FormItem>
+            <div style={styles.items}>
+              <div style={styles.item}>状态：</div>
+              <div title={this.state.status} style={styles.itemContent}>
+                {this.state.status != '-' ? (
+                  <span
                     style={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      flexFlow: 'row wrap',
+                      padding: '2px 5px',
+                      color: 'white',
+                      borderRadius: '8px',
+                      background: types[this.state.status],
                     }}
                   >
-                    <div style={styles.items}>
-                      <div style={styles.item}>状态：</div>
-                      <div title={this.state.status} style={styles.select}>
-                        <div style={styles.select}>
-                          {this.state.status!="——"?
-                            <div
-                                 style={{ backgroundColor:"#108ee9", borderRadius:"8px",display:"inline-block"}}>
-                              {this.state.status}
-                            </div>
-                            :<div style={{display:"inline-block" }}>
-                              {this.state.status}
-                            </div>
-                          }
-                        </div>
-                      </div>
-                    </div>
-                    <div style={styles.items}>
-                      {/*<div style={styles.item}>负责人：</div>*/}
-                      <FormItem label='负责人' style={{display:'inherit',marginBottom:0}}>
-                        {getFieldDecorator('acception')
-                        (<Select
-                          size={size}
-                          disabled={false}
-                          style={{top:5,marginLeft:27,width:104}}
-                        >
-                          <Option value="陈造龙">陈造龙</Option>
-                          <Option value="钱秋梅">钱秋梅</Option>
-                          <Option value="张宇">张宇</Option>
-                          <Option value="陈真">陈真</Option>
-                          <Option value="柯希权">柯希权</Option>
-                          <Option value="PO">PO</Option>
-                        </Select>)}
-                      </FormItem>
-                    </div>
-                    <div style={styles.items}>
-                      <div style={styles.item}>迭代：</div>
-                      <div title={name} style={styles.select}>
-                        {name?name:"——"}
-                      </div>
-                    </div>
-                    <div style={styles.items}>
-                      {/*<div style={styles.item}>优先级：</div>*/}
-                      <FormItem label='优先级' style={{display:'inherit',marginBottom:0}}>
-                        {getFieldDecorator('issuePriority')
-                        (<Select
-                          size={size}
-                          style={{top:5,marginLeft:27,width:104}}
-                        >
-                          <Option value="1">
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                              }}
-                            >
-                              <i
-                                className="material-icons"
-                                style={{
-                                  color: '#5095fe',
-                                  fontSize: '9px',
-                                  marginRight: '3px',
-                                }}
-                              >
-                                panorama_fish_eye
-                              </i>
-                              低
-                            </div>
-                          </Option>
-                          <Option value="2">
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                              }}
-                            >
-                              <i
-                                className="material-icons"
-                                style={{
-                                  color: '#ff9f11',
-                                  fontSize: '9px',
-                                  marginRight: '3px',
-                                }}
-                              >
-                                panorama_fish_eye
-                              </i>
-                              中
-                            </div>
-                          </Option>
-                          <Option value="3">
-                            <div
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                              }}
-                            >
-                              <i
-                                className="material-icons"
-                                style={{
-                                  color: '#fe5050',
-                                  fontSize: '9px',
-                                  marginRight: '3px',
-                                }}
-                              >
-                                panorama_fish_eye
-                              </i>
-                              高
-                            </div>
-                          </Option>
-                        </Select>)}
-                      </FormItem>
-                    </div>
-                    <div style={styles.items}>
-                      <div style={styles.item}>看板：</div>
-                      <div title={this.state.kanbanName} style={styles.select}>
-                        {this.state.kanbanName}
-                      </div>
-                    </div>
-                    <div style={styles.items}>
-                      {/*<div style={styles.item}>故事点：</div>*/}
-                      <FormItem label='工作量' style={{display:'inherit',marginBottom:0}}>
-                        {getFieldDecorator('workload')
-                        (<InputNumber
-                          size={size}
-                          style={{marginLeft:27,width:104}}
-                        />)}
-                      </FormItem>
-                    </div>
-                    <div style={{ width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',}}>
-                      <FormItem label='父级需求' style={{display:'inherit',marginBottom:0}}>
-                        {getFieldDecorator('parentId',{
-                          rules: [{ required: true, message: '父级为必选项!' },],
-                        })
-                        (<Select
-                          size={size}
-                          style={{top:5,marginLeft:4,width:110,marginRight:7}}
-                          onSelect={this.selectParent}
-                          >
-                          {items}
-                        </Select>)}
-                         </FormItem>
-                      <div style={{transform:"scale(0.8)",transformOrigin:"left"}}>选择父级需求，任务状态会随其改变</div>
-                    </div>
-                    {/*<div style={styles.items}>*/}
-                      {/*/!*<div style={styles.item}>需求来源：</div>*!/*/}
-                      {/*<FormItem label='需求来源' style={{display:'inherit',marginBottom:0}}>*/}
-                        {/*{getFieldDecorator('demandSource')*/}
-                        {/*(<Select*/}
-                          {/*size={size}*/}
-                          {/*style={{top:5,marginLeft:15,width:104}}*/}
+                    {this.state.status}
+                  </span>
+                ) : (
+                  <div style={{ display: 'inline-block' }}>
+                    {this.state.status}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div style={styles.items}>
+              <div style={styles.item}>迭代：</div>
+              <div title={name} style={styles.itemContent}>
+                {name ? name : '-'}
+              </div>
+            </div>
+            <div style={styles.items}>
+              <div style={styles.item}>看板：</div>
+              <div title={this.state.kanbanName} style={styles.itemContent}>
+                {this.state.kanbanName}
+              </div>
+            </div>
 
-                        {/*>*/}
-                          {/*<Option value="1">客户</Option>*/}
-                          {/*<Option value="2">用户</Option>*/}
-                          {/*<Option value="3">产品经理</Option>*/}
-                          {/*<Option value="4">市场</Option>*/}
-                          {/*<Option value="5">客服</Option>*/}
-                          {/*<Option value="6">竞争对手</Option>*/}
-                          {/*<Option value="7">开发人员</Option>*/}
-                          {/*<Option value="8">测试人员</Option>*/}
-                          {/*<Option value="9">bug</Option>*/}
-                          {/*<Option value="10">其他</Option>*/}
-                        {/*</Select>)}*/}
-                      {/*</FormItem>*/}
-                    {/*</div>*/}
-                    {/*<div style={styles.items}>*/}
-                      {/*/!*<div style={styles.item}>需求类型：</div>*!/*/}
-                      {/*<FormItem label='需求类型' style={{display:'inherit',marginBottom:0}}>*/}
-                        {/*{getFieldDecorator('demandType')*/}
-                        {/*(<Select*/}
-                          {/*size={size}*/}
-                          {/*style={{top:5,marginLeft:15,width:104}}*/}
-                          {/*labelInValue*/}
-                        {/*>*/}
-                          {/*<Option value="1">新需求</Option>*/}
-                          {/*<Option value="2">变更</Option>*/}
-                        {/*</Select>)}*/}
-                      {/*</FormItem>*/}
-                    {/*</div>*/}
+            <div style={{ marginTop: '15px' }}>负责人：</div>
+            <FormItem>
+              {getFieldDecorator('acception')(
+                <Select size={size} disabled={false} style={styles.select}>
+                  <Option value="陈造龙">陈造龙</Option>
+                  <Option value="钱秋梅">钱秋梅</Option>
+                  <Option value="张宇">张宇</Option>
+                  <Option value="陈真">陈真</Option>
+                  <Option value="柯希权">柯希权</Option>
+                  <Option value="PO">PO</Option>
+                </Select>,
+              )}
+            </FormItem>
+
+            <div style={{ marginTop: '15px' }}>优先级：</div>
+            <FormItem>
+              {getFieldDecorator('issuePriority')(
+                <Select size={size} style={styles.select}>
+                  <Option value="1">
                     <div
                       style={{
-                        ...styles.items,
-                        ...{width: '100%'},
+                        display: 'flex',
+                        alignItems: 'center',
                       }}
                     >
-                      <FormItem label='标签' style={{display:'inherit',marginBottom:0}}>
-                        {getFieldDecorator('labels')
-                        (<Select
-                          size={size}
-                          mode="multiple"
-                          style={{top:5,marginLeft:38,width:298}}
-                          placeholder="请选择标签"
-                        >
-                          {children}
-                        </Select>)}
-                      </FormItem>
+                      <div
+                        style={{
+                          width: '10px',
+                          height: '10px',
+                          marginRight: '8px',
+                          borderRadius: '50%',
+                          background: '#5095fe',
+                        }}
+                      />
+                      低
                     </div>
-                  </div>
-                </Panel>
-                <Panel header="内容" key="2" style={{background: '#fafafa'}}>
-                  <FormItem  style={{marginBottom:'none'}}>
-                    {getFieldDecorator('content')
-                    (<TextArea
-                      style={{margin: '10px', width: '94%', resize: 'none'}}
-                      placeholder="请输入描述"
-                      autosize={{minRows: 2, maxRows: 10}}
-                    />)}
-                  </FormItem>
-                </Panel>
-              </Collapse>
+                  </Option>
+                  <Option value="2">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '10px',
+                          height: '10px',
+                          marginRight: '8px',
+                          borderRadius: '50%',
+                          background: '#f9d252',
+                        }}
+                      />
+                      中
+                    </div>
+                  </Option>
+                  <Option value="3">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '10px',
+                          height: '10px',
+                          marginRight: '8px',
+                          borderRadius: '50%',
+                          background: '#fe5050',
+                        }}
+                      />
+                      高
+                    </div>
+                  </Option>
+                </Select>,
+              )}
+            </FormItem>
+
+            <div style={styles.item}>工作量：</div>
+            <FormItem>
+              {getFieldDecorator('workload')(
+                <div style={{ ...styles.select, ...{ paddingRight: '12px' } }}>
+                  <InputNumber
+                    min={1}
+                    size={size}
+                    style={{
+                      ...styles.select,
+                      ...{ borderRadius: 0, height: '27px', marginTop: '1px' },
+                    }}
+                  />
+                </div>,
+              )}
+            </FormItem>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              父级需求<i
+                title="选择父级需求，任务状态会随其改变"
+                className="material-icons"
+                style={{
+                  marginLeft: '5px',
+                  fontSize: '14px',
+                  color: 'gray',
+                  cursor: 'pointer',
+                }}
+              >
+                error_outline
+              </i>
             </div>
+            <FormItem>
+              {getFieldDecorator('parentId', {
+                rules: [{ required: true, message: '父级为必选项!' }],
+              })(
+                <Select
+                  size={size}
+                  style={styles.select}
+                  onSelect={this.selectParent}
+                >
+                  {items}
+                </Select>,
+              )}
+            </FormItem>
           </Form>
+          <div style={{ marginTop: '30px', marginLeft: 'calc(100% - 100px)' }}>
+            <Button
+              type="primary"
+              style={{ background: 'white', color: '#3f51b5', border: 'none' }}
+              htmlType="submit"
+              onClick={this.createTask}
+            >
+              确定
+            </Button>
+            <Button
+              style={{ background: 'white', color: '#3f51b5', border: 'none' }}
+              htmlType="reset"
+              onClick={this.cancel}
+            >
+              取消
+            </Button>
+          </div>
         </div>
       </div>
     );

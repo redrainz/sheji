@@ -12,6 +12,7 @@ const styles = {
     cursor: 'move',
   },
   content: {
+    cursor: 'pointer',
     maxHeight: '100%',
     overflow: 'hidden',
     color: '#333',
@@ -397,6 +398,7 @@ class StoryCard extends Component {
                   resize: 'none',
                   lineHeight: '15px',
                   overflow: 'hidden',
+                  cursor: 'pointer',
                 },
                 ...this.props.style,
               }}

@@ -7,68 +7,51 @@ import ReactDOM from 'react-dom';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter } from 'react-router-dom';
-import SprintStore from '../../stores/origanization/sprint/SprintStore';
 import {
   Select,
   Button,
   InputNumber,
   Input,
-  Collapse,
-  DatePicker,
-  Form,
-  Row,
-  Col,
   message,
   Tag,
   Tabs,
+  Icon,
 } from 'antd';
-import OneComment from '../userStoryMap/OneComment';
+
+import SprintStore from '../../stores/origanization/sprint/SprintStore';
+
 const Option = Select.Option;
-const FormItem = Form.Item;
-const Panel = Collapse.Panel;
 const { TextArea } = Input;
 const TabPane = Tabs.TabPane;
-
-const commitdata = [
-  {
-    username: '看板',
-    content: '“所属计划：”由“[空值]”改为“开发”',
-  },
-  {
-    username: '看板',
-    content: '“所属计划：”由“[空值]”改为“开发”',
-  },
-];
-const children = [];
-for (let i = 10; i < 36; i++) {
-  children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
-}
-
-function handleChange(value) {
-  console.log(`selected ${value}`);
-}
+//定义状态卡片颜色
+const types = {
+  'product backlog': '#108EE9',
+  'sprint backlog': '#0C60AA',
+  'pre todo': '#523EB3',
+  todo: '#FF8040',
+  doing: '#F2B43E',
+  done: '#00A854',
+};
 const styles = {
   items: {
-    width: '50%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: '6px',
+    marginTop: '2px',
   },
   item: {
+    width: '65px',
+  },
+  itemContent: {
     flex: 1,
-    marginLeft: '10px',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
   select: {
-    // width: '100px',
-    // flex: 5,
-    whiteSpace: "nowrap",
-    textOverflow: "ellipsis",
-    overflow: "hidden",
-    width: '104px'
-    // marginLeft: '-10px',
-    // padding: '0 -10px',
-    // transform: 'scaleY(0.9)',
+    width: '100%',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
 };
 const size = 'small';
@@ -76,8 +59,13 @@ const size = 'small';
 class EditDetail extends Component {
   constructor() {
     super();
+    this.state = {
+      show: false,
+      topshow: false,
+    };
   }
 
+  //textarea的enter事件
   ChangeIssue = (e, type) => {
     let data = {};
     let va = e.target.value;
@@ -101,7 +89,7 @@ class EditDetail extends Component {
   getTextArea = (instance, type) => {
     if (instance) {
       this[type] = instance;
-      console.log(this[type]);
+      // console.log(this[type]);
     }
   };
   //当数据存在store里时，可以根据store数据来动态更改textarea里的值
@@ -135,249 +123,310 @@ class EditDetail extends Component {
         console.log(error);
       });
   };
+  // saveRef(instance, type) {
+  //   if (instance) {
+  //     this[type] = instance;
+  //     ReactDOM.findDOMNode(this[type]).value = '2';
+  //     console.log(this[type]);
+  //   }
+  // }
   render() {
-    const { getFieldDecorator } = this.props.form;
-    const currentEditData=SprintStore.getCurrentEditData;
-    const sprintData=SprintStore.getSprintData;
-    const sprintName=sprintData["name"];
-    console.log("1"+currentEditData)
-    const formItemLayout = {
-      labelCol: { span: 10 },
-      wrapperCol: { span: 14 },
-    };
+    // console.log({ ...currentEditData });
+    const currentEditData = SprintStore.getCurrentEditData;
+    const sprintData = SprintStore.getSprintData;
+    const sprintName = sprintData['name'];
+    console.log({ ...currentEditData });
     return (
+      //总容器
       <div
         style={{
           position: 'fixed',
           bottom: 0,
           right: 0,
           zIndex: 500,
-          width: '448px',
-          background: '#fafafa',
+          width: '440px',
+          background: 'white',
           borderLeft: '1px solid #ddd',
           height: 'calc(100% - 48px)',
+          display: 'flex',
+          flexDirection: 'column',
         }}
+        id="editstory"
       >
+        {/* 侧边栏的header */}
         <div
           style={{
-            width: '100%',
-            height: 'calc(100% - 70px)',
-            overflowY: 'auto',
-            overflowX: 'hidden',
+            padding: '10px 10px',
+            height: '57px',
+            fontSize: '18px',
+            display: 'flex',
+            alignItems: 'center',
+            borderBottom: '1px solid #ddd',
           }}
         >
-          <div
+          <span style={{ margin: '0 0 0 10px' }}>
+            #{currentEditData.issueId}
+          </span>
+          <span
             style={{
-              padding: '10px 20px',
-              fontSize: '14px',
-              borderBottom: '1px solid #ddd',
+              margin: '0 0 0 10px',
             }}
           >
-            基本信息
-          </div>
-
-          <TextArea
+            [{currentEditData.issueType}]
+          </span>
+          <span style={{ margin: '0 0 0 10px' }}>基本信息</span>
+          <span
             style={{
-              margin: '20px 20px 10px 20px',
-              width: '90%',
-              resize: 'none',
+              color: '#3f51b5',
+              fontSize: '13px',
+              marginLeft: '114px',
+              cursor: 'pointer',
             }}
-            ref={instance => {
-              this.getTextArea(instance, 'description');
-            }}
-            placeholder="请输入描述"
-             defaultValue={currentEditData.description}
-            autosize={{ minRows: 2, maxRows: 10 }}
-            onBlur={value => {
-              this.ChangeIssue(value, 'description');
-            }}
-          />
-          <p>
-            <span style={{ margin: '5px 20px' }}>
-              宝洁创建于:{currentEditData.creationDate}
-            </span>
-          </p>
-
-          <div style={{ margin: '-10px 10px 0 10px' }}>
-            <Collapse bordered={false} defaultActiveKey={['1', '2', '3']}>
-              <Panel
-                header="基本信息"
-                key="1"
-                style={{ background: '#fafafa' }}
+            onClick={this.props.hideRight}
+          >
+            隐藏信息面板
+          </span>
+        </div>
+        {/* header下面的tab页 */}
+        <Tabs style={{ flex: 1 }}>
+          {/* 第一个tab页 */}
+          <TabPane
+            tab={<span style={{ fontSize: '12px' }}>基本信息</span>}
+            key="1"
+          >
+            <div
+              style={{
+                margin: '0 24px 10px 24px',
+                height: '100%',
+                marginBottom: '100px',
+              }}
+            >
+              <div>描述</div>
+              <TextArea
+                style={{
+                  resize: 'none',
+                  borderRadius: 0,
+                }}
+                ref={instance => {
+                  this.getTextArea(instance, 'description');
+                }}
+                placeholder="请输入描述"
+                defaultValue={currentEditData.description}
+                autosize={{ minRows: 3, maxRows: 10 }}
+                onFocus={() => {
+                  this.setState({ topshow: true });
+                }}
+                onBlur={e => {
+                  this.ChangeIssue(e, 'description');
+                }}
+              />
+              <div style={{ marginTop: '10px' }}>内容</div>
+              <TextArea
+                style={{
+                  resize: 'none',
+                  borderRadius: 0,
+                }}
+                ref={instance => {
+                  this.getTextArea(instance, 'content');
+                }}
+                placeholder="请输入详细描述"
+                defaultValue={currentEditData.content}
+                autosize={{ minRows: 3, maxRows: 10 }}
+                onFocus={() => {
+                  this.setState({ show: true });
+                }}
+                onBlur={e => {
+                  this.ChangeIssue(e, 'content');
+                }}
+              />
+              {/* 下面信息展示以及修改区域容器 */}
+              <div
+                style={{
+                  width: '100%',
+                  marginTop: '20px',
+                  padding: '2px 21px 10px 21px',
+                  boxShadow: '0 1px 3px 0 rgba(0,0,0,0.20)',
+                }}
               >
-                <div
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexFlow: 'row wrap',
+                <div style={styles.items}>
+                  <div style={styles.item}>状态：</div>
+                  <div style={styles.itemContent}>
+                    <span
+                      style={{
+                        padding: '2px 5px',
+                        color: 'white',
+                        borderRadius: '8px',
+                        background: types[currentEditData.status],
+                      }}
+                    >
+                      {currentEditData.status}
+                    </span>
+                  </div>
+                </div>
+                <div style={styles.items}>
+                  <div style={styles.item}>父级需求：</div>
+                  <div
+                    style={styles.itemContent}
+                    title={SprintStore.parentName}
+                  >
+                    {'#' + currentEditData.parentId + ' '}
+                    {SprintStore.parentName}
+                  </div>
+                </div>
+                <div style={styles.items}>
+                  <div style={styles.item}>负责人：</div>
+                  <div style={styles.itemContent}>{'-'}</div>
+                </div>
+                <div style={styles.items}>
+                  <div style={styles.item}>冲刺：</div>
+                  <div
+                    style={styles.itemContent}
+                    title={
+                      currentEditData.sprintName == null
+                        ? '-'
+                        : currentEditData.sprintName
+                    }
+                  >
+                    {currentEditData.sprintName == null
+                      ? '-'
+                      : currentEditData.sprintName}
+                  </div>
+                </div>
+
+                <div style={styles.items}>
+                  <div style={styles.item}>看板：</div>
+                  <div
+                    style={styles.itemContent}
+                    title={
+                      currentEditData.kanbanName == null
+                        ? '-'
+                        : currentEditData.kanbanName
+                    }
+                  >
+                    {currentEditData.kanbanName == null
+                      ? '-'
+                      : currentEditData.kanbanName}
+                  </div>
+                </div>
+                
+                <div style={{ marginTop: '15px' }}>
+                  {SprintStore.taskType ? '工作量：' : '故事点：'}
+                </div>
+                <div style={{ ...styles.select, ...{ paddingRight: '12px' } }}>
+                  <InputNumber
+                    min={1}
+                    size={size}
+                    style={{
+                      ...styles.select,
+                      ...{ borderRadius: 0, height: '27px' },
+                    }}
+                    value={
+                      SprintStore.taskType
+                        ? currentEditData.workload
+                        : currentEditData.storyPoint
+                    }
+                    //数据更改事件
+                    onChange={value => {
+                      this.onSelectChange(value, {
+                        type: SprintStore.taskType ? 'workload' : 'storyPoint',
+                      });
+                    }}
+                  />
+                </div>
+                <div style={{ marginTop: '15px' }}>优先级</div>
+                <Select
+                  getPopupContainer={() => document.getElementById('editstory')}
+                  size={size}
+                  style={styles.select}
+                  value={
+                    currentEditData.issuePriority != null
+                      ? currentEditData.issuePriority
+                      : '1'
+                  }
+                  onChange={value => {
+                    this.onSelectChange(value, {
+                      type: 'issuePriority',
+                    });
                   }}
                 >
-                  <div style={styles.items}>
-                    <div style={styles.item}>状态：</div>
-                    <div style={styles.select}>
-                      <Tag color="#108ee9" style={{ color: 'white' }}>
-                        {currentEditData.status}
-                      </Tag>
-                    </div>
-                  </div>
-                  <div style={styles.items}>
-                    <div style={styles.item}>负责人：</div>
-                    <Select
-                      size={size}
-                      disabled={true}
-                      onChange={value => {
-                        // this.onSelectChange(value, { type: 'assign' });
-                      }}
-                      style={styles.select}
-                    >
-                      <Option value="ma">陈造龙</Option>
-                      <Option value="aa">钱秋梅</Option>
-                      <Option value="3">张宇</Option>
-                      <Option value="4">陈真</Option>
-                      <Option value="5">柯希权</Option>
-                      <Option value="6">PO</Option>
-                    </Select>
-                  </div>
-                  <div style={styles.items}>
-                    <div style={styles.item}>迭代：</div>
-                    <div title={sprintName} style={styles.select}>
-                      {sprintName == null
-                        ? '——'
-                        : sprintName}
-                    </div>
-                  </div>
-                  <div style={styles.items}>
-                    <div style={styles.item}>优先级：</div>
-                    <Select
-                      size={size}
-                      style={styles.select}
-                      value={
-                        currentEditData.issuePriority != null
-                          ? currentEditData.issuePriority
-                          : ""
-                      }
-                      onChange={value => {
-                        this.onSelectChange(value, { type: 'issuePriority' });
+                  <Option value="1">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
                       }}
                     >
-                      <Option value="1">
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <i
-                            className="material-icons"
-                            style={{
-                              color: '#5095fe',
-                              fontSize: '9px',
-                              marginRight: '3px',
-                            }}
-                          >
-                            panorama_fish_eye
-                          </i>
-                          低
-                        </div>
-                      </Option>
-                      <Option value="2">
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <i
-                            className="material-icons"
-                            style={{
-                              color: '#ff9f11',
-                              fontSize: '9px',
-                              marginRight: '3px',
-                            }}
-                          >
-                            panorama_fish_eye
-                          </i>
-                          中
-                        </div>
-                      </Option>
-                      <Option value="3">
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <i
-                            className="material-icons"
-                            style={{
-                              color: '#fe5050',
-                              fontSize: '9px',
-                              marginRight: '3px',
-                            }}
-                          >
-                            panorama_fish_eye
-                          </i>
-                          高
-                        </div>
-                      </Option>
-                    </Select>
-                  </div>
-                  <div style={styles.items}>
-                    <div style={styles.item}>看板：</div>
-                    <div title={currentEditData.kanbanName} style={styles.select}>
-                      {currentEditData.kanbanName == null
-                        ? '——'
-                        : currentEditData.kanbanName}
+                      <div
+                        style={{
+                          width: '10px',
+                          height: '10px',
+                          marginRight: '8px',
+                          borderRadius: '50%',
+                          background: '#5095fe',
+                        }}
+                      />
+                      低
                     </div>
-                  </div>
-                  {SprintStore.taskType?
-                    <div style={styles.items}>
-                    <div style={styles.item}>工作量：</div>
-                    <InputNumber
-                      size={size}
-                      style={styles.select}
-                      value={
-                        currentEditData.workload != null
-                          ? currentEditData.workload
-                          : ""
-                      }
-                      //数据更改事件
-                      onChange={value => {
-                        this.onSelectChange(value, { type: 'workload' });
+                  </Option>
+                  <Option value="2">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
                       }}
-                    />
-                    </div>: <div style={styles.items}>
-                    <div style={styles.item}>故事点：</div>
-                    <InputNumber
-                      size={size}
-                      style={styles.select}
-                      value={
-                        currentEditData.storyPoint != null
-                          ? currentEditData.storyPoint
-                          : ""
-                      }
-                      //数据更改事件
-                      onChange={value => {
-                        this.onSelectChange(value, { type: 'storyPoint' });
+                    >
+                      <div
+                        style={{
+                          width: '10px',
+                          height: '10px',
+                          marginRight: '8px',
+                          borderRadius: '50%',
+                          background: '#f9d252',
+                        }}
+                      />
+                      中
+                    </div>
+                  </Option>
+                  <Option value="3">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
                       }}
-                    />
-                  </div>}
-                  {SprintStore.taskType?
-                    <div style={styles.items}>
-                    <div style={styles.item}>需求来源：</div>
+                    >
+                      <div
+                        style={{
+                          width: '10px',
+                          height: '10px',
+                          marginRight: '8px',
+                          borderRadius: '50%',
+                          background: '#fe5050',
+                        }}
+                      />
+                      高
+                    </div>
+                  </Option>
+                </Select>
+                {!SprintStore.taskType && (
+                  <div>
+                    <div style={{ marginTop: '4px' }}>需求来源</div>
                     <Select
+                      getPopupContainer={() =>
+                        document.getElementById('editstory')
+                      }
                       size={size}
                       style={styles.select}
                       labelInValue
                       value={{
-                       label:
-                         currentEditData.demandSource != null
-                             ? currentEditData.demandSource
+                        label:
+                          currentEditData.demandSource != null
+                            ? currentEditData.demandSource
                             : '客户',
-                       }}
+                      }}
                       onChange={value => {
-                        this.onSelectChange(value, { type: 'demandSource' });
+                        this.onSelectChange(value, {
+                          type: 'demandSource',
+                        });
                       }}
                     >
                       <Option value="1">客户</Option>
@@ -391,110 +440,56 @@ class EditDetail extends Component {
                       <Option value="9">bug</Option>
                       <Option value="10">其他</Option>
                     </Select>
-                  </div>:""}
-                  {SprintStore.taskType?
-                    <div style={styles.items}>
-                    <div style={styles.item}>需求类型：</div>
+
+                    <div style={{ marginTop: '4px' }}>需求类型</div>
                     <Select
+                      getPopupContainer={() =>
+                        document.getElementById('editstory')
+                      }
                       size={size}
                       style={styles.select}
                       labelInValue
                       value={{
-                         label:
+                        label:
                           currentEditData.demandType != null
                             ? currentEditData.demandType
                             : '新需求',
-                       }}
+                      }}
                       onChange={value => {
-                         this.onSelectChange(value, { type: 'demandType' });
+                        this.onSelectChange(value, { type: 'demandType' });
                       }}
                     >
                       <Option value="1">新需求</Option>
                       <Option value="2">变更</Option>
                     </Select>
-                  </div>:""}
-                    <div
-                    style={{
-                      ...styles.items,
-                      ...{ width: '100%', marginTop: '6px' },
-                    }}
-                  >
-                    <div style={styles.item}>标签：</div>
-                    <Select
-                      size={size}
-                      mode="multiple"
-                      style={{ flex: 4, paddingLeft: '5px' }}
-                      placeholder="请选择标签"
-                       onChange={value => {
-                         this.onSelectChange(value, { type: 'issuePriority' });
-                       }}
-                    >
-                      {children}
-                    </Select>
                   </div>
-                </div>
-              </Panel>
-              <Panel header="内容" key="2" style={{ background: '#fafafa' }}>
-                <TextArea
-                  style={{ margin: '10px', width: '100%', resize: 'none' }}
-                  ref={instance => {
-                   this.getTextArea(instance, 'content');
-                  }}
-                  placeholder="请输入描述"
-                   defaultValue={currentEditData.description}
-                  autosize={{ minRows: 2, maxRows: 10 }}
-                  onBlur={value => {
-                    this.ChangeIssue(value, 'content');
-                  }}
-                />
-              </Panel>
-
-              <Panel header="动态" key="3" style={{ background: '#fafafa' }}>
-                <Tabs type="card">
-                  <TabPane
-                    tab={<span style={{ fontSize: '12px' }}>操作记录(2)</span>}
-                    key="1"
-                  >
-                    {/* 根据评论数据生成评论 */}
-                    {commitdata.map(one => <OneComment data={one} />)}
-                  </TabPane>
-                  <TabPane
-                    tab={<span style={{ fontSize: '12px' }}>评论(0)</span>}
-                    key="2"
-                  >
-                    <p>Content of Tab Pane 2</p>
-                    <p>Content of Tab Pane 2</p>
-                    <p>Content of Tab Pane 2</p>
-                  </TabPane>
-                </Tabs>
-              </Panel>
-            </Collapse>
-          </div>
-        </div>
-        <div
-          style={{
-            width: '100%',
-            height: '80px',
-            position: 'absoulte',
-            bottom: 0,
-            right: 0,
-            background: '#eee',
-            paddingTop: '15px',
-          }}
-        >
-          <Input
-            style={{
-              display: 'block',
-              width: '80%',
-              margin: 'auto',
-              height: '40px',
-            }}
-            placeholder="编写评论（Ctrl+回车提交，还可以@其他人）"
-          />
-        </div>
+                )}
+              </div>
+            </div>
+          </TabPane>
+          {/* 第二个tab页 */}
+          <TabPane
+            disabled="true"
+            tab={<span style={{ fontSize: '12px' }}>评论</span>}
+            key="2"
+          >
+            <p>Content of Tab Pane 2</p>
+            <p>Content of Tab Pane 2</p>
+            <p>Content of Tab Pane 2</p>
+          </TabPane>
+          {/* 第三个tab页 */}
+          <TabPane
+            disabled="true"
+            tab={<span style={{ fontSize: '12px' }}>操作记录</span>}
+            key="3"
+          >
+            <p>Content of Tab Pane 3</p>
+            <p>Content of Tab Pane 3</p>
+            <p>Content of Tab Pane 3</p>
+          </TabPane>
+        </Tabs>
       </div>
     );
   }
 }
-export default Form.create({})(withRouter(EditDetail));
-
+export default withRouter(EditDetail);

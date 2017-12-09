@@ -206,8 +206,13 @@ class EditKanban extends Component {
 
   /*初始化看板的样式*/
   initTableStyle(){
-    /*根据侧边栏展开与否调整kanban-conten的宽度*/
+    /*根据侧边栏展开与否调整kanban-conten的宽度和高度*/
     this.resizeKanbanContent();
+
+    /*设置tbody 的top*/
+    let tbody = document.getElementsByClassName("edit-kanban-tbody")[0];
+    tbody.style.top = document.getElementsByClassName("edit-kanban-thead")[0].offsetHeight - 2 + "px";
+
 
     /*为列名设置marginLeft(为了居中显示)*/
     for(let columnName of document.getElementsByClassName("kanban-column-name")){
@@ -298,12 +303,31 @@ class EditKanban extends Component {
   }
 
   resizeKanbanContent=()=>{
+    // let kanbanContent = document.getElementsByClassName("kanban-content")[0];
+    // let topHeight = 47 + 94 + 2;
+    // // let menu = document.getElementById("menu");
+    // kanbanContent.style.height = window.innerHeight - topHeight + "px";
+    // // kanbanContent.style.width = window.innerWidth - 280 -2 + "px";
+    // // this.resizeSiderMenu();
+
     let kanbanContent = document.getElementsByClassName("kanban-content")[0];
-    let topHeight = 47 + 94 + 2;
-    let menu = document.getElementById("menu");
-    kanbanContent.style.height = window.innerHeight - topHeight + "px";
-    kanbanContent.style.width = window.innerWidth - menu.offsetWidth -2 + "px";
-    // this.resizeSiderMenu();
+    let topHeight = 58 + 30;
+    let autoRouter = document.getElementById("autoRouter");
+    console.log('autoRouter',autoRouter.style.height);
+    let height = Number(autoRouter.style.height.substr(0,autoRouter.style.height.length-2));
+    kanbanContent.style.height = height - topHeight  + "px";
+  }
+
+  getTopAndLeft(obj,result) { //获取某元素以浏览器左上角为原点的坐标
+    let t = obj.offsetTop; //获取该元素对应父容器的上边距
+    let l = obj.offsetLeft; //对应父容器的上边距
+    //判断是否有父容器，如果存在则累加其边距
+    while (obj = obj.offsetParent) {//等效 obj = obj.offsetParent;while (obj != undefined)
+      t += obj.offsetTop; //叠加父容器的上边距
+      l += obj.offsetLeft; //叠加父容器的左边距
+    }
+    result["top"]=t;
+    result["left"]=l;
   }
 
   /*为当前页面的有效按钮绑定点击事件，点击事件发生时将调用各自相对应的handleOn方法*/
@@ -317,7 +341,7 @@ class EditKanban extends Component {
 
     /*清空kanbanContent上的鼠标事件*/
     let kanbanContent = document.getElementsByClassName("kanban-content")[0];
-    kanbanContent.onmousedown=null;
+    tbody.onmousedown=null;
     kanbanContent.onmousemove=null;
     document.onmouseup=null;
     /*绑定扩列按钮*/
@@ -373,7 +397,7 @@ class EditKanban extends Component {
     if(this.state.isCreatingSwimLane){/*只有进入绘制模式才能绘制看板*/
       this.addOrRemoveMouseEvent("add");
       document.getElementsByTagName("tbody")[0].style.userSelect = 'unset';
-      kanbanContent.onmousedown = () => {
+      tbody.onmousedown = () => {
         evt = window.event || arguments[0];
         if(!this.ifRespondToMouseDrag(evt.target)){/*判断当前位置是否响应鼠标拖拽和点击事件*/
           return;
@@ -399,8 +423,16 @@ class EditKanban extends Component {
         /*获取鼠标相对kanbanConten的位置（无法直接使用layerX或者offsetX直接获取，需通过‘特殊’手段算出来）*/
         let isSelect = true;
         let evt = window.event || arguments[0];
-        let startX = evt.clientX - kanbanContent.offsetLeft + kanbanContent.scrollLeft;
-        let startY = evt.clientY - kanbanContent.offsetTop + kanbanContent.scrollTop;
+
+        let topAndLeft = {
+          left:0,
+          top:0
+        }
+
+        this.getTopAndLeft(kanbanContent,topAndLeft);
+
+        let startX = evt.clientX - topAndLeft.left + kanbanContent.scrollLeft+document.documentElement.scrollTop;
+        let startY = evt.clientY - topAndLeft.top + kanbanContent.scrollTop+document.documentElement.scrollLeft;
 
         let selDiv = document.createElement("div");
         selDiv.style.cssText = "position:absolute;width:0px;height:0px;font-size:0px;margin:0px;padding:0px;border:1px dashed #0099FF;background-color:#C3D5ED;z-index:1000;filter:alpha(opacity:60);opacity:0.6;display:none;pointer-events:none";
@@ -423,20 +455,21 @@ class EditKanban extends Component {
             if (selDiv.style.display == "none") {
               selDiv.style.display = "";
             }
-            _x = evt.clientX - kanbanContent.offsetLeft + kanbanContent.scrollLeft;
-            _y = evt.clientY - kanbanContent.offsetTop + kanbanContent.scrollTop;
+            _x = evt.clientX - topAndLeft.left + kanbanContent.scrollLeft + document.documentElement.scrollLeft;
+            _y = evt.clientY - topAndLeft.top + kanbanContent.scrollTop + document.documentElement.scrollTop;
 
             selDiv.style.left = Math.min(_x, startX) + "px";
             selDiv.style.top = Math.min(_y, startY) + "px";
             selDiv.style.width = Math.abs(_x - startX) + "px";
             selDiv.style.height = Math.abs(_y - startY) + "px";
 
-            let scroll = document.getElementsByClassName("kanban-content")[0];
+            // let scroll = document.getElementsByClassName("kanban-content")[0];
             let _l = selDiv.offsetLeft, _t = selDiv.offsetTop;
             let _w = selDiv.offsetWidth, _h = selDiv.offsetHeight;
             for ( let i = 0; i < selList.length; i++) {
               let sl = selList[i].offsetLeft;
-              let st = selList[i].offsetTop;
+              console.log(`tbody.top:${tbody.offsetTop}`);
+              let st = selList[i].offsetTop+tbody.offsetTop;
               if (sl +selList[i].offsetWidth > _l && _l + _w > sl && _t<st+selList[i].offsetHeight &&_t+_h>st) {
                 let hasSameItem = false;/*防止重复添加相同的div*/
                 for(let item of selectedArray){
@@ -2018,6 +2051,7 @@ class EditKanban extends Component {
     }
 
   }
+
   /*使用队列queue层次遍历生成看板的表结构*/
   generateTable(array,kanbanHeight){
     /*数组tdNextToBody记录thead中和tbody相邻的td单元*/
@@ -2092,7 +2126,7 @@ class EditKanban extends Component {
           }} title={node.name}>{node.name}</div>
           {wip}
 
-          <Input style={{backgroundColor:'white',position:'relative',display:'none',padding:'none', width: '50%',height: 18}} placeholder="未命名列名" defaultValue={node.name=='未命名列名'?'':node.name} onBlur={this.handleOnAlterColumnName} onPressEnter={this.handleOnAlterColumnName}/>
+          <Input className="edit-kanban-column-name-input" style={{backgroundColor:'white',position:'relative',display:'none',padding:'none', width: '50%'}} placeholder="未命名列名" defaultValue={node.name=='未命名列名'?'':node.name} onBlur={this.handleOnAlterColumnName} onPressEnter={this.handleOnAlterColumnName}/>
 
           <div className="edit-item" style={{
             display: 'inline-block',
@@ -2445,6 +2479,7 @@ class EditKanban extends Component {
         content: '您当前的操作还未保存，请确认是否继续',
         okText:"确认",
         cancelText:"取消",
+        style:{zIndex:1001},
         onOk:()=>{
           this.props.history.push(`/kanbanFront/kanban/${this.props.match.params.kanbanId}`);
           confirm.destroy();
@@ -2452,6 +2487,12 @@ class EditKanban extends Component {
         onCancel() {},
       });
     }
+  }
+
+  handleOnScroll=()=>{
+    let KanbantheadDom = document.getElementsByClassName('edit-kanban-thead');
+    let KanbanContentDom = document.getElementsByClassName('kanban-content');
+    KanbantheadDom[0].setAttribute('style', `top:${KanbanContentDom[0].scrollTop}px;position:absolute;z-index:1001;`)
   }
 
   render() {
@@ -2483,12 +2524,12 @@ class EditKanban extends Component {
                    {/*resizeSiderMenu={this.resizeSiderMenu}/>*/}
         {/*<SiderMenu onCilckAddColumn={this.handleOnAddColumn} onClickAddHeight={this.handleOnAddHeight}*/}
         {/*onClickReduceHeight={this.handleOnReduceHeight} onClickSave={this.handleOnSave}/>*/}
-        <div className="kanban-content" style={{overflow:'auto',position:'relative'}}>
+        <div className="kanban-content" style={{overflow:'auto',position:'relative'}} onScroll={this.handleOnScroll}>
           <table className="edit-kanban-table" style={{borderCollapse:'collapse'}}>
-            <thead>
+            <thead className="edit-kanban-thead">
             {thead}
             </thead>
-            <tbody>
+            <tbody className="edit-kanban-tbody">
             {tbody}
             </tbody>
           </table>

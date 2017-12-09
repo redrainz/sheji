@@ -15,6 +15,7 @@ import EditCardDetailModel from '../../../components/kanban/EditCardDetail'
 import CreateCard from '../../../components/kanban/CreateCard'
 import KanbanHeader from '../../../components/kanban/KanbanHeader'
 import SystemColumnContent from '../../../components/editKanban/SystemColumnContent'
+
 require('../../../assets/css/kanban-card.css');
 require('../../../assets/css/kanban.css');
 const grid = 8;
@@ -74,10 +75,11 @@ class Kanban extends Component {
   /*重置页面大小*/
   resizeKanbanContent = () => {
     let kanbanContent = document.getElementsByClassName("kanban-content")[0];
-    let topHeight = 47 + 94 + 2;
-    let menu = document.getElementById("menu");
-    kanbanContent.style.height = window.innerHeight - topHeight - 2 + "px";
-    kanbanContent.style.width = window.innerWidth - menu.offsetWidth - 2 + "px";
+    let topHeight = 58 + 30;
+    let autoRouter = document.getElementById("autoRouter");
+    console.log('autoRouter', autoRouter.style.height);
+    let height = Number(autoRouter.style.height.substr(0, autoRouter.style.height.length - 2));
+    kanbanContent.style.height = height - topHeight - 2 + "px";
   };
 
   /*给指定元素添加事件*/
@@ -254,7 +256,8 @@ class Kanban extends Component {
     let cards = {};
     KanbanStore.getCardById(kanbanId).then(response => {
       if (response) {
-        cards = response
+        console.log('执行');
+        cards = response;
         this.setState({
           cards: cards
         })
@@ -307,7 +310,7 @@ class Kanban extends Component {
 
   //将卡片放入列中
   getColumnWithCard = (array) => {
-    const {cards} =  this.state;
+    const {cards} = this.state;
     array.map((item) => {
       if (item.subColumns !== null && item.subColumns.length !== 0) {
         this.getColumnWithCard(item.subColumns)
@@ -328,11 +331,10 @@ class Kanban extends Component {
         for (let i = 0; i < cards[`${columnId}`].length; i += 1) {
           let card = cards[`${columnId}`][i]
           if (item.y <= card.positionY && card.positionY < item.y + item.height && item.y === y && x === card.positionX) {
-            if(i===0){
+            if (i === 0) {
               tempCard.push(
                 <Draggable key={card.id} draggableId={card.id}>
                   {(provided, snapshot) => (
-
                     <div
                       ref={provided.innerRef}
                       style={{
@@ -348,13 +350,12 @@ class Kanban extends Component {
                                   getSubCards={this.getSubCards}
                                   linktoChange={this.linktoChange}
                                   key={card.id}/>
-
                     </div>
 
                   )}
                 </Draggable>
               )
-            }else {
+            } else {
               tempCard.push(
                 <Draggable key={card.id} draggableId={card.id}>
                   {(provided, snapshot) => (
@@ -363,7 +364,6 @@ class Kanban extends Component {
                       ref={provided.innerRef}
                       style={{
                         zIndex: 10,
-                        marginTop:22,
                         ...provided.draggableStyle,
                       }}
                       {...provided.dragHandleProps}
@@ -386,9 +386,8 @@ class Kanban extends Component {
 
           }
         }
-      })
+      });
       if (tempCard.length > kanbanheight) {
-        console.log('1111111')
         let tempMixCard = []
         let simple = tempCard.length - kanbanheight + 1
         area[columnId].map((item) => {
@@ -615,7 +614,6 @@ class Kanban extends Component {
     //   });
     //   return tempCard
     // }
-
   }
 
   ifCardInUnnamedSwimLane = (swimLaneId) => {
@@ -633,20 +631,7 @@ class Kanban extends Component {
         }
       }
     }
-  }
-  getSystemColumn = (columnStatus, selected) => {
-    let response = null
-    if (columnStatus === 'todo' && selected === true) {
-      response = (<div className="kanban-system-column" style={{backgroundColor: '#598DED'}}>
-        <span style={{position: 'absolute', fontSize: 12, left: 10, top: 0}}>start</span></div>)
-    } else if (columnStatus === 'done' && selected === true) {
-      response = (<div className="kanban-system-column" style={{backgroundColor: '#598DED'}}>
-        <span style={{position: 'absolute', fontSize: 12, left: 10, top: 0}}>end</span></div>)
-    } else {
-      response = ( <div className="kanban-system-column" style={{backgroundColor: '#598DED'}}/>)
-    }
-    return response
-  }
+  };
 
   /*使用队列queue层次遍历生  成看板的表结构*/
   generateTable(array, depth, kanbanheight) {
@@ -736,31 +721,6 @@ class Kanban extends Component {
     // console.log('>>>>>>>>>>>>>>>>>>')
     for (let z = 0; z < kanbanheight; z += 1) {
       let rowTbody = [];
-      //   if (z === 0 && this.allColumn.length !== 0) {
-      //     let tempId = this.generateNoneDuplicateID(3);
-      //     let tempHeight = '100%';
-      //     if (this.allColumn.length === 1) {
-      //       tempHeight = 105 * kanbanheight
-      //     }
-      //
-      //     rowTbody.push(
-      //       <Droppable droppableId={`-1`}>
-      //         {(provided, snapshot) => (
-      //           <td rowSpan={kanbanheight} style={{width: 163}}>
-      //             <div ref={provided.innerRef}
-      //                  style={{
-      //                    ...snapshot.isDraggingOver,
-      //                    height: tempHeight,
-      //                    width: '100%',
-      //                    borderBottom: '1px solid #BEBDBD'
-      //                  }}
-      //             >
-      //               {this.getUserStoryCards(this.allColumn[`0`])}
-      //             </div>
-      //           </td>
-      //         )}
-      //       </Droppable>)
-      // //   }
       for (let j = 0; j < this.allColumn.length; j += 1) {
         let tempid = this.generateNoneDuplicateID(3);
         if (z === kanbanheight - 1) {
@@ -799,7 +759,7 @@ class Kanban extends Component {
   handleChangeCardsDetailState = (e) => {
     e.preventDefault()
     e.stopPropagation();
-    console.log('selectCards',e.target);
+    console.log('selectCards', e.target);
     this.setState({
       selectedCards: e.target.id,
       displayState: 'block',
@@ -988,15 +948,15 @@ class Kanban extends Component {
             item.positionX = Number(0);
             item.swimLaneId = Number(endArray[3]);
             item.parentId = Number(endArray[5]);
-            KanbanStore.updateIssueById(item.id, item).then((res) => {
-              if (res) {
-                this.fetchTaskCards(this.props.match.params.kanbanId)
-                // tempCard[`${endArray[0]}`].push(item);
-                // tempCard[startArray[0]].splice(i, 1);
-                // this.setState({
-                //   cards: tempCard,
-                // })
-              }
+            KanbanStore.updateIssueById(item.id, item).catch((err) => {
+              console.log(err);
+              message.error('网络不稳定，请重试', 1.5);
+              this.fetchTaskCards(this.props.match.params.kanbanId);
+            });
+            tempCard[`${endArray[0]}`].push(item);
+            tempCard[startArray[0]].splice(i, 1);
+            this.setState({
+              cards: tempCard,
             })
           }
         }
@@ -1010,16 +970,16 @@ class Kanban extends Component {
             item.swimLaneId = Number(endArray[3]);
             item.status = 'pre todo';
             item.projectId = 1;
-            KanbanStore.updateIssueById(item.id, item).then((res) => {
-              if (res) {
-                this.fetchTaskCards(this.props.match.params.kanbanId)
-                // tempCard[`${endArray[0]}`].push(item);
-                // tempCard[startArray[0]].splice(i, 1);
-                // this.setState({
-                //   cards: tempCard,
-                // })
-              }
+            KanbanStore.updateIssueById(item.id, item).catch((err) => {
+              console.log(err);
+              message.error('网络不稳定，请重试', 1.5);
+              this.fetchTaskCards(this.props.match.params.kanbanId);
             });
+            tempCard[`${endArray[0]}`].push(item);
+            tempCard[startArray[0]].splice(i, 1);
+            this.setState({
+              cards: tempCard,
+            })
           }
         }
       } else if (countCard.length < tempArea.height * tempArea.width && endArray[4] !== 'swimLane') {
@@ -1044,28 +1004,35 @@ class Kanban extends Component {
                 }
               });
               if (column.id === item.columnId) {
-                console.log('进入222');
                 if (column.wipNum === -1 || column.wipNum === null || realCardNum < column.wipNum) {
-                  if(cardNum <this.state.height){
-                    console.log('进入111');
+                  if (cardNum < this.state.height * column.width) {
                     item.status = column.status;
-                    KanbanStore.updateIssueById(item.id, item).then((res) => {
-                      if (res) {
-                        this.fetchTaskCards(this.props.match.params.kanbanId)
-                      }
+                    KanbanStore.updateIssueById(item.id, item).catch((err) => {
+                      console.log(err);
+                      message.error('网络不稳定，请重试', 1.5);
+                      this.fetchTaskCards(this.props.match.params.kanbanId);
                     });
-                  }else {
+                    tempCard[`${endArray[0]}`].push(item);
+                    tempCard[startArray[0]].splice(i, 1);
+                    this.setState({
+                      cards: tempCard,
+                    })
+                  } else {
                     message.warning('此列已满')
                   }
                 }
                 else if (startArray[0] === endArray[0]) {
                   item.status = column.status
-                  KanbanStore.updateIssueById(item.id, item).then((res) => {
-                    if (res) {
-                      this.fetchTaskCards(this.props.match.params.kanbanId)
-                    }
+                  KanbanStore.updateIssueById(item.id, item).catch((err) => {
+                    console.log(err);
+                    message.error('网络不稳定，请重试', 1.5);
+                    this.fetchTaskCards(this.props.match.params.kanbanId);
                   });
-
+                  tempCard[`${endArray[0]}`].push(item);
+                  tempCard[startArray[0]].splice(i, 1);
+                  this.setState({
+                    cards: tempCard,
+                  })
                 }
                 else {
                   message.warning('此列已满')
@@ -1087,7 +1054,6 @@ class Kanban extends Component {
               item.positionX = cardCountInCell.x != null ? cardCountInCell.x : Number(endArray[2]);
               item.swimLaneId = Number(endArray[3]);
               item.kanbanId = this.props.match.params.kanbanId
-
               this.allColumn.map((column) => {
                 let realCardNum = 0;
                 tempCard[item.columnId].map((item) => {
@@ -1099,38 +1065,53 @@ class Kanban extends Component {
                   if (column.status === 'doing') {
                     if (column.wipNum === -1 || column.wipNum === null || realCardNum < column.wipNum) {
                       item.status = column.status
-                      KanbanStore.updateIssueById(item.id, item).then((res) => {
-                        if (res) {
-                          this.fetchTaskCards(this.props.match.params.kanbanId)
-                        }
+                      KanbanStore.updateIssueById(item.id, item).catch((err) => {
+                        console.log(err);
+                        message.error('网络不稳定，请重试', 1.5);
+                        this.fetchTaskCards(this.props.match.params.kanbanId);
                       });
+                      tempCard[`${endArray[0]}`].push(item);
+                      tempCard[startArray[0]].splice(i, 1);
+                      this.setState({
+                        cards: tempCard,
+                      })
 
                     }
                     else if (startArray[0] === endArray[0]) {
                       item.status = column.status
-                      KanbanStore.updateIssueById(item.id, item).then((res) => {
-                        if (res) {
-                          this.fetchTaskCards(this.props.match.params.kanbanId)
-                        }
+                      KanbanStore.updateIssueById(item.id, item).catch((err) => {
+                        console.log(err);
+                        message.error('网络不稳定，请重试', 1.5);
+                        this.fetchTaskCards(this.props.match.params.kanbanId);
                       });
+                      tempCard[`${endArray[0]}`].push(item);
+                      tempCard[startArray[0]].splice(i, 1);
+                      this.setState({
+                        cards: tempCard,
+                      })
                     }
                     else {
                       message.warning('此列已满')
                     }
                   } else {
                     item.status = column.status;
-                    KanbanStore.updateIssueById(item.id, item).then((res) => {
-                      if (res) {
-                        this.fetchTaskCards(this.props.match.params.kanbanId)
-                      }
+                    KanbanStore.updateIssueById(item.id, item).catch((err) => {
+                      console.log(err);
+                      message.error('网络不稳定，请重试', 1.5);
+                      this.fetchTaskCards(this.props.match.params.kanbanId);
                     });
+                    tempCard[`${endArray[0]}`].push(item);
+                    tempCard[startArray[0]].splice(i, 1);
+                    this.setState({
+                      cards: tempCard,
+                    })
                   }
                 }
               })
             }
           }
         }
-      }else {
+      } else {
         message.warning('此列已满')
       }
     }
@@ -1139,7 +1120,7 @@ class Kanban extends Component {
     let KanbantheadDom = document.getElementsByClassName('kanban-thead');
     let KanbanContentDom = document.getElementsByClassName('kanban-content');
     KanbantheadDom[0].setAttribute('style', `top:${KanbanContentDom[0].scrollTop}px;position:absolute;z-index:7;`)
-  }
+  };
 
   componentDidUpdate() {
     this.initTable();
@@ -1161,7 +1142,7 @@ class Kanban extends Component {
     this.setState({
       CreateCardState: 'block'
     })
-  }
+  };
   handleTaskColumn = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -1169,7 +1150,6 @@ class Kanban extends Component {
       taskColumnState: 'block',
     })
   };
-
   disableTaskColunm = () => {
     if (this.state.taskColumnState === 'block') {
       this.setState({
@@ -1313,9 +1293,9 @@ class Kanban extends Component {
             handleClick={this.handleClick}
             handleReleasePlanState={this.handleReleasePlanState}
             handlePlanState={this.handlePlanState}
-            cardNum ={this.state.cards !== []?0:this.state.cards['temp'].length}
+            cardNum={this.state.cards}
           />
-          <div className="kanban-content" style={{overflow: 'auto', height: '85vh', position: 'relative', marginTop: 2}}
+          <div className="kanban-content" style={{overflow: 'auto', position: 'relative', marginTop: 2}}
                onScroll={this.handleScroll}>
             <table className="kanban-table"
                    style={{borderCollapse: 'collapse',}}
@@ -1345,7 +1325,7 @@ class Kanban extends Component {
 
           <div style={{display: this.state.displayState}}>
             <EditCardDetailModel id={this.state.selectedCards} getIssue={this.getIssue}
-                                 ChangePlanState={this.ChangePlanState}/> />
+                                 ChangePlanState={this.ChangePlanState}/>
           </div>
 
           <div style={{display: this.state.CreateCardState}}>

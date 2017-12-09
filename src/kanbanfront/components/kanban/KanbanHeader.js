@@ -1,6 +1,6 @@
 /*eslint-disable*/
 import React, {Component} from 'react';
-import {Icon, Tooltip, Dropdown,Menu,Badge} from 'antd';
+import {Icon, Tooltip, Dropdown, Menu, Badge} from 'antd';
 // import '../../assets/css/userStoryMap-card.css';
 require('../../assets/css/kanban.css')
 const styles = {
@@ -8,7 +8,7 @@ const styles = {
     // width: '',
     display: 'flex',
     alignItems: 'center',
-    height: '64px',
+    height: '58px',
     // padding: '10px',
     borderBottom: '1px solid #D3D3D3',
 
@@ -25,14 +25,19 @@ const styles = {
 };
 
 class KanbanHeader extends Component {
-  state={
-    cardNum:this.props.cardNum
+  state = {
+    cardNum: this.props.cardNum
+  };
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.cardNum.temp != null) {
+      this.setState({
+        cardNum: nextProps.cardNum.temp.length,
+      })
+    }
+
   }
-  componentWillReceiveProps(nextProps){
-    this.setState({
-      cardNum:nextProps.cardNum,
-    })
-  }
+
   render() {
     const menu = (
       <Menu>
@@ -40,7 +45,7 @@ class KanbanHeader extends Component {
           <a onClick={this.props.handlePlanState}>从冲刺导入</a>
         </Menu.Item>
         <Menu.Item key="1">
-          <a onClick={this.props.handleReleasePlanState}>从用户故事地图导入</a>
+          <a onClick={this.props.handleReleasePlanState}>从发布计划导入</a>
         </Menu.Item>
       </Menu>
     );
@@ -50,7 +55,7 @@ class KanbanHeader extends Component {
           <div
             title={this.props.kanbanName}
             style={{
-              width:158,
+              width: 158,
               marginLeft: '20px',
               fontSize: '18px',
               wordBreak: 'keep-all',
@@ -73,7 +78,7 @@ class KanbanHeader extends Component {
             }}
           >
             <Dropdown overlay={menu} trigger={['click']}>
-              <a className="ant-dropdown-link" id = 'kanbanDropdown' href="#" style={{color: '#3F51B5'}}>
+              <a className="ant-dropdown-link" id='kanbanDropdown' href="#" style={{color: '#3F51B5'}}>
                 <i className="material-icons" style={styles.icon}>
                   move_to_inbox
                 </i>
@@ -109,8 +114,22 @@ class KanbanHeader extends Component {
                }}
                onClick={this.props.handleTaskColumn}
             >note_add</i>
-            {/*<Badge count={25} />*/}
           </Tooltip>
+          <div
+            style={{
+              background: '#f04134', color: '#fff', 'border-radius': '10px',
+              maxWidth: 26,
+              minWidth: 20,
+              textAlign: 'center',
+              transform: 'scale(0.6)',
+              position: 'absolute',
+              fontSize: '19',
+              top: 53,
+              right: 48,
+              display: this.state.cardNum === 0 ? 'none' : 'block',
+            }}>
+            {this.state.cardNum}
+          </div>
           <Tooltip title="添加卡片">
             <i className="material-icons"
                style={{
