@@ -1,2 +1,1 @@
-set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
-yarn electron-pack
+yarn build
