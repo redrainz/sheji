@@ -1,15 +1,17 @@
 var path = require('path');
+const webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
 module.exports = {
-  devtool: 'cheap-module-eval-source-map',
+  // devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval',
   entry: {
-    app: './src/index.js',
+    app: ['react-hot-loader/patch','./src/index.js',]
   },
 
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'chunks/[name].[chunkHash:8].js',
+    filename: 'chunks/[name].[hash].js',
   },
   resolve: {
     alias: {
@@ -44,7 +46,7 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        loaders: ['react-hot-loader/webpack', 'babel-loader']
       },
       {
         test: /\.(ttf|eot|svg|woff|woff2)$/,
@@ -108,5 +110,6 @@ module.exports = {
       // chunks:['vendor','app'],
       template: './src/index.ejs', // Load a custom template (ejs by default see the FAQ for details)
     }),
+    new webpack.HotModuleReplacementPlugin(),
   ],
 };

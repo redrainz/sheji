@@ -74,7 +74,7 @@ class KanbanPlanModel extends Component {
             let ifKanbanCanChangeSprint = true;
             if (Cards != null) {
               Cards.map((item) => {
-                if (item.sprintId != null && item.releasePlanId != null && item.status === 'pre todo') {
+                if (item.sprintId != null && item.releasePlanId != null && item.status === 'pre todo'&& item.issueType === 'story') {
                   TargetKeys.push(item.id)
                   mockData.push({
                     key: item.id,
@@ -193,6 +193,7 @@ class KanbanPlanModel extends Component {
         moveData.push({
           id: moveKeys[i],
           kanbanId: 0,
+          status:'sprint backlog',
         })
       }
       let sprintId = this.state.storyGroup[0].sprintId;

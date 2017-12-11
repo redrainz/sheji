@@ -5,12 +5,10 @@ import {observer} from 'mobx-react';
 import KanbanStore from '../../../stores/origanization/kanban/KanbanStore';
 import KanbanCard from '../../../components/common/KanbanCard';
 import SmallKanbanCard from '../../../components/common/SmallKanbanCard';
-import CardsDetail from '../../../components/kanban/CardsDetail'
 import {Button, Layout, message, Icon, Row, Col, Collapse, Tooltip, Badge, Dropdown, Menu} from 'antd'
 import {DragDropContext, Droppable, Draggable} from 'react-beautiful-dnd';
 import KanbanPlanModel from '../../../components/kanban/KanbanPlanModel'
 import ReleasePlanModel from '../../../components/kanban/ReleasePlanModel'
-import PageHeader, {PageHeadStyle} from '../../../components/common/PageHeader'
 import EditCardDetailModel from '../../../components/kanban/EditCardDetail'
 import CreateCard from '../../../components/kanban/CreateCard'
 import KanbanHeader from '../../../components/kanban/KanbanHeader'
@@ -81,7 +79,6 @@ class Kanban extends Component {
     let height = Number(autoRouter.style.height.substr(0, autoRouter.style.height.length - 2));
     kanbanContent.style.height = height - topHeight - 2 + "px";
   };
-
   /*给指定元素添加事件*/
   addEvent(obj, type, handle) {
     try {  /* Chrome、FireFox、Opera、Safari、IE9.0及其以上版本*/
@@ -1325,11 +1322,11 @@ class Kanban extends Component {
 
           <div style={{display: this.state.displayState}}>
             <EditCardDetailModel id={this.state.selectedCards} getIssue={this.getIssue}
-                                 ChangePlanState={this.ChangePlanState}/>
+                                 setCardsDetailUnSeen={this.setCardsDetailUnSeen}/>
           </div>
 
           <div style={{display: this.state.CreateCardState}}>
-            <CreateCard ChangeCreateCardState={this.ChangeCreateCardState} getIssue={this.getIssue}/>
+            <CreateCard ChangeCreateCardState={this.ChangeCreateCardState} kanbanName={this.state.kanbanName} getIssue={this.getIssue}/>
           </div>
         </div>
       </DragDropContext>

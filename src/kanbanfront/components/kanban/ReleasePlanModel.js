@@ -78,7 +78,7 @@ class ReleasePlanModel extends Component {
                 if (item.id === kanban.releasePlanId) {
                   releasePlanName = item.name
                   item.issues.map((story) => {
-                    if (story.status === 'product backlog' && story.kanbanId === this.props.kanbanId) {
+                    if (story.status === 'product backlog' && story.kanbanId === this.props.kanbanId &&item.issueType === 'story') {
                       mockData.push({
                         key: story.id,
                         title: story.description,
@@ -174,6 +174,7 @@ class ReleasePlanModel extends Component {
         moveData.push({
           id: moveKeys[i],
           kanbanId: 0,
+          status:'product backlog'
         })
       }
       KanbanStore.MountUpdateIssue(moveData).then((res) => {
