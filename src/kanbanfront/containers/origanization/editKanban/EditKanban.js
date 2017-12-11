@@ -312,7 +312,7 @@ class EditKanban extends Component {
 
     let kanbanContent = document.getElementsByClassName("kanban-content")[0];
     let topHeight = 58 + 30;
-    let autoRouter = document.getElementById("autoRouter");
+    let autoRouter = kanbanContent.parentNode;
     console.log('autoRouter',autoRouter.style.height);
     let height = Number(autoRouter.style.height.substr(0,autoRouter.style.height.length-2));
     kanbanContent.style.height = height - topHeight  + "px";
@@ -2500,7 +2500,7 @@ class EditKanban extends Component {
     let thead = tableInfo.thead;
     let tbody = tableInfo.tbody;
     return (
-      <div className="edit-kanban">
+      <div className="edit-kanban" style={{height: window.innerHeight - 48}}>
         <EditKanbanHeader kanbanName={this.state.kanbanName}
                           isCreatingSwimLane={this.state.isCreatingSwimLane}
                           handleOnAddColumn={this.handleOnAddColumn}

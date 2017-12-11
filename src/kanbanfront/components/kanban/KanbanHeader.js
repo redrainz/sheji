@@ -124,7 +124,7 @@ class KanbanHeader extends Component {
               transform: 'scale(0.6)',
               position: 'absolute',
               fontSize: '19',
-              top: 53,
+              top: 96,
               right: 48,
               display: this.state.cardNum === 0 ? 'none' : 'block',
             }}>

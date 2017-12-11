@@ -6,12 +6,20 @@ module.exports = {
   // devtool: 'cheap-module-eval-source-map',
   devtool: 'eval',
   entry: {
+    vendor: ["react", "react-dom", "react-router-dom", "antd"],
     app: ['react-hot-loader/patch','./src/index.js',]
   },
 
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'chunks/[name].[hash].js',
+    filename: 'app/[name]_[hash:8].js',
+    chunkFilename: 'app/chunks/[name].[chunkhash:5].chunk.js',
+  },
+  node: {
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty',
+    child_process: 'empty',
   },
   resolve: {
     alias: {
@@ -96,7 +104,8 @@ module.exports = {
   },
   plugins: [
     new CommonsChunkPlugin({
-      names: ['vendor', 'manifest'], //name是提取公共代码块后js文件的名字。
+      names: ['vendor'], //name是提取公共代码块后js文件的名字。
+      minChunks: Infinity,
       // chunks: ['vendor'] //只有在vendor中配置的文件才会提取公共代码块至manifest的js文件中
     }),
     new HtmlWebpackPlugin({
