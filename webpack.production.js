@@ -10,31 +10,18 @@ module.exports = merge(webpackProConfig, {
   // entry: './src/index.prod',
   devtool: false,
   plugins: [
-    // new webpack.optimize.UglifyJsPlugin({
-    //   sourceMap: true,
-    //   output: {
-    //     comments: false,  // remove all comments
-    //   },
-    //   compress: {
-    //     warnings: true,
-    //   }
-    // }),
     new webpack.optimize.UglifyJsPlugin({
-      mangle: {
-        except: ['module', 'exports', 'require'],
-      },
-      sourceMap: true,
-      parallel: {
-        cache: true,
-        workers: 2,
-      },
-      output: {
-        comments: false,
-        beautify: false,
-      },
+      beautify: false,//最紧凑的输出
+      comments: false,//删除注释
       compress: {
-        warnings: true,
-      },
+        warnings: false,//在UglifyJs删除没有用到的代码时不输出警告
+        drop_console: true,//删除所有console语句
+        collapse_vars: true,//内嵌定义了但是只用到一次的变量
+        reduce_vars: true,// 提取出出现多次但是没有定义成变量去引用的静态值
+      }
+    }),
+    new webpack.LoaderOptionsPlugin({
+      minimize: true,
     }),
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify(

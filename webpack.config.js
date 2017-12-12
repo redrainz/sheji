@@ -7,8 +7,8 @@ module.exports = {
   // devtool: 'cheap-module-eval-source-map',
   devtool: 'eval',
   entry: {
-    vendor: ['react', 'react-dom', 'react-router-dom'],
-    app: ['./src/index.js'],
+    app: './src/index.js',
+    vendor: ['react', 'react-dom'], //分离第三方库
   },
 
   output: {
@@ -23,7 +23,7 @@ module.exports = {
     child_process: 'empty',
   },
   resolve: {
-    modules: ['node_modules'],
+    modules: [path.resolve(__dirname, 'node_modules')], //优化webpack文件搜索范围
     extensions: ['.js', '.json', '.jsx', '.ts', '.tsx', '.less'],
     alias: {
       Axios: path.resolve(__dirname, './src/axios.js'),
@@ -67,6 +67,9 @@ module.exports = {
         use: [
           {
             loader: 'file-loader',
+            options: {
+              outputPath: './app/assets/',
+            },
           },
         ],
       },
@@ -77,6 +80,7 @@ module.exports = {
             loader: 'file-loader',
             options: {
               name: 'img_[hash:8].[ext]',
+              outputPath: './app/assets/',
             },
           },
         ],
@@ -111,14 +115,11 @@ module.exports = {
   plugins: [
     new ExtractTextPlugin('styles.css'),
     new webpack.optimize.CommonsChunkPlugin({
-      names: ['vendor'], //name是提取公共代码块后js文件的名字。
+      names: ['vendor', 'manifest'], //name是提取公共代码块后js文件的名字。
       // chunks: ['vendor'] //只有在vendor中配置的文件才会提取公共代码块至manifest的js文件中
     }),
     new HtmlWebpackPlugin({
       title: '首页',
-      minify: {
-        // collapseWhitespace:true
-      },
       inject: true,
       minify: {
         html5: true,
@@ -128,7 +129,6 @@ module.exports = {
         removeEmptyAttributes: true,
         removeStyleLinkTypeAttributes: true,
       },
-
       // hash: true,
       // excludeChunks:['contact'],
       // chunks: ['manifest', 'vendor', 'app'],
