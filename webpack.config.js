@@ -2,12 +2,13 @@ var path = require('path');
 const webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
   // devtool: 'cheap-module-eval-source-map',
   devtool: 'eval',
   entry: {
-    vendor: ["react", "react-dom", "react-router-dom", "antd"],
-    app: ['react-hot-loader/patch','./src/index.js',]
+    vendor: ['react', 'react-dom', 'react-router-dom'],
+    app: ['./src/index.js'],
   },
 
   output: {
@@ -22,6 +23,8 @@ module.exports = {
     child_process: 'empty',
   },
   resolve: {
+    modules: ['node_modules'],
+    extensions: ['.js', '.json', '.jsx', '.ts', '.tsx', '.less'],
     alias: {
       Axios: path.resolve(__dirname, './src/axios.js'),
       Store: path.resolve(__dirname, './src/store.js'),
@@ -46,7 +49,7 @@ module.exports = {
           {
             loader: 'less-loader',
             options: {
-              sourceMap: true,
+              sourceMap: process.env.NODE_ENV === 'production' ? false : true,
             },
           },
         ],
@@ -54,7 +57,10 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loaders: ['react-hot-loader/webpack', 'babel-loader']
+        loader: 'babel-loader',
+        query: {
+          plugins: [['import', { libraryName: 'antd', style: 'css' }]], // `style: true` 会加载 less 文件
+        },
       },
       {
         test: /\.(ttf|eot|svg|woff|woff2)$/,
@@ -103,9 +109,9 @@ module.exports = {
     },
   },
   plugins: [
-    new CommonsChunkPlugin({
+    new ExtractTextPlugin('styles.css'),
+    new webpack.optimize.CommonsChunkPlugin({
       names: ['vendor'], //name是提取公共代码块后js文件的名字。
-      minChunks: Infinity,
       // chunks: ['vendor'] //只有在vendor中配置的文件才会提取公共代码块至manifest的js文件中
     }),
     new HtmlWebpackPlugin({
@@ -113,12 +119,22 @@ module.exports = {
       minify: {
         // collapseWhitespace:true
       },
+      inject: true,
+      minify: {
+        html5: true,
+        collapseWhitespace: true,
+        removeComments: true,
+        removeTagWhitespace: true,
+        removeEmptyAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+      },
+
       // hash: true,
       // excludeChunks:['contact'],
-      chunks: ['manifest', 'vendor', 'app'],
+      // chunks: ['manifest', 'vendor', 'app'],
       // chunks:['vendor','app'],
       template: './src/index.ejs', // Load a custom template (ejs by default see the FAQ for details)
     }),
-    new webpack.HotModuleReplacementPlugin(),
+    // new webpack.HotModuleReplacementPlugin(),
   ],
 };
