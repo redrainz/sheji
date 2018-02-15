@@ -153,3 +153,11 @@
 .kanban-manage .ant-tabs-tab-active.ant-tabs-tab{
   color: #3F51B5;
 }
+
+.all-kanban{
+  overflow: auto;
+}
+
+body{
+  overflow: hidden;
+}

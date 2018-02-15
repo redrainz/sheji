@@ -126,7 +126,7 @@ class KanbanManageCard extends React.Component {
       <div onMouseOver={this.handleOnMouseOver} onMouseLeave={this.handleOnMouseLeave}
            style={{ width: 185,height:220,float:'left',
              boxShadow: '0 2px 8px 0 rgba(0,0,0,0.20)',
-             marginRight:17,marginBottom:17}} bodyStyle={{ padding: "0px"}}>
+             marginRight:17,marginBottom:17,marginTop:2}} bodyStyle={{ padding: "0px"}}>
         <div className="custom-image" onClick={this.toKanbanPage}
              style={{width:185,height:157,textAlign:'center',cursor:'pointer'}}>
           <img src={kanbanIcon} style={{ width: 100, paddingTop: 42}}/>
@@ -136,7 +136,7 @@ class KanbanManageCard extends React.Component {
           ):([])}
 
         </div>
-        <div className="custom-card" style={{width:148,height:63,margin: '0 auto',position: 'relative',}}>
+        <div className="custom-card" style={{width:148,height:63,margin: '0 auto',position: 'relative'}}>
           <div className="kanban-name" style={{marginTop:11}} data-kanbanId={this.props.kanban.id}>
             <div className="kanban-name-text" style={{color:this.state.isMouseHover?'rgba(0,0,0,0.72)':'rgba(0,0,0,0.87)'}} title={this.props.kanban.name}>{this.props.kanban.name}</div>
             <Input defaultValue={this.props.kanban.name}

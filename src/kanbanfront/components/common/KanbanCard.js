@@ -121,7 +121,7 @@ class KanbanCard extends React.Component {
             top: 1
           }}/>{}/{this.state.issueInfo.subIssue.length}
           </div>
-          <div className="rt-label">{this.state.issueInfo.storyPoint}</div>
+          <div className="rt-label">{this.state.issueInfo.issueType==='story'?this.state.issueInfo.storyPoint:this.state.issueInfo.issueType==='task'?this.state.issueInfo.workload:''}</div>
         </div>
         <div className="card-child" style={{display: this.state.CardsChildDisplayStatus}}
              onClick={this.handleCardChildClick}>

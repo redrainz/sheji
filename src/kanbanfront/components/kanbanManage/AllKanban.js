@@ -207,7 +207,7 @@ class AllKanban extends React.Component {
     }
 
     return (
-      <div>{kanbanList}</div>
+      <div style={{paddingLeft:3,paddingTop:3}}>{kanbanList}</div>
     );
   }
 }

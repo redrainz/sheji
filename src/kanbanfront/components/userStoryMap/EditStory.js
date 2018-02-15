@@ -12,11 +12,6 @@ import {
   Button,
   InputNumber,
   Input,
-  Collapse,
-  DatePicker,
-  Form,
-  Row,
-  Col,
   message,
   Tag,
   Tabs,
@@ -24,54 +19,39 @@ import {
 } from 'antd';
 import IssueManageStore from '../../stores/origanization/issue/IssueManageStore';
 import UserStoryStore from '../../stores/origanization/userStory/UserStoryStore';
-import '../../assets/css/userStoryMap-card.css';
-import OneComment from './OneComment';
+
 const Option = Select.Option;
-const FormItem = Form.Item;
-const Panel = Collapse.Panel;
 const { TextArea } = Input;
 const TabPane = Tabs.TabPane;
-
-const commitdata = [
-  {
-    username: '看板',
-    content: '“所属计划：”由“[空值]”改为“开发”',
-  },
-  {
-    username: '看板',
-    content: '“所属计划：”由“[空值]”改为“开发”',
-  },
-];
-const children = [];
-for (let i = 10; i < 36; i++) {
-  children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
-}
-
-function handleChange(value) {
-  console.log(`selected ${value}`);
-}
+//定义状态卡片颜色
+const types = {
+  'product backlog': '#108EE9',
+  'sprint backlog': '#0C60AA',
+  'pre todo': '#523EB3',
+  todo: '#FF8040',
+  doing: '#F2B43E',
+  done: '#00A854',
+};
 const styles = {
   items: {
-    width: '50%',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: '6px',
+    marginTop: '2px',
   },
   item: {
-    flex: 1,
-    marginLeft: '10px',
+    width: '50px',
   },
-  select: {
-    // width: '100px',
-    // flex: 5,
-    width: '104px',
+  itemContent: {
+    flex: 1,
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
-    // marginLeft: '-10px',
-    // padding: '0 -10px',
-    // transform: 'scaleY(0.9)',
+  },
+  select: {
+    width: '100%',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
   },
 };
 const size = 'small';
@@ -109,7 +89,7 @@ class EditStory extends Component {
       .then(data => {
         if (data) {
           //把当前textarea的值存在store中
-          // IssueManageStore.setStoryData(data);
+          IssueManageStore.setStoryData(data);
           UserStoryStore.updateLocalStory(
             index,
             column,
@@ -195,420 +175,325 @@ class EditStory extends Component {
   render() {
     const storyDetailDatas = IssueManageStore.getStoryData;
     // console.log({ ...storyDetailDatas });
-    const { getFieldDecorator } = this.props.form;
-    const formItemLayout = {
-      labelCol: { span: 10 },
-      wrapperCol: { span: 14 },
-    };
     return (
+      //总容器
       <div
         style={{
           position: 'fixed',
           bottom: 0,
           right: 0,
           zIndex: 500,
-          width: '448px',
-          background: '#fafafa',
+          width: '440px',
+          background: 'white',
           borderLeft: '1px solid #ddd',
-          height: 'calc(100% - 112px)',
+          height: 'calc(100% - 48px)',
+          display: 'flex',
+          flexDirection: 'column',
         }}
         id="editstory"
       >
+        {/* 侧边栏的header */}
         <div
           style={{
-            width: '100%',
-            height: 'calc(100% - 70px)',
-            overflowY: 'auto',
-            overflowX: 'hidden',
+            padding: '10px 10px',
+            height: '57px',
+            fontSize: '18px',
+            display: 'flex',
+            alignItems: 'center',
+            borderBottom: '1px solid #ddd',
           }}
         >
-          <div
+          <span style={{ margin: '0 0 0 10px' }}>
+            #{storyDetailDatas.issueId}
+          </span>
+          <span
             style={{
-              padding: '10px 10px',
-              fontSize: '14px',
-              borderBottom: '1px solid #ddd',
+              margin: '0 0 0 10px',
             }}
           >
-            <span style={{ fontSize: '12px', margin: '0 0 0 10px' }}>
-              #{storyDetailDatas.issueId}
-            </span>
-            <span
+            [story]
+          </span>
+          <span style={{ margin: '0 0 0 10px' }}>基本信息</span>
+          <span
+            style={{
+              color: '#3f51b5',
+              fontSize: '13px',
+              marginLeft: '114px',
+              cursor: 'pointer',
+            }}
+            onClick={this.props.hideright}
+          >
+            隐藏信息面板
+          </span>
+        </div>
+        {/* header下面的tab页 */}
+        <Tabs style={{ flex: 1 }}>
+          {/* 第一个tab页 */}
+          <TabPane
+            tab={<span style={{ fontSize: '12px' }}>基本信息</span>}
+            key="1"
+          >
+            <div
               style={{
-                fontSize: '12px',
-                margin: '0 0 0 10px',
-                color: '#3f51b5',
+                margin: '0 24px 10px 24px',
+                height: '100%',
+                marginBottom: '100px',
               }}
             >
-              [story]
-            </span>
-            <span style={{ margin: '0 0 0 10px' }}>基本信息</span>
-          </div>
-
-          <TextArea
-            style={{
-              margin: '20px 20px 10px 20px',
-              width: '90%',
-              resize: 'none',
-            }}
-            ref={instance => {
-              this.getTextArea(instance, 'description');
-            }}
-            placeholder="请输入描述"
-            defaultValue={storyDetailDatas.description}
-            autosize={{ minRows: 2, maxRows: 10 }}
-            onFocus={() => {
-              this.setState({ topshow: true });
-            }}
-            onBlur={e => {
-              this.ChangeIssue(e, 'description');
-            }}
-            // onPressEnter={value => {
-            //   this.ChangeIssue(value, 'description');
-            // }}
-          />
-          {/* <div
-            style={{
-              ...{ width: '90%', textAlign: 'right', color: '#888' },
-              ...{ display: this.state.topshow ? 'block' : 'none' },
-            }}
-          >
-            <Icon
-              type="smile"
-              style={{
-                fontSize: '14px',
-                lineHeight: '16px',
-                marginRight: '6px',
-              }}
-            />Enter保存
-          </div> */}
-          <p>
-            <span style={{ margin: '5px 20px' }}>
-              宝洁创建于:{storyDetailDatas.creationDate}
-            </span>
-          </p>
-
-          <div style={{ margin: '-10px 10px 0 10px' }}>
-            <Collapse bordered={false} defaultActiveKey={['1', '2', '3']}>
-              <Panel header="属性" key="1" style={{ background: '#fafafa' }}>
-                <div
-                  style={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    flexFlow: 'row wrap',
-                  }}
-                >
-                  <div style={styles.items}>
-                    <div style={styles.item}>状态：</div>
-                    <div style={styles.select}>
-                      <Tag color="#108ee9" style={{ color: 'white' }}>
-                        {storyDetailDatas.status}
-                      </Tag>
-                    </div>
-                  </div>
-                  <div style={styles.items}>
-                    <div style={styles.item}>负责人：</div>
-                    <Select
-                      size={size}
-                      getPopupContainer={() =>
-                        document.getElementById('editstory')
-                      }
-                      disabled={true}
-                      onChange={value => {
-                        this.onSelectChange(value, { type: 'assign' });
-                      }}
-                      style={styles.select}
-                    >
-                      <Option value="ma">陈造龙</Option>
-                      <Option value="aa">钱秋梅</Option>
-                      <Option value="3">张宇</Option>
-                      <Option value="4">陈真</Option>
-                      <Option value="5">柯希权</Option>
-                      <Option value="6">PO</Option>
-                    </Select>
-                  </div>
-                  <div style={styles.items}>
-                    <div style={styles.item}>迭代：</div>
-                    <div
-                      style={styles.select}
-                      title={
-                        storyDetailDatas.sprintName == null
-                          ? '-'
-                          : storyDetailDatas.sprintName
-                      }
-                    >
-                      {storyDetailDatas.sprintName == null
-                        ? '-'
-                        : storyDetailDatas.sprintName}
-                    </div>
-                  </div>
-                  <div style={styles.items}>
-                    <div style={styles.item}>优先级：</div>
-                    <Select
-                      getPopupContainer={() =>
-                        document.getElementById('editstory')
-                      }
-                      size={size}
-                      style={styles.select}
-                      value={
-                        storyDetailDatas.issuePriority != null
-                          ? storyDetailDatas.issuePriority
-                          : '1'
-                      }
-                      onChange={value => {
-                        this.onSelectChange(value, { type: 'issuePriority' });
+              <div>描述</div>
+              <TextArea
+                style={{
+                  resize: 'none',
+                  borderRadius: 0,
+                }}
+                ref={instance => {
+                  this.getTextArea(instance, 'description');
+                }}
+                placeholder="请输入描述"
+                defaultValue={storyDetailDatas.description}
+                autosize={{ minRows: 3, maxRows: 10 }}
+                onFocus={() => {
+                  this.setState({ topshow: true });
+                }}
+                onBlur={e => {
+                  this.ChangeIssue(e, 'description');
+                }}
+              />
+              <div style={{ marginTop: '10px' }}>内容</div>
+              <TextArea
+                style={{
+                  resize: 'none',
+                  borderRadius: 0,
+                }}
+                ref={instance => {
+                  this.getTextArea(instance, 'content');
+                }}
+                placeholder="请输入详细描述"
+                defaultValue={storyDetailDatas.content}
+                autosize={{ minRows: 3, maxRows: 10 }}
+                onFocus={() => {
+                  this.setState({ show: true });
+                }}
+                onBlur={e => {
+                  this.ChangeIssue(e, 'content');
+                }}
+              />
+              {/* 下面信息展示以及修改区域容器 */}
+              <div
+                style={{
+                  width: '100%',
+                  marginTop: '20px',
+                  padding: '2px 21px 20px 21px',
+                  boxShadow: '0 1px 3px 0 rgba(0,0,0,0.20)',
+                }}
+              >
+                <div style={styles.items}>
+                  <div style={styles.item}>状态：</div>
+                  <div style={styles.itemContent}>
+                    <span
+                      style={{
+                        padding: '2px 5px',
+                        color: 'white',
+                        borderRadius: '8px',
+                        background: types[storyDetailDatas.status],
                       }}
                     >
-                      <Option value="1">
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <i
-                            className="material-icons"
-                            style={{
-                              color: '#5095fe',
-                              fontSize: '9px',
-                              marginRight: '3px',
-                            }}
-                          >
-                            panorama_fish_eye
-                          </i>
-                          低
-                        </div>
-                      </Option>
-                      <Option value="2">
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <i
-                            className="material-icons"
-                            style={{
-                              color: '#ff9f11',
-                              fontSize: '9px',
-                              marginRight: '3px',
-                            }}
-                          >
-                            panorama_fish_eye
-                          </i>
-                          中
-                        </div>
-                      </Option>
-                      <Option value="3">
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <i
-                            className="material-icons"
-                            style={{
-                              color: '#fe5050',
-                              fontSize: '9px',
-                              marginRight: '3px',
-                            }}
-                          >
-                            panorama_fish_eye
-                          </i>
-                          高
-                        </div>
-                      </Option>
-                    </Select>
-                  </div>
-                  <div style={styles.items}>
-                    <div style={styles.item}>看板：</div>
-                    <div
-                      style={styles.select}
-                      title={
-                        storyDetailDatas.kanbanName == null
-                          ? '-'
-                          : storyDetailDatas.kanbanName
-                      }
-                    >
-                      {storyDetailDatas.kanbanName == null
-                        ? '-'
-                        : storyDetailDatas.kanbanName}
-                    </div>
-                  </div>
-                  <div style={styles.items}>
-                    <div style={styles.item}>故事点：</div>
-                    <InputNumber
-                      size={size}
-                      style={styles.select}
-                      value={storyDetailDatas.storyPoint}
-                      disabled="true"
-                      //数据更改事件
-                      onChange={value => {
-                        this.onSelectChange(value, { type: 'storyPoint' });
-                      }}
-                    />
-                  </div>
-                  <div style={styles.items}>
-                    <div style={styles.item}>需求来源：</div>
-                    <Select
-                      getPopupContainer={() =>
-                        document.getElementById('editstory')
-                      }
-                      size={size}
-                      style={styles.select}
-                      labelInValue
-                      value={{
-                        label:
-                          storyDetailDatas.demandSource != null
-                            ? storyDetailDatas.demandSource
-                            : '客户',
-                      }}
-                      onChange={value => {
-                        this.onSelectChange(value, { type: 'demandSource' });
-                      }}
-                    >
-                      <Option value="1">客户</Option>
-                      <Option value="2">用户</Option>
-                      <Option value="3">产品经理</Option>
-                      <Option value="4">市场</Option>
-                      <Option value="5">客服</Option>
-                      <Option value="6">竞争对手</Option>
-                      <Option value="7">开发人员</Option>
-                      <Option value="8">测试人员</Option>
-                      <Option value="9">bug</Option>
-                      <Option value="10">其他</Option>
-                    </Select>
-                  </div>
-                  <div style={styles.items}>
-                    <div style={styles.item}>需求类型：</div>
-                    <Select
-                      getPopupContainer={() =>
-                        document.getElementById('editstory')
-                      }
-                      size={size}
-                      style={styles.select}
-                      labelInValue
-                      value={{
-                        label:
-                          storyDetailDatas.demandType != null
-                            ? storyDetailDatas.demandType
-                            : '新需求',
-                      }}
-                      onChange={value => {
-                        this.onSelectChange(value, { type: 'demandType' });
-                      }}
-                    >
-                      <Option value="1">新需求</Option>
-                      <Option value="2">变更</Option>
-                    </Select>
-                  </div>
-                  <div
-                    style={{
-                      ...styles.items,
-                      ...{ width: '100%', marginTop: '6px' },
-                    }}
-                  >
-                    <div style={styles.item}>标签：</div>
-                    <Select
-                      getPopupContainer={() =>
-                        document.getElementById('editstory')
-                      }
-                      size={size}
-                      mode="multiple"
-                      style={{ flex: 4, paddingLeft: '5px' }}
-                      placeholder="请选择标签"
-                      // onChange={value => {
-                      //   this.onSelectChange(value, { type: 'issuePriority' });
-                      // }}
-                    >
-                      {children}
-                    </Select>
+                      {storyDetailDatas.status}
+                    </span>
                   </div>
                 </div>
-              </Panel>
-              <Panel header="内容" key="2" style={{ background: '#fafafa' }}>
-                <TextArea
-                  style={{ margin: '10px', width: '100%', resize: 'none' }}
-                  ref={instance => {
-                    this.getTextArea(instance, 'content');
-                  }}
-                  placeholder="请输入详细描述"
-                  defaultValue={storyDetailDatas.content}
-                  autosize={{ minRows: 2, maxRows: 10 }}
-                  onFocus={() => {
-                    this.setState({ show: true });
-                  }}
-                  onBlur={e => {
-                    this.ChangeIssue(e, 'content');
-                  }}
-                  // onPressEnter={value => {
-                  //   this.ChangeIssue(value, 'content');
-                  // }}
-                  
-                />
-                {/* <div
-                  style={{
-                    ...{ width: '100%', textAlign: 'right', color: '#888' },
-                    ...{ display: this.state.show ? 'block' : 'none' },
+                <div style={styles.items}>
+                  <div style={styles.item}>负责人：</div>
+                  <div style={styles.itemContent}>{'-'}</div>
+                </div>
+                <div style={styles.items}>
+                  <div style={styles.item}>冲刺：</div>
+                  <div
+                    style={styles.itemContent}
+                    title={
+                      storyDetailDatas.sprintName == null
+                        ? '-'
+                        : storyDetailDatas.sprintName
+                    }
+                  >
+                    {storyDetailDatas.sprintName == null
+                      ? '-'
+                      : storyDetailDatas.sprintName}
+                  </div>
+                </div>
+
+                <div style={styles.items}>
+                  <div style={styles.item}>看板：</div>
+                  <div
+                    style={styles.itemContent}
+                    title={
+                      storyDetailDatas.kanbanName == null
+                        ? '-'
+                        : storyDetailDatas.kanbanName
+                    }
+                  >
+                    {storyDetailDatas.kanbanName == null
+                      ? '-'
+                      : storyDetailDatas.kanbanName}
+                  </div>
+                </div>
+                <div style={styles.items}>
+                  <div style={styles.item}>故事点：</div>
+                  <div style={styles.itemContent}>
+                    {storyDetailDatas.storyPoint}
+                  </div>
+                </div>
+
+                <div style={{ marginTop: '15px' }}>优先级</div>
+                <Select
+                  getPopupContainer={() => document.getElementById('editstory')}
+                  size={size}
+                  style={styles.select}
+                  value={
+                    storyDetailDatas.issuePriority != null
+                      ? storyDetailDatas.issuePriority
+                      : '1'
+                  }
+                  onChange={value => {
+                    this.onSelectChange(value, {
+                      type: 'issuePriority',
+                    });
                   }}
                 >
-                  <Icon
-                    type="smile"
-                    style={{
-                      fontSize: '14px',
-                      lineHeight: '16px',
-                      marginRight: '6px',
-                    }}
-                  />Enter保存
-                </div> */}
-              </Panel>
+                  <Option value="1">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '10px',
+                          height: '10px',
+                          marginRight: '8px',
+                          borderRadius: '50%',
+                          background: '#5095fe',
+                        }}
+                      />
+                      低
+                    </div>
+                  </Option>
+                  <Option value="2">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '10px',
+                          height: '10px',
+                          marginRight: '8px',
+                          borderRadius: '50%',
+                          background: '#f9d252',
+                        }}
+                      />
+                      中
+                    </div>
+                  </Option>
+                  <Option value="3">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div
+                        style={{
+                          width: '10px',
+                          height: '10px',
+                          marginRight: '8px',
+                          borderRadius: '50%',
+                          background: '#fe5050',
+                        }}
+                      />
+                      高
+                    </div>
+                  </Option>
+                </Select>
 
-              <Panel header="动态" key="3" style={{ background: '#fafafa' }}>
-                <Tabs type="card">
-                  <TabPane
-                    tab={<span style={{ fontSize: '12px' }}>操作记录(2)</span>}
-                    key="1"
-                  >
-                    {/* 根据评论数据生成评论 */}
-                    {commitdata.map(one => <OneComment data={one} />)}
-                  </TabPane>
-                  <TabPane
-                    tab={<span style={{ fontSize: '12px' }}>评论(0)</span>}
-                    key="2"
-                  >
-                    <p>Content of Tab Pane 2</p>
-                    <p>Content of Tab Pane 2</p>
-                    <p>Content of Tab Pane 2</p>
-                  </TabPane>
-                </Tabs>
-              </Panel>
-            </Collapse>
-          </div>
-        </div>
-        <div
-          style={{
-            width: '100%',
-            height: '80px',
-            position: 'absoulte',
-            bottom: 0,
-            right: 0,
-            background: '#eee',
-            paddingTop: '15px',
-          }}
-        >
-          <Input
-            style={{
-              display: 'block',
-              width: '80%',
-              margin: 'auto',
-              height: '40px',
-            }}
-            placeholder="编写评论（Ctrl+回车提交，还可以@其他人）"
-          />
-        </div>
+                <div style={{ marginTop: '4px' }}>需求来源</div>
+                <Select
+                  getPopupContainer={() => document.getElementById('editstory')}
+                  size={size}
+                  style={styles.select}
+                  labelInValue
+                  value={{
+                    label:
+                      storyDetailDatas.demandSource != null
+                        ? storyDetailDatas.demandSource
+                        : '客户',
+                  }}
+                  onChange={value => {
+                    this.onSelectChange(value, {
+                      type: 'demandSource',
+                    });
+                  }}
+                >
+                  <Option value="1">客户</Option>
+                  <Option value="2">用户</Option>
+                  <Option value="3">产品经理</Option>
+                  <Option value="4">市场</Option>
+                  <Option value="5">客服</Option>
+                  <Option value="6">竞争对手</Option>
+                  <Option value="7">开发人员</Option>
+                  <Option value="8">测试人员</Option>
+                  <Option value="9">bug</Option>
+                  <Option value="10">其他</Option>
+                </Select>
+
+                <div style={{ marginTop: '4px' }}>需求类型</div>
+                <Select
+                  getPopupContainer={() => document.getElementById('editstory')}
+                  size={size}
+                  style={styles.select}
+                  labelInValue
+                  value={{
+                    label:
+                      storyDetailDatas.demandType != null
+                        ? storyDetailDatas.demandType
+                        : '新需求',
+                  }}
+                  onChange={value => {
+                    this.onSelectChange(value, { type: 'demandType' });
+                  }}
+                >
+                  <Option value="1">新需求</Option>
+                  <Option value="2">变更</Option>
+                </Select>
+              </div>
+            </div>
+          </TabPane>
+          {/* 第二个tab页 */}
+          <TabPane
+            disabled="true"
+            tab={<span style={{ fontSize: '12px' }}>评论</span>}
+            key="2"
+          >
+            <p>Content of Tab Pane 2</p>
+            <p>Content of Tab Pane 2</p>
+            <p>Content of Tab Pane 2</p>
+          </TabPane>
+          {/* 第三个tab页 */}
+          <TabPane
+            disabled="true"
+            tab={<span style={{ fontSize: '12px' }}>操作记录</span>}
+            key="3"
+          >
+            <p>Content of Tab Pane 3</p>
+            <p>Content of Tab Pane 3</p>
+            <p>Content of Tab Pane 3</p>
+          </TabPane>
+        </Tabs>
       </div>
     );
   }
 }
-export default Form.create({})(withRouter(EditStory));
+export default withRouter(EditStory);

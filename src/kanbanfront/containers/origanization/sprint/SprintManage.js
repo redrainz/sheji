@@ -51,12 +51,12 @@ const menu = (
 );
 const styles = {
   tableitem: {
-    width: '120px',
+    maxWidth: '100px',
     height: '20px',
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
-    fontSize: '14px',
+    fontSize: '12px',
     color: 'rgba(0,0,0,0.65)',
   },
 };
@@ -97,6 +97,11 @@ class SprintManage extends Component {
 
   componentDidMount() {
     this.init(1);
+    window.addEventListener('resize', this.ChangeContent.bind(this));
+    if (this.scrollele) {
+      let ele = this.scrollele.parentNode.parentNode;
+      console.log(ele.getBoundingClientRect());
+    }
   }
 
   init(projectId) {
@@ -455,14 +460,15 @@ class SprintManage extends Component {
     const columns = [
       {
         title: '冲刺',
-        // width: 120,
+        width: '15%',
         dataIndex: 'name',
         key: 'name',
         render: (name, resolve) => (
-          <div style={styles.tableitem}>
+          <div style={{ ...styles.tableitem, ...{ width: '120px' } }}>
             <a
               onClick={this.toDetail.bind(this, resolve.id)}
               style={{ color: '#3F51B5' }}
+              title={name}
             >
               {name}
             </a>
@@ -471,14 +477,20 @@ class SprintManage extends Component {
       },
       {
         title: '描述',
-        // width: 120,
+        width: '25%',
         dataIndex: 'description',
         key: 'description',
         render: description => (
           <div
+            title={description}
             style={{
               ...styles.tableitem,
-              ...{ fontSize: '12px', width: '200px' },
+              ...{
+                fontSize: '12px',
+                maxWidth: '250px',
+                Width: '250px',
+                minWidth: '250px',
+              },
             }}
           >
             {description}
@@ -487,12 +499,12 @@ class SprintManage extends Component {
       },
       {
         title: '进度',
-        // width: 120,
+        width: '10%',
         dataIndex: 'progress',
         key: 'progress',
         render: progress => (
           <div style={styles.tableitem}>
-            已完成{isNaN(parseInt(progress)) ? 0 : parseInt(progress)}%
+            {isNaN(parseInt(progress)) ? 0 : parseInt(progress)}%
             {/* <Progress
               percent={parseInt(progress)}
               showInfo={false}
@@ -503,70 +515,77 @@ class SprintManage extends Component {
       },
       {
         title: '开始日期',
-        // width: 120,
+        width: '12%',
         dataIndex: 'startTime',
         key: 'startTime',
         render: startTime => <div style={styles.tableitem}>{startTime}</div>,
       },
       {
         title: '结束日期',
-        // width: 120,
+        width: '12%',
         dataIndex: 'endTime',
         key: 'endTime',
         render: endTime => <div style={styles.tableitem}>{endTime}</div>,
       },
-
+      {
+        title: '状态',
+        width: '10%',
+        dataIndex: 'oldStatus2',
+        key: 'oldStatus2',
+        render: oldStatus2 => <div style={styles.tableitem}>{oldStatus2}</div>,
+      },
       {
         title: '操作',
         dataIndex: 'id',
         key: 'id',
-        width: 360,
+        width: '16%',
         render: (id, recoder) => (
           <div
             style={{
               ...styles.tableitem,
-              ...{ width: '280px', display: 'flex', alignItems: 'center' },
+              ...{ display: 'flex', alignItems: 'center' },
             }}
           >
             <i
+              title="状态切换"
               className="material-icons"
-              style={{ color: '#3F51B5', fontSize: '16px', marginRight: '8px' }}
+              style={{
+                color: '#3F51B5',
+                fontSize: '16px',
+                marginRight: '16px',
+                cursor: 'pointer',
+              }}
+              onClick={this.switchStatus.bind(this, id, recoder.oldStatus)}
             >
               {recoder.oldStatus === 'doing' ? 'lock_open' : 'lock_outline'}
             </i>
-            <a
-              style={{ border: 'none', marginRight: '24px', color: '#3F51B5' }}
-              onClick={this.switchStatus.bind(this, id, recoder.oldStatus)}
-            >
-              {recoder.oldStatus === 'doing' ? '关闭' : '开启'}
-            </a>
+
             <i
+              title="编辑"
               className="material-icons"
-              style={{ color: '#3F51B5', fontSize: '14px', marginRight: '8px' }}
+              style={{
+                color: '#3F51B5',
+                fontSize: '14px',
+                marginRight: '16px',
+                cursor: 'pointer',
+              }}
+              onClick={this.editSprint.bind(this, id)}
             >
               border_color
             </i>
-            <a
-              style={{ border: 'none', marginRight: '24px', color: '#3F51B5' }}
-              onClick={this.editSprint.bind(this, id)}
-              // onClick={() => console.log(id)}
-            >
-              编辑
-            </a>
             <i
-              className="material-icons"
-              style={{ color: '#3F51B5', fontSize: '16px', marginRight: '6px' }}
-            >
-              av_timer
-            </i>
-            <a
               id={id}
-              style={{ border: 'none', color: '#3F51B5' }}
+              title="用户故事"
+              className="material-icons"
+              style={{
+                color: '#3F51B5',
+                fontSize: '16px',
+                cursor: 'pointer',
+              }}
               onClick={this.showSprintPlanModel}
-              // onClick={() => console.log(id)}
             >
-              用户故事
-            </a>
+              input
+            </i>
           </div>
         ),
       },
@@ -586,7 +605,23 @@ class SprintManage extends Component {
       />
     );
   };
+  scroll() {
+    console.log('scroll');
+  }
+  getscroll(instance) {
+    if (instance) {
+      this.scrollele = instance;
+    }
+  }
 
+  ChangeContent() {
+    if (this.scrollele) {
+      this.scrollele.style.height = `${window.innerHeight - 48}px`;
+    }
+  }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.ChangeContent.bind(this));
+  }
   render() {
     let sprintsTemp = this.filterByStatus();
     console.log(sprintsTemp);
@@ -617,15 +652,6 @@ class SprintManage extends Component {
       j++;
     }
     console.log(data, lastdata);
-    if (lastdata.length !== this.state.defaultExpandedRowKeys.length) {
-      let temp = [];
-      for (let i = 0; i < lastdata.length; i++) {
-        temp.push(i);
-      }
-      this.setState({
-        defaultExpandedRowKeys: temp,
-      });
-    }
     const columns = [{ title: 'Release名称', dataIndex: 'name', key: 'name' }];
     for (let i = 0; i < sprintsTemp.length; i++) {
       if (sprintsTemp[i].oldStatus == 'done') {
@@ -635,156 +661,16 @@ class SprintManage extends Component {
       } else {
         switchStatus = '开启';
       }
-      sprintArr.push(
-        <div className="sprintContent">
-          <div
-            style={{
-              flex: '2',
-              marginTop: '10px',
-              marginLeft: '10px',
-              marginBottom: '10px',
-              lineHeight: '20px',
-            }}
-          >
-            <p style={{ color: '#0070c0', marginLeft: '7px' }}>
-              <span
-                style={{
-                  marginRight: '10px',
-                  fontSize: '13px',
-                  color: '#0070c0',
-                }}
-              >
-                <a
-                  onClick={this.toDetail.bind(this, sprintsTemp[i].id)}
-                  style={{ color: '#0070c0' }}
-                >
-                  {sprintsTemp[i].name}
-                </a>
-              </span>
-              <span>
-                {sprintsTemp[i].oldStatus == 'doing' ? (
-                  <FontAwesome
-                    name="unlock"
-                    style={{ color: '#e44444', fontSize: '13px' }}
-                  />
-                ) : (
-                  <FontAwesome
-                    name="lock"
-                    style={{ color: '#e44444', fontSize: '13px' }}
-                  />
-                )}
-              </span>
-            </p>
-            <p className="timeStyle">
-              <span class="small-font" style={{ color: '#999999' }}>{`从${
-                sprintsTemp[i].startTime
-              }到${sprintsTemp[i].endTime}`}</span>
-            </p>
-            <p style={{ marginTop: '8px', marginLeft: '3px' }}>
-              <span
-                className="releaseStyle"
-                style={{ marginRight: '10px', color: '#999999' }}
-              >{`发布计划:${sprintsTemp[i].releasePlaneId}`}</span>
-            </p>
-          </div>
-          <div
-            style={{
-              flex: '3',
-              marginTop: '10px',
-              marginBottom: '10px',
-              lineHeight: '20px',
-            }}
-          >
-            <p style={{ color: '#5a5555' }} className="desStyle">
-              {sprintsTemp[i].description}
-            </p>
-          </div>
-          <div
-            style={{
-              flex: '3',
-              border: '1px solid #e0e0e0',
-              margin: '10px 30px 30px 10px',
-              borderBottom: 'none',
-              borderTop: 'none',
-              textAlign: 'center',
-              lineHeight: '20px',
-            }}
-          >
-            <p className="finshStyle">
-              已完成<span className="numStyle">{sprintsTemp[i].endStory}</span>
-              <span style={{ marginRight: '5px' }}>条</span>/<span
-                style={{ marginLeft: '5px' }}
-              >
-                共
-              </span>
-              <span className="numStyle">{sprintsTemp[i].storyIssue}</span>条
-            </p>
-            <Progress
-              percent={
-                sprintsTemp[i].endStory / sprintsTemp[i].storyIssue * 100
-                  ? parseInt(
-                      sprintsTemp[i].endStory / sprintsTemp[i].storyIssue * 100,
-                    )
-                  : 0
-              }
-              showInfo={false}
-              style={{ height: '15px' }}
-            />
-          </div>
-          <div style={{ flex: '1.6', marginTop: '23px' }}>
-            <Button
-              id={sprintsTemp[i].id}
-              style={{
-                background: '#3b78e7',
-                color: '#fff',
-                width: '60px',
-                height: '20px',
-                padding: '0px',
-                borderColor: '#0070c0',
-                borderRadius: '3px',
-              }}
-              onClick={this.showSprintPlanModel}
-            >
-              用户故事
-            </Button>
-            <a
-              style={{ border: 'none', marginLeft: '10px', color: '#0070c0' }}
-              onClick={this.editSprint.bind(this, sprintsTemp[i].id)}
-            >
-              编辑
-            </a>
-            <a
-              style={{ border: 'none', marginLeft: '10px', color: '#0070c0' }}
-              onClick={this.switchStatus.bind(
-                this,
-                sprintsTemp[i].id,
-                sprintsTemp[i].oldStatus,
-              )}
-            >
-              {switchStatus}
-            </a>
-          </div>
-        </div>,
-      );
     }
     return (
-      <div className="sprintStyle">
+      <div
+        ref={this.getscroll.bind(this)}        
+        className="sprintStyle"
+        style={{ height: window.innerHeight - 48 }}
+      >
         <Header handleClick={this.showModel} />
         <PageHeader style={{ display: 'flex' }}>
-          {/* <Button
-            style={{
-              background: '#0070c0',
-              marginTop: '10px',
-              color: '#fff',
-              borderColor: '#0070c0',
-              padding: '0px',
-              width: '55px',
-              borderRadius: '0px',
-            }}
-            onClick={this.showModel}
-          >
-            创建
-          </Button> */}
+
           <div style={{ flex: '1' }} />
           <div
             style={{
@@ -800,20 +686,20 @@ class SprintManage extends Component {
               onChange={this.getDiffSprintData}
             >
               <Radio.Button value="all" style={{ borderRadius: '0px' }}>
-                全部({this.state.allCount})
+                {`全部 (${this.state.allCount})`}
               </Radio.Button>
               <Radio.Button value="doing">
-                开启({this.state.openCount})
+                {`开启 (${this.state.openCount})`}
               </Radio.Button>
               <Radio.Button value="done">
-                关闭({this.state.closeCount})
+                {`关闭 (${this.state.closeCount})`}
               </Radio.Button>
               <Radio.Button value="todo">
-                未开启({this.state.unOpenCount})
+                {`未开启 (${this.state.unOpenCount})`}
               </Radio.Button>
             </Radio.Group>
           </div>
-          <Button
+          {/* <Button
             style={{
               float: 'right',
               marginTop: '10px',
@@ -825,21 +711,38 @@ class SprintManage extends Component {
             onClick={this.sortByTime}
           >
             排序<Icon type="arrow-up" />
-          </Button>
-          <Search
+          </Button> */}
+          <Input
+            prefix={
+              <i
+                className="material-icons"
+                style={{ marginTop: '9px', color: 'rgba(0, 0, 0, 0.65)' }}
+              >
+                search
+              </i>
+            }
             placeholder="根据冲刺名称查询"
             style={{
               width: 200,
-              marginTop: '10px',
+              margin: '11px 7px 0 -10px',
               height: '20px',
               transform: ' scale(0.9)',
               disable: 'inline-block',
             }}
-            onSearch={value => console.log(value)}
+            onChange={value => console.log(value)}
             className="searchStyle"
           />
         </PageHeader>
-        <div className="sprintContentStyle">
+        <div
+          className="sprintContentStyle"          
+          style={{
+            width: '100%',
+            overflow: 'auto',
+            height: 'calc(100% - 107px)',
+            backgroundColor: 'white',
+          }}
+          onScroll={this.scroll.bind(this)}
+        >
           {/* <div className="headerStyle">
             <div style={{ flex: '2' }}>
               <p style={{ marginLeft: '25px' }}>冲刺</p>

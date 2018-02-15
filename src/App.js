@@ -32,7 +32,7 @@ class App extends Component {
               </Menu.Item>
 
               <Menu.Item key="3">
-                <Link to="/kanbanfront/kanbanManage">看板管理</Link>
+                <Link to="/kanbanfront/kanbanManage/0">看板管理</Link>
               </Menu.Item>
               <Menu.Item key="4">
                 <Link to="/kanbanfront/labelManage">Label管理</Link>

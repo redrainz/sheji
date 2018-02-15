@@ -80,7 +80,7 @@ div .ant-progress-inner {
 .sprintStyle .sprintContentStyle {
     width: 100%;
     height: 100%;
-    border: 1px solid #eff0f1;
+    border-top: 1px solid #eff0f1;
     z-index: 999;
     /* box-shadow: 0px 2px 5px #bbb; */
 }
@@ -90,31 +90,8 @@ div .ant-progress-inner {
     height: 100%;
 }
 
-
-/*定义滚动条高宽及背景 高宽分别对应横竖滚动条的尺寸*/
-
-.sprintStyle .srollContant::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-    background-color: #e2e2e2;
-}
-
-
-/*定义滚动条轨道 内阴影+圆角*/
-
-.sprintStyle .srollContant::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    /*border-radius: 10px;*/
-    background-color: #F5F5F5;
-}
-
-
-/*定义滑块 内阴影+圆角*/
-
-.sprintStyle .srollContant::-webkit-scrollbar-thumb {
-    border-radius: 8px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
-    background-color: #F5F5F5;
+.sprintStyle .ant-table-row-expand-icon-cell span {
+    visibility: hidden;
 }
 
 .sprintStyle .headerStyle {
@@ -128,21 +105,40 @@ div .ant-progress-inner {
     margin-top: 5px;
 }
 
+.sprintStyle .ant-radio-group label {
+    border: none;
+}
+
+.sprintStyle .ant-input {
+    height: 28px !important;
+}
+
+.sprintStyle .ant-table-thead>tr>th,
+.ant-table-tbody>tr>td {
+    padding: 8px;
+}
+
 .sprintStyle .ant-radio-group label,
 .sprintStyle .ant-btn,
 .sprintStyle .ant-input {
     border-color: #979797;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: normal !important;
 }
 
 .sprintStyle .ant-radio-button-wrapper-checked {
     background: #5266D4;
-    color: white;
+    border-color: #5266D4 !important;
+}
+
+.sprintStyle .radioStyle .ant-radio-button-wrapper {
+    border: 1px solid #979797;
+    border-right: none;
 }
 
 .sprintStyle .radioStyle .ant-radio-button-wrapper:last-child {
     border-radius: 0px !important;
+    border-right: 1px solid #979797;
 }
 
 

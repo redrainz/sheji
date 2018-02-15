@@ -11,7 +11,7 @@ const styles = {
     // width: '',
     display: 'flex',
     alignItems: 'center',
-    height: '64px',
+    height: '58px',
     // padding: '10px',
     borderBottom: '1px solid #D3D3D3',
 

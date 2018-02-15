@@ -42,6 +42,18 @@ class KanbanManage extends Component {
   componentWillMount() {
     this.fetchKanban();
   }
+  
+  componentDidMount() {
+    window.onresize=()=>{
+      this.resizeAllKanban();
+    }
+  }
+  resizeAllKanban(){
+    /*为看板设置页面大小，出现滚动条*/
+    let allKanbanContent = document.getElementsByClassName("all-kanban")[0];
+    let topHeight = 58 + 48 + 44 + 15;
+    allKanbanContent.style.height = window.innerHeight - topHeight  + "px";
+  }
 
   fetchKanban = () => {
     let projectId = 1;
@@ -199,8 +211,10 @@ class KanbanManage extends Component {
         <Tabs defaultActiveKey="1" tabBarExtraContent={SearchInput}>
           <TabPane tab="所有看板" key="1">
             <div style={{ top: -4, position: 'relative' }}>
-              <div className="all-kanban" style={{ marginLeft: '1rem',}}>
-                <div className="all-kanban-header" style={{height:48,width:'100%'}}>
+              <div className="all-kanban" style={{
+                marginLeft: '1rem',
+                height:window.innerHeight - 165,}}>
+                <div className="all-kanban-header" style={{height:45,width:'100%'}}>
                   <div className="all-kanban-left" style={headFontStyle}>正在使用的看板</div>
                   <div className="all-kanban-right">
                     <div className="kanban-manage-item" style={{marginRight: 8}}>

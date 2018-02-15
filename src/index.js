@@ -13,7 +13,7 @@ import './assets/materialicons.css';
 import App from './App';
 import { Menu, Icon } from 'antd';
 const SubMenu = Menu.SubMenu;
-import 'antd/dist/antd.css';
+// import 'antd/dist/antd.css';
 const PageSet = () => (
   <Router>
     <Switch>

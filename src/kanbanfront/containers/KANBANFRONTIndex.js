@@ -7,6 +7,7 @@ import { inject } from 'mobx-react';
 
 import asyncRouter from 'asyncRouter';
 
+
 const Home = asyncRouter(() => import('./Home'));
 const KANBANMANAGEIndex = asyncRouter(() => import('./origanization/managePage/KANBANMANAGEIndex'));
 const LABELMANAGEIndex = asyncRouter(() => import('./origanization/label/LABELMANAGEIndex'));
@@ -17,12 +18,14 @@ const KANBANIndex = asyncRouter(() => import('./origanization/kanban/KANBANIndex
 const EDITKANBANIndex = asyncRouter(() => import('./origanization/editKanban/EDITKANBANIndex'));
 const SPRINTIndex = asyncRouter(() => import('./origanization/sprint/SPRINTIndex'));
 
+
 class KANBANFRONTIndex extends React.Component {
   render() {
     const { match } = this.props;
-    
+  
+
     return (
-      
+    
         <div>
           <Switch>
             <Route exact path={match.url} component={Home} />
@@ -38,7 +41,7 @@ class KANBANFRONTIndex extends React.Component {
             <Route path={`${match.url}/sprintDetails`} component={SPRINTIndex} />
           </Switch>
         </div>
-     
+
     );
   }
 }

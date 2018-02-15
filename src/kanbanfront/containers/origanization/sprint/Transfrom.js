@@ -14,17 +14,17 @@ export function Transfrom(value) {
   switch (data.status) {
     case "doing": {
       data.status = true;
-      data.oldStatus2 = "开启";
+      data.oldStatus2 = "运行中";
       break;
     }
     case "done": {
       data.status = false;
-      data.oldStatus2 = "关闭";
+      data.oldStatus2 = "已结束";
       break;
     }
     default : {
       data.status = false;
-      data.oldStatus2 = "未开启";
+      data.oldStatus2 = "计划中";
       break;
     }
   }

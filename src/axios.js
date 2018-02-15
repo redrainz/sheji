@@ -4,7 +4,7 @@ import axios from 'axios';
 
 // axios 配置
 axios.defaults.timeout = 10000;
-// axios.defaults.baseURL = `${process.env.API_HOST}`;
+// axios.defaults.baseURL = "http://123.207.142.127:8378";
 // history.go(0);
 // http request 拦截器);
 axios.interceptors.request.use(
